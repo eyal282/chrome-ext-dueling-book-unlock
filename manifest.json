@@ -2,13 +2,15 @@
 	"name": "Dueling Book Unlock",
 	"action": {},
 	"manifest_version": 3,
-	"version": "1.0",
+	"version": "1.1",
 	"description": "Unlocks all card mechanics in Dueling Book",
 	"permissions": [
 		"tabs",
-		"scripting"
+		"scripting",
+		"webNavigation",
+		"webRequest"
 	],
-	"host_permissions": ["https://*/*"],
+	"host_permissions": ["https://duelingbook.com/", "https://www.duelingbook.com/"],
 	"background":
 	{
 		"service_worker": "background.js"
