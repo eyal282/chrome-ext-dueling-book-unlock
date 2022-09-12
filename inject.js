@@ -1,3 +1,12 @@
+/*
+=== List of Effects that generate mechanics ===
+
+1. This card can attack from your Pendulum Zone
+2. This card can attack during your opponent's battle phase
+3. This card can attack while in face-up Defense Position
+4. You can Set this card from your hand to your Spell
+*/
+
 
 window.findCard = function(arr, hand, grave, like)
 {
@@ -114,7 +123,22 @@ window.cardMenuE = function() {
 		}
 	}
 	else {
-		if (currentPhase == "BP" && turn_player.username == username && !card.data("face_down") && isMonster(player1, card)) {
+		
+		// for attacking during opponent's battle phase.
+		if (currentPhase == "BP" && !card.data("face_down") && card.data("cardfront").data("effect").search(/This card can attack during your opponent's battle phase/i) != -1)
+		{
+			if (countMonsters(player2) > 0) {
+				menu.push({label:"Attack",data:"Attack"});
+			}
+			menu.push({label:"Attack Directly",data:"Attack directly"});
+		}
+		else if (currentPhase == "BP" && (turn_player.username == username || isEitherTurnAttacker(card)) && !card.data("face_down") && isST(player1, card) && isPendulumAttacker(card)) {
+				if (countMonsters(player2) > 0) {
+					menu.push({label:"Attack",data:"Attack"});
+				}
+				menu.push({label:"Attack Directly",data:"Attack directly"});
+		}
+		else if (currentPhase == "BP" && (turn_player.username == username || isEitherTurnAttacker(card)) && !card.data("face_down") && isMonster(player1, card)) {
 			if (card.data("inATK")) {
 				if (countMonsters(player2) > 0) {
 					menu.push({label:"Attack",data:"Attack"});
@@ -124,7 +148,7 @@ window.cardMenuE = function() {
 			else {
 				switch (card.data("cardfront").data("name")) {
 					default:
-						if (card.data("cardfront").data("effect").indexOf("This card can attack while in face-up Defense Position") < 0) {
+						if (card.data("cardfront").data("effect").search(/This card can attack while in face-up Defense Position/i) == -1) {
 							break;
 						}
 					case "Elemental HERO Rampart Blaster":
@@ -148,7 +172,7 @@ window.cardMenuE = function() {
 			}
 		}
 		if (isIn(card, player1.hand_arr) >= 0) {
-			if (hasAvailableSTZones(player1) && card.data("cardfront").data("effect").indexOf("You can Set this card from your hand to your Spell") >= 0) {
+			if (hasAvailableSTZones(player1) && card.data("cardfront").data("effect").search(/You can Set this card from your hand to your Spell/i) != -1) {
 				menu.push({label:"Set (To S/T)",data:"Set ST"});
 			}
 			if (card.data("cardfront").data("pendulum")) {
@@ -1660,4 +1684,29 @@ window.showExtraDeckMenu = function()
 		menu.push({label:"Banish random FD",data:"Banish random ED card FD"});
 
 	showMenu(player1.extra_arr[0], menu);
+}
+
+window.isPendulumAttacker = function(card)
+{
+	let effect = card.data("cardfront").data("pendulum_effect")
+	effect = effect.replaceAll("from your ", "")
+	effect = effect.replaceAll("while in your ", "")
+	
+	console.log(effect)
+	
+	if(effect.search(/This card can attack Pendulum Zone/i) != -1)
+		return true;
+	
+	return false;
+}
+
+window.isEitherTurnAttacker = function(card)
+{
+	if(isMonster(player1, card) && card.data("cardfront").data("effect").search(/This card can attack during your opponent's battle phase/i) != -1)
+		return true;
+	
+	else if(isST(player1, card) && isPendulumAttacker(card))
+		return true;
+	
+	return false;
 }
