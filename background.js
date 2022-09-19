@@ -1,3 +1,9 @@
+
+chrome.webNavigation.onCommitted.addListener(function(e) {
+	keepAlive();
+}, {url: [{hostSuffix: 'duelingbook.com'}]});
+
+
 setInterval(function () {
 	chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
 		if(tabs[0] && tabs[0].url && tabs[0].url.search("duelingbook.com") >= 0)
@@ -122,7 +128,7 @@ async function retryOnTabUpdate(tabId, info, tab) {
 /*
 === List of Effects that generate mechanics ===
 
-1. This card can attack from your Pendulum Zone
+1. This card can attack from your Pendulum Scale
 2. This card can attack during your opponent's battle phase
 3. This card can attack while in face-up Defense Position
 4. You can Set this card from your hand to your Spell
@@ -165,59 +171,27 @@ function injectFunction(potOfSwitch)
 		}
 		return no_question;
 	}
-	// Function is only here to edit cardMenuE to be Eyal_cardMenuE
-	window.newDuelCard = function() {
-		var card = getRecycledCard();
-		if (!card) {
-			card = new Card();
+	
+	window.Eyal_swapCardMenuForPlayer = function(player)
+	{
+		for(let abc=0;abc < player.all_cards_arr.length;abc++)
+		{
+			player.all_cards_arr[abc].find('.content:first').off("mouseover", cardMenuE);
+			player.all_cards_arr[abc].find('.content:first').mouseover(Eyal_cardMenuE);
 		}
-		if (automatic) {
-			card.contextmenu(duelCardDownE);
-		}
-		//card.on("mouseover click", previewE);
-		card.on("mouseenter click", previewE);
-		if (duelist) {
-			card.find('.content:first').mouseover(Eyal_cardMenuE);
-			//card.find('.content:first').mouseleave(menuOutE);
-		}
-		card.find('.content:first').mouseleave(menuOutE);
-		card.find('.cardfront').hide();
-		if (admin || adjudicator) {
-			if (!automatic) {
-				card.css("cursor", "pointer");
-				card.click(targetCard);
-			}
-		}
-		TweenMax.to(card, 0, {rotationY:180 + ABOUT_ZERO, scale:0.1485});
-		return card;
 	}
-	// Function is only here to edit cardMenuE to be Eyal_cardMenuE
-	window.addRecycledCard = function(card) {
-		/*log('addRecycledCard');
-		if (!card) {
-			log('ignoring');
-			return;
+	
+	// Is the extension user dueling? "duel_active" is for dueling and watching, while "duelist" is only for dueling
+	if(duelist)
+	{
+		Eyal_swapCardMenuForPlayer(player1);
+		Eyal_swapCardMenuForPlayer(player2);
+		
+		if(tag_duel)
+		{
+			Eyal_swapCardMenuForPlayer(player3)
+			Eyal_swapCardMenuForPlayer(player4)
 		}
-		log(card.data("id"));*/
-
-		card.removeSleeve();
-		card.css("cursor", "auto");
-		card.find('.content:first').off("mouseover", Eyal_cardMenuE);
-		card.find('.content:first').off("mouseleave", menuOutE);
-		card.off("click", targetCard);
-		//card.rotationY = 180;
-		card.find('.cardfront').hide();
-		card.find('.skillback').remove();
-		card.find('.sleeve').remove();
-		card.detach();
-		//if (card.isSkill || card.data("cardfront").card_type == 'Skill' || card.data("cardfront").data("name") == 'Token' || card.data("face_down")) {
-		//	card = null;
-		//	return;
-		//}
-		if (recycled_cards_arr.indexOf(card) >= 0) {
-			return; // in some past replays where Siding unfortunately happens twice, this could happen and cause problems
-		}
-		recycled_cards_arr.push(card);
 	}
 	
 	window.Eyal_cardMenuE = function() {	
@@ -386,7 +360,10 @@ function injectFunction(potOfSwitch)
 			if ((hasAvailableMonsterZones(player1) || links && (!linkLeft || !linkRight) && isIn(card, player1.extra_arr) >= 0) && card.data("cardfront").data("card_type") == "Monster" && !card.data("isXyzMaterial") && !isMonster(player1, card) && !isST(player1, card)) {
 				menu.push({label:"S. Summon ATK",data:"SS ATK"});
 				menu.push({label:"S. Summon DEF",data:"SS DEF"});
-				menu.push({label:"Set",data:"Set monster"});
+				
+				// Because setting a main deck monster already exists
+				if(isIn(card, player1.extra_arr) >= 0)
+					menu.push({label:"Set",data:"Set monster"});
 			}
 			if (isIn(card, player1.grave_arr) >= 0 && hasAvailableMonsterZones(player1)) {
 				switch (card.data("cardfront").data("name")) {
@@ -1531,7 +1508,7 @@ function injectFunction(potOfSwitch)
 						Eyal_snipeByArray(opponentArr);
 						
 					}
-					else if(data.message.indexOf('/search') == 0 || data.message.indexOf("/send") == 0 || data.message.indexOf("/atk") == 0 || data.message.indexOf("/def") == 0)
+					else if(data.message.indexOf('/search') == 0 || data.message.indexOf("/send") == 0 || data.message.indexOf("/ban") == 0 || data.message.indexOf("/atk") == 0 || data.message.indexOf("/def") == 0)
 					{
 						let msg = data.message;
 						
@@ -1556,6 +1533,17 @@ function injectFunction(potOfSwitch)
 							
 							cardClickAction = "To GY";
 							commandName = "/send";
+						}
+						
+						else if(msg.indexOf('/ban') == 0)
+						{
+							msg = msg.replace("/ban", "");
+							
+							if(msg.indexOf(' ') == 0)
+								msg = msg.replace(" ", "");
+							
+							cardClickAction = "Banish";
+							commandName = "/ban";
 						}
 						
 						else if(msg.indexOf('/atk') == 0)
@@ -2255,7 +2243,7 @@ function injectFunction(potOfSwitch)
 		effect = effect.replaceAll("from your ", "")
 		effect = effect.replaceAll("while in your ", "")
 		
-		if(effect.search(/This card can attack Pendulum Zone/i) != -1)
+		if(effect.search(/This card can attack Pendulum/i) != -1)
 			return true;
 		
 		return false;
