@@ -133,10 +133,100 @@ async function retryOnTabUpdate(tabId, info, tab) {
 3. This card can attack while in face-up Defense Position
 4. You can Set this card from your hand to your Spell
 5. each player swaps the cards in their graveyard with the cards in their deck
+6. Shuffle this card face-up into your opponent's Deck
 */
 
 function injectFunction(potOfSwitch)
 {
+	// Prevents the page from scrolling away.
+	
+	if($('html').scrollTop() != 0)
+	{
+		$('html').scrollTop(0);
+	}
+	
+	if($('html').scrollLeft() != 0)
+	{
+		$('html').scrollLeft(0);
+	}
+	
+	window.Eyal_swapCardMenuForPlayer = function(player)
+	{
+		for(let abc=0;abc < player.all_cards_arr.length;abc++)
+		{
+			player.all_cards_arr[abc].find('.content:first').off("mouseover", cardMenuE);
+			player.all_cards_arr[abc].find('.content:first').mouseover(Eyal_cardMenuE);
+		}
+	}
+	
+	// Is the extension user dueling? "duel_active" is for dueling and watching, while "duelist" is only for dueling
+	if(duelist)
+	{
+		Eyal_swapCardMenuForPlayer(player1);
+		Eyal_swapCardMenuForPlayer(player2);
+		
+		if(tag_duel)
+		{
+			Eyal_swapCardMenuForPlayer(player3)
+			Eyal_swapCardMenuForPlayer(player4)
+		}
+	}
+	
+	window.enterM1E = function()
+	{
+		if(currentPhase != "DP" && currentPhase != "SP")
+		{
+			Send({"action":"Duel", "play":"Enter M1"});
+			return;
+		}
+		
+		
+		let serpentFound = false;
+		
+		for(let abc=0;abc < player1.grave_arr.length;abc++)
+		{
+			if(player1.grave_arr[abc].data("cardfront").data("name") == "Sinister Serpent")
+			{
+				serpentFound = true;
+				break;
+			}
+		}
+		
+		if(serpentFound)
+		{
+			if(currentPhase == "DP")	
+			{
+				enterSPE();
+			}
+			
+			getConfirmation2("Take Sinister Serpent before MP1?", "", Eyal_SinisterYes, Eyal_SinisterNo);
+		}
+		else
+		{
+			Send({"action":"Duel", "play":"Enter M1"});
+		}
+	}
+	window.Eyal_SinisterYes = function()
+	{
+
+		
+		for(let abc=0;abc < player1.grave_arr.length;abc++)
+		{
+			if(player1.grave_arr[abc].data("cardfront").data("name") == "Sinister Serpent")
+			{
+				cardMenuClicked(player1.grave_arr[abc], "To hand");
+				break;
+			}
+		}
+		
+		Send({"action":"Duel", "play":"Enter M1"});
+	}
+	
+	window.Eyal_SinisterNo = function()
+	{
+		Send({"action":"Duel", "play":"Enter M1"});
+	}
+	
 	window.findCard = function(arr, hand, grave, like)
 	{
 		var no_question = true;
@@ -170,28 +260,6 @@ function injectFunction(potOfSwitch)
 			}
 		}
 		return no_question;
-	}
-	
-	window.Eyal_swapCardMenuForPlayer = function(player)
-	{
-		for(let abc=0;abc < player.all_cards_arr.length;abc++)
-		{
-			player.all_cards_arr[abc].find('.content:first').off("mouseover", cardMenuE);
-			player.all_cards_arr[abc].find('.content:first').mouseover(Eyal_cardMenuE);
-		}
-	}
-	
-	// Is the extension user dueling? "duel_active" is for dueling and watching, while "duelist" is only for dueling
-	if(duelist)
-	{
-		Eyal_swapCardMenuForPlayer(player1);
-		Eyal_swapCardMenuForPlayer(player2);
-		
-		if(tag_duel)
-		{
-			Eyal_swapCardMenuForPlayer(player3)
-			Eyal_swapCardMenuForPlayer(player4)
-		}
 	}
 	
 	window.Eyal_cardMenuE = function() {	
@@ -245,9 +313,13 @@ function injectFunction(potOfSwitch)
 				}
 				if (isIn(card, player1.opponent.grave_arr) >= 0) {
 					menu.push({label:"Banish",data:"Banish"});
+					
+					// Eyal282 here
+					menu.push({label:"Banish FD",data:"Banish FD"});
 				}
 				else if (!card.data("face_down")) {
 					menu.push({label:"To Grave",data:"To GY"});
+					menu.push({label:"Banish FD", data:"Eyal Banish FD"});
 				}
 				menu.push({label:"Target",data:"Target"});
 				
@@ -344,13 +416,21 @@ function injectFunction(potOfSwitch)
 					menu.push({label:"Set",data:"Set Field Spell"});
 				}
 				if (hasAvailableMonsterZones(player1)) {
-					if (card.data("cardfront").data("card_type") == "Monster") {
+					if(Eyal_IsEaterOfMillions(card)) {
+						if(countFaceDownExtraDeckCards(player1) >= 5)
+						{
+							menu.push({label:"Banish first 5 ED",data:"Banish first 5 ED FD"});
+						}
+					}
+					// Eyal282, we use else if to prevent normal summoning Eater of Millions.
+					else if (card.data("cardfront").data("card_type") == "Monster") {
 						menu.push({label:"Normal Summon",data:"Normal Summon"});
 						menu.push({label:"Set",data:"Set monster"});
 					}
 					else if (findCard(["Magical Hats"])) {
 						menu.push({label:"Set to Monster Zone",data:"Set monster"});
 					}
+					
 				}
 			}
 			if (card.data("cardfront").data("monster_color") == "Xyz" && isIn(card, player1.extra_arr) >= 0 && countOverlayOptions(player1) >= 1) {
@@ -361,6 +441,13 @@ function injectFunction(potOfSwitch)
 				menu.push({label:"S. Summon ATK",data:"SS ATK"});
 				menu.push({label:"S. Summon DEF",data:"SS DEF"});
 				
+				if(Eyal_IsEaterOfMillions(card) && (isIn(card, player1.hand_arr) >= 0 || isIn(card, player1.extra_arr) >= 0))
+				{
+					if(countFaceDownExtraDeckCards(player1) >= 5)
+					{
+						menu.push({label:"Banish entire ED",data:"Banish entire ED FD"});
+					}
+				}
 				// Because setting a main deck monster already exists
 				if(isIn(card, player1.extra_arr) >= 0)
 					menu.push({label:"Set",data:"Set monster"});
@@ -571,9 +658,6 @@ function injectFunction(potOfSwitch)
 				if (!card.data("face_down")) {
 					if (isMonster(player1, card)) {
 						switch (card.data("cardfront").data("name")) {
-							case "Parasite Paracide":
-								menu.push({label:"Resolve Effect",data:"To T Deck 2 FU"});
-								break;
 							case "SPYRAL GEAR - Drone":
 								if (player1.opponent.main_arr.length >= 3) {
 									menu.push({label:"Look at cards",data:"Spyral event"});
@@ -654,6 +738,14 @@ function injectFunction(potOfSwitch)
 						if (card.data("cardfront").data("name") == "Pot of Extravagance" && countFaceDownExtraDeckCards(player1) >= 6) {
 							menu.push({label:"Banish 6 ED Cards FD",data:"Banish 6 random ED cards FD"});
 						}
+						// Eyal282 here
+						if(card.data("cardfront").data("name") == "Pot of Prosperity") {
+							if(countFaceDownExtraDeckCards(player1) >= 3)
+								menu.push({label:"Banish first 3 ED",data:"Banish first 3 ED FD"});
+							
+							if(countFaceDownExtraDeckCards(player1) >= 6)
+								menu.push({label:"Banish first 6 ED",data:"Banish first 6 ED FD"});
+						}
 						
 						if (card.data("cardfront").data("name") == "Pot of Duality" && player1.main_arr.length >= 3) {
 							menu.push({label:"Banish 3 Cards",data:"Banish top 3 cards"});
@@ -693,9 +785,6 @@ function injectFunction(potOfSwitch)
 						}
 						if (card.data("cardfront").data("name") == "Draw of Fate") {
 							menu.push({label:"Resolve Effect",data:"Fate effect"});
-						}
-						if (card.data("cardfront").data("name") == "Old Mind") {
-							menu.push({label:"To Opponent's Hand",data:"To hand 2"});
 						}
 						if (card.data("cardfront").data("name") == "Transmission Gear" && moderator >= 2) {
 							//menu.push({label:"Resolve Effect",data:"Play RPS"});
@@ -759,7 +848,15 @@ function injectFunction(potOfSwitch)
 				if (card.data("cardfront").data("name") == "Small World") {
 					menu.push({label:"Check Options",data:"Resolve Small World"});
 				}
-				menu.push({label:"To Opponent's Hand",data:"To hand 2"});
+				
+				if(Eyal_IsCardAbleToShuffleToOpponentDeck(card))
+				{
+					menu.push({label:"To Opponent's Deck FU",data:"To T Deck 2 FU"});
+				}
+				else
+				{
+					menu.push({label:"To Opponent's Hand",data:"To hand 2"});
+				}
 				
 				if (card.data("isXyzMaterial")) {
 					menu = [];
@@ -810,6 +907,55 @@ function injectFunction(potOfSwitch)
 			Eyal_ExchangeOfTheSpirit();
 			return;
 		}
+		
+		else if(data == "Banish first 3 ED FD" || data == "Banish first 5 ED FD" || data == "Banish first 6 ED FD" || data == "Banish entire ED FD")
+		{
+			let banishMax;
+			
+			if(data.search("3") != -1)
+				banishMax = 3;
+			
+			if(data.search("5") != -1)
+				banishMax = 5;
+				
+			if(data.search("6") != -1)
+				banishMax = 6;
+			
+			if(data.search("entire") != -1)
+				banishMax = 9999;
+				
+			
+			for(let abc = 0;abc < player1.all_cards_arr.length;abc++)
+			{
+				if(banishMax == 0)
+					break;
+				
+				// Skip myself, this is because I made an eater of millions that banishes the rest of the ED.
+				if(player1.all_cards_arr[abc].data("id") == card.data("id"))
+					continue;
+				
+				if(isIn(player1.all_cards_arr[abc], player1.extra_arr) >= 0)
+				{
+					cardMenuClicked(player1.all_cards_arr[abc], "Banish FD");
+					banishMax--;
+				}
+			}
+			
+			if(Eyal_IsEaterOfMillions(card))
+			{
+				cardMenuClicked(card, "SS ATK")
+			}
+			exitViewing();
+		}
+		
+		else if(data == "Eyal Banish FD")
+		{
+			cardMenuClicked(card, "To GY");
+			cardMenuClicked(card, "Banish FD");
+			exitViewing();
+		}
+
+		
 		if (data == "Choose card") {
 			player1.temp_arr.push(card.data("id"));
 			if (player1.temp_arr.length == 3 && viewing == "Deck (Picking 3 Cards)" || player1.temp_arr.length == 2 && viewing == "Deck (Picking 2 Cards)" || player1.temp_arr.length == 1 && viewing == "Deck (Picking Card)") {
@@ -1264,6 +1410,12 @@ function injectFunction(potOfSwitch)
 				// Eyal282
 				case "Banish ED Card FD":
 				case "To Main Deck FU":
+				case "Banish first 3 ED":
+				case "Banish first 5 ED":
+				case "Banish first 6 ED":
+				case "Banish entire ED":
+				case "To Opponent's Deck FU":
+				
 					option.find('img').attr("src", IMAGES_START + "svg/card_menu_btn_up2.svg");
 					break;
 			}
@@ -1318,9 +1470,7 @@ function injectFunction(potOfSwitch)
 		
 			//duelActions++;
 			//saveGamestate(duelActions);
-
-
-
+		
 		if (SOFT_PLAYS.indexOf(data.play) < 0) {
 			$('.red_target').hide();
 			$('.blue_target').hide();
@@ -1705,6 +1855,9 @@ function injectFunction(potOfSwitch)
 				else if (player == Player2()) {
 					$('#done_siding2').show();
 				}
+				
+				// Eyal282 here.
+				playSound(Decided)
 				break;
 			case "Pick first":
 				pickFirstResponse(data);
@@ -2260,6 +2413,33 @@ function injectFunction(potOfSwitch)
 		return false;
 	}
 	
+	window.Eyal_IsCardAbleToShuffleToOpponentDeck = function(card)
+	{
+		let effect = card.data("cardfront").data("effect")
+		
+		if(effect.search(/Shuffle this card face-up into your opponent's Deck/i) != -1)
+			return true;
+		
+		return false;
+		
+	}
+	window.Eyal_IsEaterOfMillions = function(card)
+	{
+		
+		if(card.data("cardfront").data("name") == "Eater of Millions")
+			return true;
+		
+		else if(card.data("cardfront").data("name") == "Eater of Billions")
+			return true;
+		
+		else if(card.data("cardfront").data("name") == "Eater of Trillions")
+			return true;
+
+		else if(card.data("cardfront").data("name") == "Eater of Quadrillions")
+			return true;
+		
+		return false;
+	}
 	window.Eyal_CountSpellsInGY = function(player)
 	{
 		let spellCount = 0;
