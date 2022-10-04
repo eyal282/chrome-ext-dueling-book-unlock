@@ -133,7 +133,9 @@ async function retryOnTabUpdate(tabId, info, tab) {
 3. This card can attack while in face-up Defense Position
 4. You can Set this card from your hand to your Spell
 5. each player swaps the cards in their graveyard with the cards in their deck
-6. Shuffle this card face-up into your opponent's Deck
+6. swap the cards in your graveyard with the cards in your deck
+7. Shuffle this card face-up into your opponent's Deck
+8. pay half your LP
 */
 
 function injectFunction(potOfSwitch)
@@ -158,6 +160,65 @@ function injectFunction(potOfSwitch)
 			player.all_cards_arr[abc].find('.content:first').mouseover(Eyal_cardMenuE);
 		}
 	}
+	
+    window.Eyal_addColoredLine = function(color, str)
+    {
+        if (conceal)
+        {
+            return;
+        }
+        saveDuelVSP();
+        $('#duel .cout_txt').append('<b><font color="' + color + '">' + escapeHTML(str) + '</b></font><br>');
+        restoreDuelVSP();
+    }
+    
+    window.Eyal_exitViewing = function(e, b)
+    {
+        if(viewing == "Opponent's Hand")
+        {
+            Eyal_LastOpponentHand = [];
+            
+            for(let abc=0;abc < player1.opponent.hand_arr.length;abc++)
+            {
+                Eyal_LastOpponentHand.push(player1.opponent.hand_arr[abc]);
+            }
+            
+            getConfirmation("Log Opponent's Hand?", "", Eyal_LogHandYes);
+        }
+        
+        if (duelist && viewing) {
+            Send({"action":"Duel", "play":b ? "Stop viewing 2" : "Stop viewing", "viewing":viewing});
+            player1.temp_arr = [];
+        }
+        removeCardMenu();
+        viewing = "";
+        $('#view .title_txt').text("");
+        $('#view > .content').scrollTop(0);
+        $('#view').hide();
+        shiftDecks();
+        
+        if (e)
+        {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+    }
+    
+    window.Eyal_LogHandYes = function()
+    {
+        addLine("==============================")
+        
+        for(let abc=0;abc < player1.opponent.hand_arr.length;abc++)
+        {
+            Eyal_addColoredLine("0000FF", player1.opponent.hand_arr[abc].data("cardfront").data("name"));    
+        }
+        
+        addLine("==============================")
+    }
+    
+    removeButton($('#view .exit_btn'))
+    addButton($('#view .exit_btn'), Eyal_exitViewing);
 	
 	// Is the extension user dueling? "duel_active" is for dueling and watching, while "duelist" is only for dueling
 	if(duelist)
@@ -226,6 +287,148 @@ function injectFunction(potOfSwitch)
 	{
 		Send({"action":"Duel", "play":"Enter M1"});
 	}
+	
+	window.Eyal_ImportDeckE = function()
+	{
+		var options = ["File"];
+		var custom = false;
+		var rush = false;
+		
+		for (var i = 0; i < deck_filled_arr.length; i++) {
+			if (deck_filled_arr[i].data("custom")) {
+				custom = true;
+			}
+			if (deck_filled_arr[i].data("rush")) {
+				rush = true;
+			}
+		}
+		for (i = 0; i < side_filled_arr.length; i++) {
+			if (side_filled_arr[i].data("custom")) {
+				custom = true;
+			}
+			if (side_filled_arr[i].data("rush")) {
+				rush = true;
+			}
+		}
+		for (i = 0; i < extra_filled_arr.length; i++) {
+			if (extra_filled_arr[i].data("custom")) {
+				custom = true;
+			}
+			if (extra_filled_arr[i].data("rush")) {
+				rush = true;
+			}
+		}
+		
+		if (!custom) {
+			options.push("Clipboard List");
+		}
+		getComboBox("Import Deck", "For Clipboard import, use this example: https://ibb.co/7jZ4bS1", options, 0, Eyal_ImportDeck);
+		showDim();
+	}
+
+	window.Eyal_ImportDeck = function()
+	{
+		if ($('#combo .combo_cb').val().indexOf("File") >= 0)
+		{
+			importDeck();
+			return;
+		}
+		else if ($('#combo .combo_cb').val().indexOf("Clipboard List") >= 0)
+		{
+			Eyal_ImportDeckFromList();
+		}
+	
+	}
+	
+	window.Eyal_ImportDeckFromList = async function()
+	{
+		
+		let str = await navigator.clipboard.readText();
+
+		var main_arr = [];
+		var side_arr = [];
+		var extra_arr = [];
+		
+		let cards = [];
+		
+		let import_arr = str.split("\n");
+		
+		for (let abc = 0;abc < import_arr.length;abc++)
+		{
+			if(import_arr[abc].charAt(0) != 1 && import_arr[abc].charAt(0) != 2 && import_arr[abc].charAt(0) != 3)
+				continue;
+			
+			let count = import_arr[abc].charAt(0);
+			
+			if(import_arr[abc].charAt(1) == 'x' || import_arr[abc].charAt(1) == 'X')
+			{
+				import_arr[abc] = import_arr[abc].replace(import_arr[abc].charAt(1), "")
+			}
+			
+			import_arr[abc] = import_arr[abc].replace(import_arr[abc].charAt(0), "")
+			import_arr[abc] = import_arr[abc].trim()
+			
+			for(let dummy_value=0;dummy_value < count;dummy_value++)
+			{
+				cards.push(import_arr[abc]);
+			}
+		}
+		for (let abc = 0; abc < cards.length; abc++)
+		{			
+			for(let i=0;i < Cards.length;i++)
+			{
+				if(Cards[i].name_lowercase == cards[abc].toLowerCase())
+				{
+					if(Cards[i].monster_color == "Fusion" || Cards[i].monster_color == "Synchro" || Cards[i].monster_color == "Xyz" || Cards[i].monster_color == "Link")
+					{
+						extra_arr.push(Cards[i].id);
+						i = 9999999;
+					}
+					else
+					{
+						main_arr.push(Cards[i].id);
+						i = 9999999;
+					}
+				}
+			}
+		}
+		
+		importedCards = {"main":main_arr, "side":side_arr, "extra":extra_arr};
+		Eyal_importDeckFromListB();
+	}
+
+	window.Eyal_importDeckFromListB = function(str)
+	{
+		importedDeckName = "";
+		getInput("Import Deck", "Enter a name for your new deck", importedDeckName, 20, Eyal_importDeckFromListC, /[^ -~●]/g);
+		showDim();
+	}
+
+	window.Eyal_importDeckFromListC = function()
+	{
+		var name = $('#input .input_txt').val();
+		if (name == "") {
+			errorE("Deck name cannot be blank");
+			importedCards = null;
+			importedDeckName = null;
+			return;
+		}
+		for (var i = 0; i < decks.length; i++) {
+			if (decks[i].data.toLowerCase() == name.toLowerCase()) {
+				errorE("Deck with name exists", importDeckE);
+				showDim();
+				return;
+			}
+		}
+		Send({"action":"Import deck", "cards":importedCards, "name":name});
+		importedCards = null;
+		importedDeckName = null;
+		showDim();
+	}
+	
+	$('#deck_constructor #import_btn').off("click")
+	$('#deck_constructor #import_btn').click(Eyal_ImportDeckE)
+	
 	
 	window.findCard = function(arr, hand, grave, like)
 	{
@@ -433,6 +636,11 @@ function injectFunction(potOfSwitch)
 					
 				}
 			}
+			// Eyal282 here, for Magical Hats.
+			if (isIn(card, player1.banished_arr) >= 0 && hasAvailableMonsterZones(player1) && findCard(["Magical Hats"]) && card.data("cardfront").data("card_type") != "Monster")
+			{
+				menu.push({label:"Set to Monster Zone",data:"Set monster"});
+			}
 			if (card.data("cardfront").data("monster_color") == "Xyz" && isIn(card, player1.extra_arr) >= 0 && countOverlayOptions(player1) >= 1) {
 				menu.push({label:"OL ATK",data:"OL ATK"});
 				menu.push({label:"OL DEF",data:"OL DEF"});
@@ -544,9 +752,13 @@ function injectFunction(potOfSwitch)
 				if (player1.fieldSpell && card[0] == player1.fieldSpell[0] && !card.data("face_down")) {
 					menu.push({label:"Set",data:"Set Field Spell"});
 				}
+				// Eyal282 commented these 3 lines out:
+				/*
 				if (isIn(card, player1.hand_arr) < 0 && isIn(card, player1.main_arr) < 0 && !isExtraDeckCard(card) && card.data("cardfront").data("monster_color") != "Token" && !card.data("isXyzMaterial")) {
 					menu.push({label:"To Hand",data:"To hand"});
+					
 				}
+				*/
 				//if (card.data("isXyzMaterial")) {
 				//	menu.push({label:"Detach",data:"Detach"});
 				//}
@@ -657,6 +869,10 @@ function injectFunction(potOfSwitch)
 				}
 				if (!card.data("face_down")) {
 					if (isMonster(player1, card)) {
+						if(Eyal_IsCardAbleToPayHalfLP(card))
+						{
+							menu.push({label:"Pay Half LP", data:"Eyal Pay Half LP"});
+						}
 						switch (card.data("cardfront").data("name")) {
 							case "SPYRAL GEAR - Drone":
 								if (player1.opponent.main_arr.length >= 3) {
@@ -796,8 +1012,12 @@ function injectFunction(potOfSwitch)
 							menu.push({label:"Resolve Effect",data:"Upside Down effect"});
 						}
 						// Eyal282
-						if (card.data("cardfront").data("effect").search(/each player swaps the cards in their graveyard with the cards in their deck/i) != -1) {
-							menu.push({label:"Resolve Effect", data:"Eyal Exchange Spirit"});
+						if (Eyal_IsCardExchangeOfSpirit(card)) {
+							menu.push({label:"Swap Deck with GY", data:"Eyal Exchange Spirit"});
+						}
+						
+						if(Eyal_IsCardAbleToPayHalfLP(card)) {
+							menu.push({label:"Pay Half LP", data:"Eyal Pay Half LP"});
 						}
 					}
 					if (isIn(card, player1.grave_arr) >= 0 || isMonster(player1, card)) {
@@ -858,6 +1078,15 @@ function injectFunction(potOfSwitch)
 					menu.push({label:"To Opponent's Hand",data:"To hand 2"});
 				}
 				
+				let tokenCount = Eyal_CountTokensCardCanSummon(card);
+				
+				// Negative token count = summon to opponent.
+				// For now I'm not implementing it.
+				if(tokenCount > 0)
+				{
+					menu.push({label:`SS DEF ${tokenCount} Tokens`, data:`Eyal SS Many Tokens`});
+				}
+				
 				if (card.data("isXyzMaterial")) {
 					menu = [];
 					menu.push({label:"Detach",data:"Detach"});
@@ -901,10 +1130,48 @@ function injectFunction(potOfSwitch)
 		}
 		removeCardMenu();
 		hideSelectZones();
-		if(data == "Eyal Exchange Spirit")
+		
+		
+		if(data == "Eyal Pay Half LP")
+		{
+			exitViewing();
+			
+			
+			let amountToGive = -1 * Math.ceil((player1.lifepoints / 2.0));
+			Send({"action":"Duel", "play":"Life points", "amount":amountToGive});
+			return;
+		}
+		
+		else if(data == "Eyal Exchange Spirit")
 		{
 			exitViewing();
 			Eyal_ExchangeOfTheSpirit();
+			return;
+		}
+		
+		else if(data == "Eyal SS Many Tokens")
+		{
+			exitViewing();
+			
+			let tokenCount = Eyal_CountTokensCardCanSummon(card);
+			
+			if(tokenCount == 0)
+				return;
+			
+			let toOpponent = false;
+			
+			if(tokenCount < 0)
+			{
+				toOpponent = true;
+				
+				tokenCount = -1 * tokenCount;
+			}
+			
+			for(let abc=0;abc < tokenCount;abc++)
+			{
+				Send({"action":"Duel", "play":"Summon token", "card":newDuelCard()});
+			}
+			
 			return;
 		}
 		
@@ -1415,6 +1682,8 @@ function injectFunction(potOfSwitch)
 				case "Banish first 6 ED":
 				case "Banish entire ED":
 				case "To Opponent's Deck FU":
+				case "Swap Deck with GY":
+				case "Pay Half LP":
 				
 					option.find('img').attr("src", IMAGES_START + "svg/card_menu_btn_up2.svg");
 					break;
@@ -2423,6 +2692,7 @@ function injectFunction(potOfSwitch)
 		return false;
 		
 	}
+	
 	window.Eyal_IsEaterOfMillions = function(card)
 	{
 		
@@ -2440,6 +2710,127 @@ function injectFunction(potOfSwitch)
 		
 		return false;
 	}
+	
+	
+	window.Eyal_CountTokensCardCanSummon = function(card)
+	{
+		let effect = card.data("cardfront").data("effect");
+		
+		let pos = -1;
+		
+		let count = 0;
+		// Search the term "Special Summon" as many times as possible in the card.
+		
+		if(effect.search("ATK") == -1 || effect.search("DEF") == -1 || effect.search("Level") == -1)
+			return 0;
+			
+		while(pos < (pos = effect.search(/Special Summon/i, pos+1)))
+		{	
+			// What's the distance between Special Summon and Tokens when testing if a card has:
+			// "Special Summon x/as many "Card Name Token/s"
+			
+			let relativePos = effect.search(/ Tokens"/i, pos+1);
+			
+			if(relativePos == -1)
+			{
+				relativePos = effect.search(/ Token"/i, pos+1);
+			}
+			
+			
+			if(relativePos == -1)
+				continue;
+			
+			
+			if(relativePos - pos < 50)
+			{
+				let relativePosNum2 = effect.search(/DEF /i, relativePos+1);
+				
+				count = 1;
+				
+				let relativePosNum3 = effect.search(/ to your opponent/i, relativePosNum2);
+				
+				if(relativePosNum3 != -1)
+				{
+					if(relativePosNum3 - relativePosNum2 < 25)
+					{
+						count = -1;
+					}
+				}
+				
+				if(!isNaN(effect[pos+15]))
+				{
+					count *= effect[pos+15];
+					break;
+				}
+				else if(pos+15 == effect.search(/as many /i, pos+15))
+				{
+					let player = player1;
+					
+					let zonesAvailable = 0;
+					
+					if(count < 0)
+						player = player1.opponent;
+					
+					if (player.m1 == null)
+						zonesAvailable++;
+					
+					if(player.m2 == null)
+						zonesAvailable++;
+					
+					if(player.m3 == null)
+						zonesAvailable++;
+					
+					if (!speed && !rush)
+					{
+						if (player.m4 == null)
+							zonesAvailable++;
+						
+						if (player.m5 == null)
+							zonesAvailable++;
+					}
+						
+					count *= zonesAvailable;
+					break;
+				}
+				
+				continue;
+			}
+		}
+		
+		return count;
+	}
+	
+	window.Eyal_IsCardExchangeOfSpirit = function(card)
+	{
+		let effect = card.data("cardfront").data("effect");
+		
+		// /word/gi --> /word/Global ( all occurences ) case insensitive.
+		effect = effect.replace(/graveyard/gi, "GY");
+		
+		if(effect.search(/each player swaps the cards in their GY with the cards in their deck/i) != -1 || effect.search(/swap the cards in your GY with the cards in your deck/i) != -1)
+			return true;
+		
+		return false;
+			
+			
+	}
+	
+	window.Eyal_IsCardAbleToPayHalfLP = function(card)
+	{
+		let effect = card.data("cardfront").data("effect");
+		
+		effect = effect.replace(/Life Points/gi, "LP");
+		// /word/gi --> /word/Global ( all occurences ) case insensitive.
+		effect = effect.replace(/pay half of your LP/gi, "pay half your LP");
+		
+		if(effect.search(/pay half your LP/i) != -1)
+			return true;
+		
+		return false;
+			
+			
+	}
+	
 	window.Eyal_CountSpellsInGY = function(player)
 	{
 		let spellCount = 0;
