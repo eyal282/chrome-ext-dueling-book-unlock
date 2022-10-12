@@ -1,36 +1,57 @@
-
 chrome.webNavigation.onCommitted.addListener(function(e) {
 	keepAlive();
 }, {url: [{hostSuffix: 'duelingbook.com'}]});
 
 
-setInterval(function () {
-	chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-		if(tabs[0] && tabs[0].url && tabs[0].url.search("duelingbook.com") >= 0)
+const femaleCards = [];
+
+
+function Eyal_ReadFile(_path, _cb)
+{
+
+	fetch(_path, {mode:'same-origin'})   // <-- important
+
+	.then(function(_res) {
+		return _res.blob();
+	})
+
+	.then(function(_blob) {
+		var reader = new FileReader();
+
+		reader.addEventListener("loadend", function() {
+			_cb(this.result);
+		});
+
+		reader.readAsText(_blob); 
+	});
+};
+
+
+if(femaleCards.length == 0)
+{
+	Eyal_ReadFile("./censored_card_names.txt", function(_res){
+	
+		let eyal_arr = [];
+		
+		eyal_arr = _res.split('\r\n');
+		
+		for(let abc=0;abc < eyal_arr.length;abc++)
 		{
-			if(tabs[0].id != undefined)
-			{
-				chrome.storage.sync.get(['potOfSwitch'], function(result)
-				{
-					let potOfSwitch = false;
-					
-					if(result && result.potOfSwitch == true)
-						potOfSwitch = true;
-				
-					
-					chrome.scripting.executeScript(
-					{
-						args: [potOfSwitch],
-						target: {tabId: tabs[0].id},
-						world: "MAIN", // Main world is mandatory to edit other website functions
-						func: injectFunction,
-						//files: ['inject.js'],
-					});
-				});
-			}
+			femaleCards.push(eyal_arr[abc]);
+			console.log(eyal_arr[abc])
 		}
-	}); 
+		
+	});
+}
+	
+
+setInterval(function () {
+	performInjection();
 }, 4500);
+
+setInterval(function () {
+	performCensorInjection();
+}, 500);
 
 // This is a race
 
@@ -43,22 +64,42 @@ let raceInterval = setInterval(function () {
 	else
 		clearInterval(raceInterval);
 	
+	performInjection();
+}, 250);
+
+function performInjection()
+{
 	chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
 		if(tabs[0] && tabs[0].url && tabs[0].url.search("duelingbook.com") >= 0)
 		{
 			if(tabs[0].id != undefined)
 			{
-				chrome.storage.sync.get(['potOfSwitch'], function(result)
+				chrome.storage.sync.get(['potOfSwitch', 'femOfSwitch', 'kaibaThemeSlider', 'limitedCardsSound'], function(result)
 				{
 					let potOfSwitch = false;
 					
 					if(result && result.potOfSwitch == true)
 						potOfSwitch = true;
 				
+					let femOfSwitch = false;
+					
+					if(result && result.femOfSwitch == true)
+						femOfSwitch = true;
+					
+					let kaibaThemeSlider = 0;
+					
+					if(result && result.kaibaThemeSlider > 0)
+						kaibaThemeSlider = result.kaibaThemeSlider;
+					
+					let limitedCardsSound = true;
+					
+					if(result && result.limitedCardsSound == false)
+						limitedCardsSound = false;
+						
 					
 					chrome.scripting.executeScript(
 					{
-						args: [potOfSwitch],
+						args: [potOfSwitch, femOfSwitch, kaibaThemeSlider, limitedCardsSound, femaleCards],
 						target: {tabId: tabs[0].id},
 						world: "MAIN", // Main world is mandatory to edit other website functions
 						func: injectFunction,
@@ -68,8 +109,43 @@ let raceInterval = setInterval(function () {
 			}
 		}
 	}); 
-}, 250);
+}
 
+function performCensorInjection()
+{
+	chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+		if(tabs[0] && tabs[0].url && tabs[0].url.search("duelingbook.com") >= 0)
+		{
+			if(tabs[0].id != undefined)
+			{
+				chrome.storage.sync.get(['potOfSwitch', 'femOfSwitch'], function(result)
+				{
+					let potOfSwitch = false;
+					
+					if(result && result.potOfSwitch == true)
+						potOfSwitch = true;
+				
+					let femOfSwitch = false;
+					
+					if(result && result.femOfSwitch == true)
+						femOfSwitch = true;
+					
+					if(femOfSwitch)
+					{
+						chrome.scripting.executeScript(
+						{
+							args: [potOfSwitch, femOfSwitch, femaleCards],
+							target: {tabId: tabs[0].id},
+							world: "MAIN", // Main world is mandatory to edit other website functions
+							func: censorInjectFunction,
+							//files: ['inject.js'],
+						});
+					}
+				});
+			}
+		}
+	}); 
+}
 
 let lifeline;
 
@@ -138,9 +214,130 @@ async function retryOnTabUpdate(tabId, info, tab) {
 8. pay half your LP
 */
 
-function injectFunction(potOfSwitch)
+
+// This function only fires if femOfSwitch = true
+function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 {
-	// Prevents the page from scrolling away.
+	
+	window.Eyal_checkCensors = function()
+	{
+		if(femOfSwitch && femaleCards.length > 0)
+		{
+			for(let abc=0;abc < deck_arr.length;abc++)
+			{
+				if(femaleCards.indexOf(deck_arr[abc].data("name")) != -1)
+				{
+					deck_arr[abc].removeImage();
+				}
+			}
+			
+			for(let abc=0;abc < side_arr.length;abc++)
+			{
+				if(femaleCards.indexOf(side_arr[abc].data("name")) != -1)
+				{
+					side_arr[abc].removeImage();
+				}
+			}
+			
+			for(let abc=0;abc < extra_arr.length;abc++)
+			{
+				if(femaleCards.indexOf(extra_arr[abc].data("name")) != -1)
+				{
+					extra_arr[abc].removeImage();
+				}
+			}
+			
+			for(let abc=0;abc < search_arr.length;abc++)
+			{
+			if(femaleCards.indexOf(search_arr[abc].data("name")) != -1)
+				{
+					search_arr[abc].removeImage();
+				}
+			}
+			
+			if(player1 != undefined && player1.all_cards_arr != undefined)
+			{
+				for(let abc=0;abc < player1.all_cards_arr.length;abc++)
+				{
+					if(femaleCards.indexOf(player1.all_cards_arr[abc].data("cardfront").data("name")) != -1)
+					{
+						player1.all_cards_arr[abc].data("cardfront").removeImage();
+					}
+				}
+			}
+			
+			if(player2 != undefined && player2.all_cards_arr != undefined)
+			{
+				for(let abc=0;abc < player2.all_cards_arr.length;abc++)
+				{
+					if(femaleCards.indexOf(player2.all_cards_arr[abc].data("cardfront").data("name")) != -1)
+					{
+						player2.all_cards_arr[abc].data("cardfront").removeImage();
+					}
+				}
+			}
+			
+			if(player3 != undefined && player3.all_cards_arr != undefined)
+			{
+				for(let abc=0;abc < player3.all_cards_arr.length;abc++)
+				{
+					if(femaleCards.indexOf(player3.all_cards_arr[abc].data("cardfront").data("name")) != -1)
+					{
+						player3.all_cards_arr[abc].data("cardfront").removeImage();
+					}
+				}
+			}
+			
+			if(player4 != undefined && player4.all_cards_arr != undefined)
+			{
+				for(let abc=0;abc < player4.all_cards_arr.length;abc++)
+				{
+					if(femaleCards.indexOf(player4.all_cards_arr[abc].data("cardfront").data("name")) != -1)
+					{
+						player4.all_cards_arr[abc].data("cardfront").removeImage();
+					}
+				}
+			}
+		}
+	}
+	
+	Eyal_checkCensors();
+}
+
+function injectFunction(potOfSwitch, femOfSwitch, kaibaThemeSlider, limitedCardsSound, femaleCards)
+{
+	let Eyal_music = document.getElementById("Eyal_music");
+	
+	if(Eyal_music == null)
+	{
+		Eyal_music = document.createElement("audio");
+		Eyal_music.src = "https://cdn.freesound.org/previews/649/649769_14275923-lq.mp3";   
+		Eyal_music.id = "Eyal_music";
+		document.body.appendChild(Eyal_music)
+	}
+	
+	let Eyal_pogSound = document.getElementById("Eyal_pogSound");
+	
+	if(Eyal_pogSound == null)
+	{
+		Eyal_pogSound = document.createElement("audio");
+		Eyal_pogSound.src = "https://cdn.freesound.org/previews/649/649769_14275923-lq.mp3";   
+		Eyal_pogSound.id = "Eyal_pogSound";
+		document.body.appendChild(Eyal_pogSound)
+	}
+	
+	let Eyal_drawLimitedSound = document.getElementById("Eyal_drawLimitedSound");
+	
+	if(Eyal_drawLimitedSound == null)
+	{
+		Eyal_drawLimitedSound = document.createElement("audio");
+		Eyal_drawLimitedSound.src = "https://cdn.freesound.org/previews/653/653122_14275923-lq.mp3";   
+		Eyal_drawLimitedSound.id = "Eyal_drawLimitedSound";
+		document.body.appendChild(Eyal_drawLimitedSound)
+	}
+	
+	
+	Eyal_music.volume = (kaibaThemeSlider / 100.0)
 	
 	if($('html').scrollTop() != 0)
 	{
@@ -152,6 +349,232 @@ function injectFunction(potOfSwitch)
 		$('html').scrollLeft(0);
 	}
 	
+	window.drawCard = function(player, data)
+	{
+		if (data.username == username && $('#mulligan_btn').length == 1) {
+			$('#mulligan_btn').hide();
+			$('#draw_btn').show();
+		}
+		var card = removeTopCardFromDeck(player);
+		player.hand_arr.push(card);
+		determineHandPosition(player);
+		organizeHand(player);
+		card.data("cardfront").reinitialize(data.card);
+		var rotY = 180 + ABOUT_ZERO;
+		if ((show_cards && player == Player1()) || (show_cards == 2)) {
+			rotY = ABOUT_ZERO;
+		}
+		TweenMax.to(card, easeSeconds, {left:handDestination, top:player.handY, scale:0.25, rotation:player.rot, rotationY:rotY, ease:Linear.easeNone, onComplete:function(){ 
+			endAction();
+		}});
+		$('#duel .cards').append(card);
+		
+		playSound(DrawSound);
+		
+		if(player == player1 && currentPhase == "DP" && limitedCardsSound)
+		{
+			let Eyal_playSound = false;
+			
+			if(card.data("cardfront").data("custom"))
+			{
+				if(card.data("cardfront").data("tcg_limit") < 3)
+				{
+					Eyal_playSound = true;
+				}
+			}
+			else
+			{
+				if(card.data("cardfront").data("tcg") && card.data("cardfront").data("tcg_limit") < 3)
+				{
+					Eyal_playSound = true;
+				}
+				if(card.data("cardfront").data("ocg") && card.data("cardfront").data("ocg_limit") < 3)
+				{
+					Eyal_playSound = true;
+				}
+			}
+			
+			if(Eyal_playSound)
+			{
+				Eyal_drawLimitedSound.currentTime = 0;
+				Eyal_drawLimitedSound.play();
+				
+				Eyal_music.pause();
+				
+				Eyal_drawLimitedSound.addEventListener("ended", function(){
+					Eyal_drawLimitedSound.currentTime = 0;
+					Eyal_drawLimitedSound.pause();
+					
+					if(kaibaThemeSlider > 0)
+					{
+						Eyal_tryStartMusic();
+					}
+				});
+			}
+		}
+	}
+	if(kaibaThemeSlider > 0)
+	{
+		window.startDuel = function(data)
+		{	
+			console.log('startDuel');
+			hideDim();
+			duel_active = true;
+			links = data.links;
+			tag_duel = !!data.tag_duel;
+			speed = (data.format == "su" || data.format == "sr");
+			rush = !!data.rush || (data.format == "ru" || data.format == "rr");
+			solo = (data.format == "so");
+			rated = data.rated;
+			match_type = data.type;
+			duelFormat = data.format;
+			automaticTourney = !!data.automatic_tourney;
+			if (data.type == "m") {
+				match = true;
+			}
+			lifepointMax = 8000;
+			if (tag_duel && duelId >= 9943145) {
+				lifepointMax = 16000;
+			}
+			if (speed) {
+				lifepointMax = 4000;
+				if (tag_duel) {
+					lifepointMax = 6000;
+				}
+			}
+			duelId = data.id;
+			lastDuelId = data.id;
+			duelHash = data.hash;
+			deckData = data;
+			player1 = new Player();
+			player2 = new Player();
+			players = [player1, player2];
+			turn_player = player1; // it has to be someone
+			if (tag_duel) {
+				player3 = new Player();
+				player4 = new Player();
+				if (data.player3.username == username) {
+					switchDuelists(data, "player1", "player3");
+					
+					// because player1 and player3 share grave, banished, and field, it's only given to player1 in the data. so, when you switch the data, you need to give those back to player1, since it's player1's grave, banished, and field that's used in initDuel
+					data.player1.grave = data.player3.grave;
+					data.player1.banished = data.player3.banished;
+					data.player1.field = data.player3.field;
+					
+					turn_player = player3; // makes sure correct rps backs show
+				}
+				if (switched) {
+					switchDuelists(data, "player3", "player4");
+				}
+				player3.username = data.player3.username;
+				player4.username = data.player4.username;
+				player3.opponent = player2;
+				player4.opponent = player1;
+				player3.skill = data.player3.skill;
+				player4.skill = data.player4.skill;
+				player3.still_good = data.player3.still_good;
+				player4.still_good = data.player4.still_good;
+			}
+			player1.username = data.player1.username;
+			player2.username = data.player2.username;
+			player1.opponent = player2;
+			player2.opponent = player1;
+			player1.skill = data.player1.skill;
+			player2.skill = data.player2.skill;
+			player1.start = data.player1.start;
+			player2.start = data.player2.start;
+			player1.still_good = data.player1.still_good;
+			player2.still_good = data.player2.still_good;
+			if (zooming) {
+				//unZoom();
+			}
+			turnCount = ~~data.turnCount;
+			
+			if(kaibaThemeSlider > 0)
+			{
+				Eyal_tryStartMusic();
+			}
+		}
+	}
+	
+	window.updateLifePoints = function(player, data)
+	{
+		var wid = 0;
+		prev_life = player.lifepoints;
+		life_amount = data.amount;
+		player.lifepoints = data.life;
+		if (player.lifepoints < 0) {
+			player.lifepoints = 0;
+		}
+		wid = 154 - player.lifepoints / lifepointMax * 154;
+		if (player.lifepoints >= lifepointMax) {
+			wid = 0;
+		}
+		var word = " lost ";
+		var points = -data.amount;
+		if (data.amount > 0) {
+			word = " gained ";
+			points = data.amount;
+		}
+		var animation;
+		var life_bar = $('#lifepoints1');
+		if (isPlayer2(player.username)) {
+			life_bar = $('#lifepoints2');
+		}
+		var lifepoints_tween = TweenMax.to(life_bar.find('.black_bar'), 1, {width:wid, ease:Expo.easeOut, onComplete:function(){
+			clearInterval(animation);
+			life_bar.find('.life_txt').text(player.lifepoints);
+			addLine(escapeHTML(player.username) + word + points + " LP");
+			if (player.lifepoints <= 0) {
+				playSound(LifePointsEnd);
+			}
+			endAction();
+		}});
+		animation = setInterval(function(){
+			life_bar.find('.life_txt').text(prev_life + Math.floor(lifepoints_tween.progress() * life_amount));
+		}, 42);
+		playSound(LifePoints);
+		
+		if(kaibaThemeSlider > 0)
+		{
+			Eyal_tryStartMusic();
+		}
+	}
+	
+	window.Eyal_tryStartMusic = function()
+	{
+		// Normal theme.
+		
+		console.log("ABCDEFG");
+		
+		let urlToPlay = "https://drive.google.com/uc?id=1b5a7Yl1JkIwLU3cVUPaooqM3IM7l_IJO&export=download"
+		
+		let lifepointsToUse = player1.lifepoints;
+		
+		if(player2.lifepoints < player1.lifepoints)
+			lifepointsToUse = player2.lifepoints;
+		
+		if((lifepointsToUse <= 3000 && !speed) || lifepointsToUse <= 1000)
+		{
+			urlToPlay = "https://drive.google.com/uc?id=17n_G-tGRVyQb2T6j4JuX2jzHDsz7oN2Z&export=download"
+		}
+		
+		if(Eyal_music.src != urlToPlay)
+		{
+			Eyal_music.volume = (kaibaThemeSlider / 100.0)
+			Eyal_music.pause();
+			Eyal_music.src = urlToPlay;
+
+			Eyal_music.play();
+		}
+		else
+		{
+			Eyal_music.pause();
+			Eyal_music.volume = (kaibaThemeSlider / 100.0);
+			
+			Eyal_music.play();
+		}
+	}
 	window.Eyal_swapCardMenuForPlayer = function(player)
 	{
 		for(let abc=0;abc < player.all_cards_arr.length;abc++)
@@ -217,8 +640,135 @@ function injectFunction(potOfSwitch)
         addLine("==============================")
     }
     
+	window.Eyal_checkCensors = function()
+	{
+		if(femOfSwitch && femaleCards.length > 0)
+		{
+			for(let abc=0;abc < deck_arr.length;abc++)
+			{
+				if(femaleCards.indexOf(deck_arr[abc].data("name")) != -1)
+				{
+					deck_arr[abc].removeImage();
+				}
+			}
+			
+			for(let abc=0;abc < side_arr.length;abc++)
+			{
+				if(femaleCards.indexOf(side_arr[abc].data("name")) != -1)
+				{
+					side_arr[abc].removeImage();
+				}
+			}
+			
+			for(let abc=0;abc < extra_arr.length;abc++)
+			{
+				if(femaleCards.indexOf(extra_arr[abc].data("name")) != -1)
+				{
+					extra_arr[abc].removeImage();
+				}
+			}
+			
+			for(let abc=0;abc < search_arr.length;abc++)
+			{
+			if(femaleCards.indexOf(search_arr[abc].data("name")) != -1)
+				{
+					search_arr[abc].removeImage();
+				}
+			}
+			
+			if(player1 != undefined && player1.all_cards_arr != undefined)
+			{
+				for(let abc=0;abc < player1.all_cards_arr.length;abc++)
+				{
+					if(femaleCards.indexOf(player1.all_cards_arr[abc].data("cardfront").data("name")) != -1)
+					{
+						player1.all_cards_arr[abc].data("cardfront").removeImage();
+					}
+				}
+			}
+			
+			if(player2 != undefined && player2.all_cards_arr != undefined)
+			{
+				for(let abc=0;abc < player2.all_cards_arr.length;abc++)
+				{
+					if(femaleCards.indexOf(player2.all_cards_arr[abc].data("cardfront").data("name")) != -1)
+					{
+						player2.all_cards_arr[abc].data("cardfront").removeImage();
+					}
+				}
+			}
+			
+			if(player3 != undefined && player3.all_cards_arr != undefined)
+			{
+				for(let abc=0;abc < player3.all_cards_arr.length;abc++)
+				{
+					if(femaleCards.indexOf(player3.all_cards_arr[abc].data("cardfront").data("name")) != -1)
+					{
+						player3.all_cards_arr[abc].data("cardfront").removeImage();
+					}
+				}
+			}
+			
+			if(player4 != undefined && player4.all_cards_arr != undefined)
+			{
+				for(let abc=0;abc < player4.all_cards_arr.length;abc++)
+				{
+					if(femaleCards.indexOf(player4.all_cards_arr[abc].data("cardfront").data("name")) != -1)
+					{
+						player4.all_cards_arr[abc].data("cardfront").removeImage();
+					}
+				}
+			}
+		}
+	}
+	
+	window.previewFront = function(cardfront)
+	{
+		if (preview.data("id") == 0) {
+			preview.data("id", -1);
+		}
+		if (preview.data("id") == cardfront.data("id") && preview.is(":visible")) {
+			return;
+		}
+		preview.find('.skillback').detach();
+		showPreview(); // moved from below because setCardName
+		
+		preview.copyCard(cardfront);
+			
+		if(femOfSwitch && femaleCards.indexOf(cardfront.data("name")) != -1)
+			preview.removeImage();
+		
+		//if (~~cardfront.data("pendulum") > 0) {
+		if (cardfront.data("pendulum")) {
+			preview_txt.html("<b>Pendulum Effect:</b><br>" + escapeHTML(cardfront.data("pendulum_effect")) + '<br><br>' + "<b>Monster Effect:</b><br>");
+			if (cardfront.data("monster_color") == "Normal") {
+				preview_txt.append("<i>" + escapeHTML(cardfront.data("effect")) + "</i>");
+			}
+			else {
+				preview_txt.append(escapeHTML(cardfront.data("effect")));
+			}
+		}
+		else if (cardfront.data("rush") && cardfront.data("monster_color") != "Normal") {
+			preview_txt.html(escapeHTML(cardfront.data("effect")).replace('[Requirement]', '<b>[Requirement]</b>').replace('<br>[Effect]', '<br><b>[Effect]</b>').replace('<br>[Continuous Effect]', '<br><b>[Continuous Effect]</b>').replace('<br>[Multi-Choice Effect]', '<br><b>[Multi-Choice Effect]</b>').replace('[REQUIREMENT]', '<b>[REQUIREMENT]</b>').replace('<br>[EFFECT]', '<br><b>[EFFECT]</b>').replace('<br>[CONTINUOUS EFFECT]', '<br><b>[CONTINUOUS EFFECT]</b>').replace('<br>[MULTI-CHOICE EFFECT]', '<br><b>[MULTI-CHOICE EFFECT]</b>'));
+		}
+		else {
+			if (cardfront.data("monster_color") == "Normal") {
+				preview_txt.html("<i>" + escapeHTML(cardfront.data("effect")) + "</i>");
+			}
+			else if (cardfront.data("card_type") == "Skill") {
+				preview_txt.html(escapeHTML(cardfront.data("pendulum_effect")) + "<br><br>" + escapeHTML(cardfront.data("effect")));
+			}
+			else {
+				preview_txt.html(escapeHTML(cardfront.data("effect")));
+			}
+		}
+		
+	}
+
     removeButton($('#view .exit_btn'))
     addButton($('#view .exit_btn'), Eyal_exitViewing);
+	
+	Eyal_checkCensors();
 	
 	// Is the extension user dueling? "duel_active" is for dueling and watching, while "duelist" is only for dueling
 	if(duelist)
@@ -800,7 +1350,9 @@ function injectFunction(potOfSwitch)
 					menu.push({label:"To Extra Deck",data:"To ED"});
 				}
 				//if (card.data("cardfront").data("pendulum") && isIn(card, player1.extra_arr) < 0 && (isMonster(player1, card) || isST(player1, card) || card == player1.pendulumRight || card == player1.pendulumLeft)) {
-				if (card.data("cardfront").data("pendulum") && isIn(card, player1.main_arr) < 0 && isIn(card, player1.hand_arr) < 0) { // i think you should be able to return it from the gy to the extra deck
+					
+					// Eyal282 here, prevented extra deck from going to extra deck
+				if (card.data("cardfront").data("pendulum") && isIn(card, player1.extra_arr) < 0 && isIn(card, player1.main_arr) < 0 && isIn(card, player1.hand_arr) < 0) { // i think you should be able to return it from the gy to the extra deck
 					menu.push({label:"To Extra Deck FU",data:"To ED FU"});
 				}
 				if (!isExtraDeckCard(card) && isIn(card, player1.main_arr) < 0 && !card.data("isXyzMaterial")) {
@@ -1528,6 +2080,9 @@ function injectFunction(potOfSwitch)
 			
 			if(dp[abc].data == "Banish random ED card FD")
 				wasAdded = true;
+			
+			if(dp[abc].label == "Banish random ED Card")
+				dp[abc].label = "Banish random";
 		}
 		
 		if(isED && !wasAdded)
@@ -1649,6 +2204,7 @@ function injectFunction(potOfSwitch)
 				case "Banish 3 ED Cards FD":
 				case "Banish 6 ED Cards FD":
 				case "Banish random ED Card":
+				case "Banish random":
 				case "Banish random FD":
 				case "Banish random ED Card FD":
 				case "To Top of Deck face-up":
@@ -2711,7 +3267,6 @@ function injectFunction(potOfSwitch)
 		return false;
 	}
 	
-	
 	window.Eyal_CountTokensCardCanSummon = function(card)
 	{
 		let effect = card.data("cardfront").data("effect");
@@ -2925,10 +3480,22 @@ function injectFunction(potOfSwitch)
 			}});
 
 			if(card.data("cardfront").data("name") == "Pot of Greed" || (card.data("cardfront").data("name") == "Sky Striker Mobilize - Engage!" && Eyal_CountSpellsInGY(player) >= 3))
-			{
-					var beepsound = new Audio(   
-			'https://cdn.freesound.org/previews/649/649769_14275923-lq.mp3');   
-					beepsound.play();   
+			{	
+				Eyal_pogSound.currentTime = 0;
+				Eyal_pogSound.play();
+				
+				Eyal_music.pause();
+				
+				Eyal_pogSound.addEventListener("ended", function(){
+					Eyal_pogSound.currentTime = 0;
+					Eyal_pogSound.pause();
+					
+					if(kaibaThemeSlider > 0)
+					{
+						Eyal_tryStartMusic();
+					}
+				});
+			
 			}
 			else
 			{
