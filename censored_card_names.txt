@@ -449,7 +449,7 @@ Doll Part Gold
 Doll Part Pink
 Doll Part Red
 Domain of the Dark Ruler
-Donna, Dagger Fur Hire
+Donner, Dagger Fur Hire
 Door to Mirrorland
 Doriado
 Doriado's Blessing
@@ -1195,7 +1195,6 @@ Neospace Wave
 Nephe Shaddoll Fusion
 Nephthys, the Sacred Flame
 Nephthys, the Sacred Preserver
-Nether Prediction Princess Tarotreith
 Next World
 Next to be Lost
 Night Papilloperative
@@ -1290,6 +1289,7 @@ Prediction Princess Coinorma
 Prediction Princess Crystaldine
 Prediction Princess Petalelf
 Prediction Princess Tarotrei
+Prediction Princess Tarotreith
 Premature Return
 Prevention Star
 Prickle Fairy
@@ -1628,6 +1628,7 @@ Surprise Inspection
 Swallowtail Butterspy
 Swan Maiden
 Swing of Memories
+Swordsoul of Mo Ye
 Sylvan Cherubsprout
 Sylvan Mikorange
 Sylvan Princessprite
@@ -1640,7 +1641,18 @@ Talons of Shurilane
 Tamagushi the Righteous
 Taste Inspector
 Teardrop the Rikka Queen
-Tearlaments Lulucaros
+Tearlaments Cryme
+Tearlaments Grief
+Tearlaments Havnis
+Tearlaments Kashtira
+Tearlaments Kitkallos
+Tearlaments Merrli
+Tearlaments Metanoise
+Tearlaments Perlegia
+Tearlaments Rulkallos
+Tearlaments Scheiren
+Tearlaments Scream
+Tearlaments Sulliek
 Tears of a Mermaid
 Teletemporate
 Tellarknight Genesis

@@ -69,18 +69,116 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function () {
 
-	let slider = document.querySelector('input[id="kaibaThemeSlider"]');
+	let checkbox = document.querySelector('input[id="randomRPS"]');
 	
-	if(slider.id == 'kaibaThemeSlider')
+	if(checkbox.id == 'randomRPS')
 	{
-		chrome.storage.sync.get(['kaibaThemeSlider'], function(result) {
-			if(result && result.kaibaThemeSlider > 0)
-				slider.value = result.kaibaThemeSlider;
+		chrome.storage.sync.get(['randomRPS'], function(result) {
+			
+			if(result && result.randomRPS == true)
+				checkbox.checked = true;
+			
+			else
+				checkbox.checked = false;
+
+		});
+		
+		checkbox.addEventListener('change', function () {
+			chrome.storage.sync.set({randomRPS: checkbox.checked}, function() {});
+		});
+	}
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+
+	let menu = document.getElementById('normalMusicDL');
+	
+	if(menu)
+	{
+		chrome.storage.sync.get(['normalMusicDL'], function(result) {
+			
+			let index = menu.selectedIndex;
+			let options = menu.options;
+			
+			menu.selectedIndex = -1;
+			
+			if(result)
+				menu.selectedIndex = getIndexByValue(options, result.normalMusicDL);
+			
+			if(menu.selectedIndex == -1)
+				menu.selectedIndex = getIndexByValue(options, 'kaibaDSOD');
+
+		});
+		
+		menu.addEventListener('change', function () {
+			chrome.storage.sync.set({normalMusicDL: menu.options[menu.selectedIndex].value}, function() {});
+		});
+	}
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+
+	let menu = document.getElementById('victoryMusicDL');
+	
+	if(menu)
+	{
+		chrome.storage.sync.get(['victoryMusicDL'], function(result) {
+			
+			let index = menu.selectedIndex;
+			let options = menu.options;
+			
+			
+			menu.selectedIndex = -1;
+			
+			if(result)
+				menu.selectedIndex = getIndexByValue(options, result.victoryMusicDL);
+			
+			if(menu.selectedIndex == -1)
+				menu.selectedIndex = getIndexByValue(options, 'kaibaDSOD');
+
+		});
+		
+		menu.addEventListener('change', function () {
+			chrome.storage.sync.set({victoryMusicDL: menu.options[menu.selectedIndex].value}, function() {});
+		});
+	}
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+
+	let slider = document.querySelector('input[id="musicSliderDL"]');
+	
+	if(slider.id == 'musicSliderDL')
+	{
+		chrome.storage.sync.get(['musicSliderDL'], function(result) {
+			if(result && result.musicSliderDL > 0)
+				slider.value = result.musicSliderDL;
 
 		});
 		
 		slider.addEventListener('change', function () {
-			chrome.storage.sync.set({kaibaThemeSlider: slider.value}, function() {});
+			chrome.storage.sync.set({musicSliderDL: slider.value}, function() {});
 		});
 	}
 });
+
+
+function conLog(text)
+{
+	let cons = document.getElementById('consoleLog');
+	
+	cons.innerHTML = "a" + text;
+}
+
+function getIndexByValue(options, value)
+{
+	for(let abc=0;abc < options.length;abc++)
+	{
+		if(options[abc].value == value)
+			return options[abc].index;
+	}
+	
+	return -1;
+}

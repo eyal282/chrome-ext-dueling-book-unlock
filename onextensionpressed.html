@@ -94,9 +94,52 @@
 		  <span class="slider round"></span>
 		</label>
 		
-		<h1>Best Theme Sound</h1>
-			<input type="range" min="0" max="100" value="0" id="kaibaThemeSlider">
+        <h1>Random Nibiru Paper Scissors</h1>
+		
+		<label class="switch">
+		  <input type="checkbox" id="randomRPS">
+		  <span class="slider round"></span>
 		</label>
+		
+		<h1>Duel Links Music</h1>
+		
+		<h2>Normal Music</h2>
+		
+		<label class="switch">
+			<select name="Music" id="normalMusicDL">
+			<option value="victoryMusic">Under 3000 LP Music</option>
+			<optgroup label="Duel Monsters">
+			</optgroup>
+			<optgroup label="Dark Side of Dimensions">
+			<option value="kaibaDSOD">Seto Kaiba</option>
+			</optgroup>
+			<optgroup label="Generation X">
+			<option value="alexisGX">Alexis Rhodes</option>
+			</optgroup>
+			</select>
+		</label>
+		<h2>Under 3000 LP Music</h2>
+		
+		<label class="switch">
+			<select name="LP Music" id="victoryMusicDL">
+			<option value="normalMusic">Normal Music</option>
+			<optgroup label="Duel Monsters">
+			</optgroup>
+			<optgroup label="Dark Side of Dimensions">
+			<option value="kaibaDSOD">Seto Kaiba</option>
+			</optgroup>
+			<optgroup label="ZEXAL">
+			<option value="kiteZEXAL">Kite / Shark</option>
+			</optgroup>
+			</select>
+		</label>
+		<h2>Volume</h2>
+		<label>
+			<input type="range" min="0" max="100" value="0" id="musicSliderDL">
+		</label>
+		<br>
+		<label id="consoleLog">Ignore This Message</label>
+		
 </body>
   <script src="onextensionpressed.js"></script>
 </html>
