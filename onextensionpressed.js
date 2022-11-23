@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				menu.selectedIndex = getIndexByValue(options, result.normalMusicDL);
 			
 			if(menu.selectedIndex == -1)
-				menu.selectedIndex = getIndexByValue(options, 'kaibaDSOD');
+				menu.selectedIndex = getIndexByValue(options, 'DSOD');
 
 		});
 		
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	
 	if(menu)
 	{
-		chrome.storage.sync.get(['victoryMusicDL'], function(result) {
+		chrome.storage.sync.get(['victoryMusicDL_V2'], function(result) {
 			
 			let index = menu.selectedIndex;
 			let options = menu.options;
@@ -133,15 +133,15 @@ document.addEventListener('DOMContentLoaded', function () {
 			menu.selectedIndex = -1;
 			
 			if(result)
-				menu.selectedIndex = getIndexByValue(options, result.victoryMusicDL);
+				menu.selectedIndex = getIndexByValue(options, result.victoryMusicDL_V2);
 			
 			if(menu.selectedIndex == -1)
-				menu.selectedIndex = getIndexByValue(options, 'kaibaDSOD');
+				menu.selectedIndex = getIndexByValue(options, 'DSOD');
 
 		});
 		
 		menu.addEventListener('change', function () {
-			chrome.storage.sync.set({victoryMusicDL: menu.options[menu.selectedIndex].value}, function() {});
+			chrome.storage.sync.set({victoryMusicDL_V2: menu.options[menu.selectedIndex].value}, function() {});
 		});
 	}
 });

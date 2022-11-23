@@ -92,7 +92,7 @@ function performFastInjection(bSecond)
 		{
 			if(tabs[0].id != undefined)
 			{
-				chrome.storage.sync.get(['potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL', 'musicSliderDL', 'limitedCardsSound', 'randomRPS'], function(result)
+				chrome.storage.sync.get(['potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'limitedCardsSound', 'randomRPS'], function(result)
 				{
 					let potOfSwitch = false;
 					
@@ -141,7 +141,7 @@ function performInjection()
 		{
 			if(tabs[0].id != undefined)
 			{
-				chrome.storage.sync.get(['potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL', 'musicSliderDL', 'limitedCardsSound'], function(result)
+				chrome.storage.sync.get(['potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'limitedCardsSound'], function(result)
 				{
 					let potOfSwitch = false;
 					
@@ -158,10 +158,10 @@ function performInjection()
 					if(result && result.normalMusicDL)
 						normalMusicDL = result.normalMusicDL;
 					
-					let victoryMusicDL = "kaibaDSOD";
+					let victoryMusicDL = "DSOD";
 					
-					if(result && result.victoryMusicDL)
-						victoryMusicDL = result.victoryMusicDL;
+					if(result && result.victoryMusicDL_V2)
+						victoryMusicDL = result.victoryMusicDL_V2;
 					
 					let musicSliderDL = 0;
 					
@@ -208,17 +208,14 @@ function performCensorInjection()
 					if(result && result.femOfSwitch == true)
 						femOfSwitch = true;
 					
-					if(femOfSwitch)
+					chrome.scripting.executeScript(
 					{
-						chrome.scripting.executeScript(
-						{
-							args: [potOfSwitch, femOfSwitch, femaleCards],
-							target: {tabId: tabs[0].id},
-							world: "MAIN", // Main world is mandatory to edit other website functions
-							func: censorInjectFunction,
-							//files: ['inject.js'],
-						});
-					}
+						args: [potOfSwitch, femOfSwitch, femaleCards],
+						target: {tabId: tabs[0].id},
+						world: "MAIN", // Main world is mandatory to edit other website functions
+						func: censorInjectFunction,
+						//files: ['inject.js'],
+					});
 				});
 			}
 		}
@@ -300,7 +297,7 @@ async function retryOnTabUpdate(tabId, info, tab) {
 
 function fastInjectFunction(potOfSwitch, femOfSwitch, musicSliderDL, limitedCardsSound, randomRPS, bSecond)
 {
-	if(duelist && Eyal_swapCardMenuForPlayer)
+	if(duelist && typeof Eyal_swapCardMenuForPlayer == "function")
 	{
 		Eyal_swapCardMenuForPlayer(player1);
 		Eyal_swapCardMenuForPlayer(player2);
@@ -314,14 +311,14 @@ function fastInjectFunction(potOfSwitch, femOfSwitch, musicSliderDL, limitedCard
 	
 	if(bSecond && randomRPS && duelist && player1.username == username)
 	{
-		if(currentLabel == "rps_start" && !pickedRPS)
+		if(currentLabel == "rps_start" && !pickedRPS && typeof rock1 !== 'undefined' && typeof paper1 !== 'undefined' && typeof scissors1 !== 'undefined')
 		{
 			let arr = [rock1[0], paper1[0], scissors1[0]];
 			arr[Eyal_getRandomInt(0, arr.length-1)].click();
 		}
 	}
 }
-// This function only fires if femOfSwitch = true
+
 function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 {
 	window.loadThumbnails = function(data) {
@@ -341,7 +338,7 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 				thumb.data("nsfw", data.nsfws[i]);
 				
 				
-				thumb.find('img').attr("src", IMAGES_START + "blank.png");
+				thumb.find('img').attr("src", IMAGES_START + "loading.gif");
 				if (!data.nsfws[i] || always_show_nsfw)
 				{
 					thumb.find('img').attr("src", getAvatarStart(data.pics[i]));
@@ -381,8 +378,16 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 		}
 		
 		var avatar = $('<div class="avatar"></div>');
-		if (data.pic) {
-			avatar.data("pic", getAvatarStart(data.pic));
+		if (data.pic)
+		{
+			if(!data.nsfw || always_show_nsfw)
+			{
+				avatar.data("pic", getAvatarStart(data.pic));
+			}
+			else
+			{
+				avatar.data("pic", IMAGES_START + "loading.gif");
+			}
 		}
 		avatar.click(function(){
 			loadProfile(data.username);
@@ -399,7 +404,10 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 			avatar.data("started", false);
 		}
 		else {
-			img.attr("src", getAvatarStart(data.pic));
+			if(!data.nsfw || always_show_nsfw)
+			{
+				img.attr("src", getAvatarStart(data.pic));
+			}
 			avatar.data("started", true);
 		}
 		
@@ -496,6 +504,23 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 			if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/(This card is an Evolve Monster)/i) != -1)
 			{
 				Eyal_cards[abc].find('.card_color').attr('src', "https://i.ibb.co/XzGbZ6p/Evolution-cardtype.png");
+				
+				
+				Eyal_cards[abc].find(".name_txt").css("color", "white")
+			}
+			else if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/(This card is a Token)/i) != -1)
+			{
+				Eyal_cards[abc].find('.card_color').attr('src', IMAGES_START + "card/token_front2.jpg");
+			}
+			else if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/At the start of the Duel, flip this card over/i) != -1)
+			{
+				Eyal_cards[abc].find('.card_color').attr('src', IMAGES_START + "card/skill_front2.jpg");
+				
+				Eyal_cards[abc].find(".name_txt").css("color", "white")
+			}
+			if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/this card is DREAM-Attribute/i) != -1)
+			{
+				Eyal_cards[abc].find('.attribute').attr('src', "https://i.ibb.co/X2VSTR0/dream2-en.png")
 			}
 		}
 	}
@@ -536,6 +561,37 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		document.body.appendChild(Eyal_drawLimitedSound)
 	}
 	
+	let Eyal_offlineDeckViewer = $("#front_page #Eyal_offlineDeckViewer")
+	
+	if(Eyal_offlineDeckViewer.length == 0)
+	{	
+		Eyal_offlineDeckViewer = $(`<div></div>`)
+		Eyal_offlineDeckViewer.setHTML(`<div class="menu_btn" style="top: 550px; left: 550px; opacity: 1; cursor: pointer;">
+							<img src="https://images.duelingbook.com/svg/menu_btn_up.svg" alt="Duel Room">
+							<span style="font-size:18pt; font-weight: bold; text-align:center; color: white;"><center>Browse Cards</center></span></div>`);
+							
+		Eyal_offlineDeckViewer.attr("id", "Eyal_offlineDeckViewer");
+		
+		// Create new clickable button outside of the screen
+		Eyal_offlineDeckViewer.append($(`<div style="top: 5000px"><button></button></div>`))
+		
+		// Add the whole button to the front page
+		$('#front_page').append(Eyal_offlineDeckViewer)		
+	}
+	
+	if(Eyal_offlineDeckViewer.length > 0)
+	{
+		Eyal_offlineDeckViewer.off("click");
+		Eyal_offlineDeckViewer.on("click", gotoDeckConstructor);
+		Eyal_offlineDeckViewer.on("click", searchCardsE);
+		Eyal_offlineDeckViewer.on("click", function() { $('#welcome_buttons').hide() });
+		
+		Eyal_offlineDeckViewer.off("touchend");
+		Eyal_offlineDeckViewer.on("touchend", gotoDeckConstructor);
+		Eyal_offlineDeckViewer.on("touchend", searchCardsE);
+		Eyal_offlineDeckViewer.on("touchend", function() { $('#welcome_buttons').hide() });
+	}
+	
 	
 	Eyal_music.volume = (musicSliderDL / 100.0)
 	
@@ -547,6 +603,438 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	if($('html').scrollLeft() != 0)
 	{
 		$('html').scrollLeft(0);
+	}
+	
+	if (typeof my_profile_data === 'undefined')
+	{
+		window.my_profile_data = null;
+	}
+	
+	// We get the song by asking to load the profile while in a duel.
+	if(my_profile_data == null && websocket !== false && websocket.readyState == websocket.OPEN)
+	{
+		my_profile_data = {};
+		my_profile_data.loading = true;
+		loadMyProfile();
+	}
+	
+
+	window.loadMyProfileResponse = function(data) {
+		my_profile_data = data;
+		my_profile_data.loading = false;
+		console.log(data);
+		hideDim();
+		$('#my_profile .profile_txt').val(data.profile_txt);
+		profileBodyState = data.profile_txt;
+		unsavedChanges = false;
+		if (data.html) {
+			$('#my_profile .html_cb').show();
+			$('#my_profile .html_lbl').show();
+		}
+		$('#my_profile .html_cb').checked(!!data.use_html_txt);
+		if (data.customs) {
+			customs = ~~data.customs;
+		}
+		sleeveIndex = 0;
+		if (data.admin) {
+			$('#my_profile .donation_txt').show();
+			if (data.calls) {
+				$('#my_profile .donation_txt').text(data.calls + " calls/day (" + (admin_status >= 2 ? "5" : "10") + " Required)");
+			}
+			else {
+				$('#my_profile .donation_txt').text("Insufficient calls");
+			}
+		}
+		$('#my_profile .thumbs').hide();
+		if (data.customs) {
+			loadThumbnails(data);
+			if (data.days) {
+				$('#my_profile .donation_txt').show();
+				$('#my_profile .donation_txt').text("Donation Reward: " + data.days + " left");
+			}
+			$('#my_profile .upload_btn').show();
+			$('#my_profile .html_cb').show();
+			$('#my_profile .html_lbl').show();
+		}
+		if (data.sleeve) {
+			$('#sleeve .image').attr("src", SLEEVE_START + data.sleeve);
+			sleeveIndex = ~~data.sleeve.substring(0, data.sleeve.indexOf("."));
+			$('#my_profile #sleeve').data("id", sleeveIndex);
+			if (sleeveIndex <= 132) {
+				if (sleeveIndex < 132) {
+					$('#my_profile .next_sleeve_btn').show();
+				}
+				if (sleeveIndex > 1) {
+					$('#my_profile .prev_sleeve_btn').show();
+				}
+			}
+			displaySleeve();
+		}
+		else {
+			sleeveIndex = 1;
+			$('#my_profile .next_sleeve_btn').show();
+		}
+		if (data.nsfw) {
+			if (!always_show_nsfw) {
+				$('#my_profile .nsfw_btn').show();
+			}
+			$('#my_profile .nsfw_cb').checked(true);
+		}
+		$('#my_profile .profile_avatar .image').attr("src", getAvatarStart(data.pic));
+		if (data.pic.indexOf(".") >= 5) {
+			$('#my_profile .nsfw_cb').show();
+			$('#my_profile .nsfw_lbl').show();
+			$('#my_profile .remove_btn').show();
+		}
+	}
+
+	window.loadProfileResponse = function(data) {
+		profile_data = data;
+		resumeTime = 0;
+		if (profileSong) {
+			profileSong.pause();
+		}
+		$('#profile_viewer').css("visibility", "visible");
+		$('#profile_viewer').css("opacity", 1);
+		$('#profile_content').css("left", 0);
+		$('#profile_content').scrollTop(0);
+		$('#profile_content').show();
+		$('#all_comments').hide();
+		$('#all_friends').hide();		
+		$('#profile_viewer .nsfw_btn').hide();
+		$('#profile_viewer .nsfw_cb').hide();
+		$('#profile_viewer .nsfw_cb').checked(false);
+		$('#profile_viewer .nsfw_lbl').hide();
+		$('#profile_viewer .prev_thumb_btn').hide();
+		$('#profile_viewer .next_thumb_btn').hide();
+		$('#profile_viewer .remove_btn').hide();
+		$('#profile_viewer .thumbs').hide();
+		//autoCompleteTimer.reset();
+		selectedThumb = 0;
+		$('#profile_viewer .match_ranking_txt').text("Calculate");
+		$('#profile_viewer .match_ranking_txt').removeClass("calculating");
+		$('#profile_viewer .single_ranking_txt').text("Calculate");
+		$('#profile_viewer .single_ranking_txt').removeClass("calculating");
+		$('#profile_viewer .send_pm_btn').hide();
+		$('#profile_viewer .follow_btn').hide();
+		$('#profile_viewer .unfollow_btn').hide();
+		$('#profile_viewer .add_friend_btn').hide();
+		$('#profile_viewer .accept_request_btn').hide();
+		$('#profile_viewer .revoke_friend_btn').hide();
+		$('#profile_viewer .delete_friend_btn').hide();
+		$('#profile_viewer .block_user_btn').hide();
+		$('#profile_viewer .unblock_user_btn').hide();
+		$('#profile_viewer .watch_duel_btn').hide();
+		$('#profile_viewer .key').hide();
+		//$('#profile_viewer .add_note_btn').hide();
+		hideAutoComplete($('#profile_username_txt'));
+		$('#profile_viewer .social').html("");
+		$('#profile_viewer .friends').html("");
+		$('#profile_viewer .comments').html("");
+		$('#profile_viewer .friends_lbl').hide();
+		$('#profile_viewer .view_all_friends_btn').hide();
+		$('#profile_viewer .view_all_comments_btn').hide();
+		view_more_comments_btn.hide();
+		$('#profile_bottom .reply_cb').hide();
+		$('#profile_bottom .reply_cb').checked(false);
+		$('#profile_bottom .reply_lbl').hide();
+		friendsLoaded = false;
+		commentsLoaded = false;
+		$('#all_comments .content').scrollTop(0);
+		$('#all_comments .content .comment').detach();
+		userCommentY = 0;
+		$('#profile_viewer #all_comments').hide();
+		$('#profile_viewer #all_friends').hide();
+		lastAutoCompleteString = null;
+		$('#profile_bottom .comment_txt').removeClass("readonly");
+		$('#profile_bottom .comment_txt').prop("disabled", false);
+		TweenMax.killAll(true);
+		currentProfile = data.username;
+		currentProfileId = data.user_id;
+		currentNote = str(data.note);
+		if (data.judge) {
+			loadProfileResponse2(data);
+			return;
+		}
+		goto('profile_viewer');
+		$('#profile_username_txt').insertAfter($('#profile_viewer .username_lbl:first'));
+		$('#profile_username_txt').data("proxy").insertAfter($('#profile_username_txt'));
+		$('#profile_username_txt').data("autocomplete").insertAfter($('#profile_username_txt').data("proxy"));
+		//$('#autocomplete').insertAfter($('#profile_username_txt').data("proxy")); 
+		$('#profile_username_txt').val(currentProfile);
+		$('#profile_username_txt').select();
+		$('#profile_viewer .profile_avatar').remove();
+		var avatar = new Avatar(data);
+		avatar.addClass("profile_avatar");
+		$('#profile_content').prepend(avatar);
+		if (currentProfile == username) {
+			$('#profile_viewer .stats_red').hide();
+		}
+		$('#profile_content .nsfw_cb').checked(!!data.nsfw);
+		if (data.nsfw) {
+			if (!always_show_nsfw) {
+				avatar.find('.image').hide();
+				avatar.find('.nsfw').hide();
+			}
+		}
+		$('#profile_viewer .follow_btn').show();
+		$('#profile_viewer .follow_btn').show();
+		if (isFollowing(currentProfile)) {
+			$('#profile_viewer .follow_btn').hide();
+			$('#profile_viewer .unfollow_btn').show();
+		}
+		if (currentProfile != username) {
+			$('#profile_viewer .send_pm_btn').show();
+			if (isFriend(currentProfile)) {
+				$('#profile_viewer .delete_friend_btn').show();
+			}
+			else if (isFriendReceived(currentProfile)) {
+				$('#profile_viewer .accept_request_btn').show();
+			}
+			else if (isFriendSent(currentProfile)) {
+				$('#profile_viewer .revoke_friend_btn').show();
+			}
+			else {
+				$('#profile_viewer .add_friend_btn').show();
+			}
+			if (data.duel) {
+				clickedDuel = data.duel;
+				$('#profile_viewer .watch_duel_btn').show();
+			}
+			if (isBlocked(currentProfile)) {
+				$('#profile_viewer .send_pm_btn').hide();
+				$('#profile_viewer .follow_btn').hide();
+				$('#profile_viewer .unfollow_btn').hide();
+				$('#profile_viewer .add_friend_btn').hide();
+				$('#profile_viewer .block_user_btn').hide();
+				$('#profile_viewer .unblock_user_btn').hide();
+				$('#profile_viewer .watch_duel_btn').hide();
+				if (isBlockedByYou(currentProfile)) {
+					$('#profile_viewer .unblock_user_btn').show();
+				}
+			}
+			else {
+				$('#profile_viewer .block_user_btn').show();
+			}
+		}
+		$('#profile_viewer .social_buttons').css("top", 0);
+		if (!$('#profile_viewer .watch_duel_btn').is(":visible") && $('#profile_viewer .send_pm_btn').is(":visible") && !isBlocked(currentProfile)) {
+			$('#profile_viewer .social_buttons').css("top", 25);
+		}
+		if (!simple) {
+			TweenMax.from($('#profile_viewer .send_pm_btn'), 0.375, {left:1050, delay:0.75, ease:Expo.easeOut});
+			TweenMax.from($('#profile_viewer .follow_btn'), 0.375, {left:1032, delay:1, ease:Expo.easeOut});
+			TweenMax.from($('#profile_viewer .unfollow_btn'), 0.375, {left:1045, delay:1, ease:Expo.easeOut});
+			TweenMax.from($('#profile_viewer .add_friend_btn'), 0.375, {left:1050, delay:1.25, ease:Expo.easeOut});
+			TweenMax.from($('#profile_viewer .accept_request_btn'), 0.375, {left:1020, delay:1.25, ease:Expo.easeOut});
+			TweenMax.from($('#profile_viewer .revoke_friend_btn'), 0.375, {left:1020, delay:1.25, ease:Expo.easeOut});
+			TweenMax.from($('#profile_viewer .delete_friend_btn'), 0.375, {left:1050, delay:1.25, ease:Expo.easeOut});
+			TweenMax.from($('#profile_viewer .unblock_user_btn'), 0.375, {left:1035, delay:1.5, ease:Expo.easeOut});
+			TweenMax.from($('#profile_viewer .block_user_btn'), 0.375, {left:1050, delay:1.5, ease:Expo.easeOut});
+			TweenMax.from($('#profile_viewer .watch_duel_btn'), 0.375, {left:1050, delay:1.75, ease:Expo.easeOut, onComplete:function(){
+				if (data.password) {
+					$('#profile_viewer .key').show();
+				}
+			}});
+		}
+		else {
+			if (data.password) {
+				$('#profile_viewer .key').show();
+			}
+		}
+		$('#profile_viewer .stats .status_txt').html(data.status);
+		if (data.ban_status == 1) {
+			$('#profile_viewer .stats .status_txt').html('<font color="#3ce1ff">Frozen</font>');
+		}
+		else if (data.ban_status == 2) {
+			$('#profile_viewer .stats .status_txt').html('<font color="#FF0000">Banned</font>');
+		}
+		$('#profile_viewer .stats .last_seen_txt').text(data.last_seen);
+		$('#profile_viewer .stats .registered_txt').text(data.registered);
+		showAdvancedStats(data);
+		$('#profile_viewer .views_txt').text(data.views);
+		/*if (data.html) {
+			var ifr = $('<iframe scrolling="no" width="100%" height="100%" frameborder="0" marginwidth="0" marginheight="0" sandbox="allow-same-origin allow-popups"></iframe>');
+			$('#profile_viewer .profile_txt').html(ifr);
+			ifr.attr("height", 0);
+			ifr.get(0).contentWindow.document.write('<html><style>::selection { color: white; background: black; } ::-moz-selection { color: white; background: black; } div { display: inline; }</style><body style="font-family: Arial; font-size: 12px;">' + addLinks(addBreaks(flashToHTML(data.profile_txt))) + '</body></html>');
+			//ifr.get(0).contentWindow.document.body.outerHTML = '<html><style>::selection { color: white; background: black; } ::-moz-selection { color: white; background: black; } div { display: inline; }</style><body style="font-family: Arial; font-size: 12px;">' + addLinks(addBreaks(data.profile_txt.replace(/  /g, ' &nbsp;'))) + '</body></html>';
+			ifr.attr("height", ifr.get(0).contentWindow.document.body.scrollHeight);
+		}
+		else {
+			$('#profile_viewer .profile_txt').html(escapeHTMLWithLinks(data.profile_txt));
+		}*/
+		
+		log('validHTMLText(data.profile_txt) = ' + validHTMLText(data.profile_txt))
+		
+		if (data.html && validHTMLText(data.profile_txt)) {
+			$('#profile_viewer .profile_txt').html(addLinks(flashToHTML(data.profile_txt))); // why are we adding links if a user is handling their own html?
+			//$('#profile_viewer .profile_txt').html(data.profile_txt);
+			//$('#profile_viewer .profile_txt').html(flashToHTML(data.profile_txt));
+		}
+		else {
+			//$('#profile_viewer .profile_txt').html(escapeHTMLWithLinks(data.profile_txt));
+			$('#profile_viewer .profile_txt').html(escapeHTMLWithLinks(data.profile_txt).replace(/  /g, ' &nbsp;'));
+		}
+		
+		$('#profile_song').hide();
+		if (data.song.active == 1 && data.song.size > 0) {
+			$('#profile_song .name_txt').text(data.song.name + " - " + data.song.artist);
+			$('#profile_song .play_btn').show();
+			$('#profile_song .pause_btn').hide();
+			$('#profile_song').show();
+			profileSong = new Audio(data.song.original_url);
+			tweenSong();
+			if (always_play_profile_song) {
+				playProfileSong();
+			}
+		}
+		for (var i = 0; i < data.social.length; i++) {
+			var social_btn = new SocialButton(data.social[i]);
+			social_btn.css("left", 564 - (37.7 * i));
+			social_btn.css("opacity", 0);
+			$('#profile_viewer .social').prepend(social_btn);
+			TweenMax.fromTo(social_btn, 0.33, {left:564 - (37.7 * i) + 37.5}, {left:564 - (37.7 * i), delay:i * 0.33 + 0.8, ease:Expo.easeOut, onStart:function(){
+				$(this.target).css("opacity", 1);
+			}});
+		}
+		loadThumbnails(data);
+		if (data.ids.length <= 1) {
+			$('#profile_viewer .thumbs').hide();
+		}
+		$('#profile_viewer .prev_thumb_btn').hide();
+		$('#profile_viewer .next_thumb_btn').hide();
+		$('#profile_bottom').css("top", 1450);
+		$('#profile_viewer .about_lbl').html("");
+		$('#profile_viewer .about_lbl').show();
+		$('#profile_viewer .about_txt').html("");
+		$('#profile_viewer .about_txt').show();
+		$('#profile_viewer .stats2_red').show();
+		if (data.gender) {
+			$('#profile_viewer .about_lbl').append("Gender:<br>");
+			$('#profile_viewer .about_txt').html(escapeHTML(data.gender) + '<br>');
+		}
+		if (data.orientation) {
+			$('#profile_viewer .about_lbl').append("Orientation:<br>");
+			$('#profile_viewer .about_txt').append(escapeHTML(data.orientation) + '<br>');
+		}
+		if (data.distance) {
+			$('#profile_viewer .about_lbl').append("Distance:<br>");
+			$('#profile_viewer .about_txt').append(escapeHTML(data.distance) + '<br>');
+		}
+		if (data.location) {
+			$('#profile_viewer .about_lbl').append("Location:<br>");
+			$('#profile_viewer .about_txt').append(escapeHTML(data.location) + '<br>');
+		}
+		if (data.languages) {
+			$('#profile_viewer .about_lbl').append("Languages:<br>");
+			$('#profile_viewer .about_txt').append(escapeHTML(data.languages) + '<br>');
+		}
+		if ($('#profile_viewer .about_txt').text() == "") {
+			$('#profile_viewer .about_lbl').hide();
+			$('#profile_viewer .about_txt').hide();
+			$('#profile_viewer .stats2_red').hide();
+			$('#profile_viewer .comments_lbl').css("top", 281);
+			$('#profile_viewer .comments').css("top", 350);
+		}
+		else {
+			$('#profile_viewer .comments_lbl').css("top", 525);
+			$('#profile_viewer .comments').css("top", 594);
+		}
+		if (data.comments.length > 0) {
+			var profileCommentY = 0;
+			for (var i = 0; i < data.comments.length; i++) {
+				var comment = new Comment(data.comments[i]);
+				manageLikes(comment, data.comments[i]);
+				comment.css("top", profileCommentY);
+				$('#profile_viewer .comments').append(comment);
+				setText(comment.find('.username_txt'));
+				profileCommentY += comment[0].scrollHeight + 12;
+			}
+		}
+		total_comments = data.total_comments;
+		$('#profile_viewer .view_all_comments_btn').hide();
+		profileBottomY = parseInt($('#profile_body .comments').css("top")) + $('#profile_viewer .comments')[0].scrollHeight + 32;
+		if (total_comments > 10) {
+			comment_limit = 0;
+			//all_comments_arr = [];
+			$('#profile_viewer .view_all_comments_btn').show();
+			$('#profile_viewer .view_all_comments_btn').css("top", profileBottomY);
+			profileBottomY += 63;
+		}
+		$('#profile_viewer .comments_lbl').text("No Comments");
+		if (data.comments.length > 0) {
+			$('#profile_viewer .comments_lbl').text("Comments: (" + total_comments + ")");
+		}
+		enableComments();
+		if (data.allow_comments_friends_only) {
+			if (!isFriend(currentProfile) && username != currentProfile) {
+				disableComments(currentProfile + " only allows comments from friends");
+			}
+		}
+		if (!data.allow_comments) {
+			disableComments(currentProfile + " does not allow profile comments");
+		}
+		if (isBlocked(currentProfile)) {
+			disableComments("You are blocked");
+		}
+		if (frozen) {
+			disableComments("You are frozen");
+		}
+		if (data.ban_status == 1 && !isFriend(currentProfile)) {
+			disableComments(currentProfile + " is frozen");
+		}
+		if (data.ban_status > 1) {
+			disableComments(currentProfile + " is banned");
+		}
+		if (judge) {
+			disableComments("You cannot post comments as a judge");
+		}
+		var profileBottomY2 = 345;
+		profileFriends = data.friends;
+		$('#profile_viewer #all_comments .title_txt').text(currentProfile + "'s Comments (" + total_comments + ")");
+		$('#profile_viewer #all_friends .title_txt').text(currentProfile + "'s Friends (" + data.total_friends + ")");
+		if (data.friends.length > 0) {
+			for (i = 0; i < data.friends.length; i++) {
+				if (i >= 10) {
+					break;
+				}
+				var friend = new FriendItem(data.friends[i]);
+				friend.css("top", i * 50);
+				$('#profile_viewer .friends').append(friend);
+				setText(friend.find('.username_txt'));
+				profileBottomY2 += 50;
+			}
+			$('#profile_viewer .friends_lbl').show();
+			$('#profile_viewer .friends_lbl').text("Friends: (" + data.total_friends + ")");
+			if (data.friends.length > 5 && data.comments.length <= 2 || data.total_friends > 10) {
+				$('#profile_viewer .view_all_friends_btn').show();
+				$('#profile_viewer .view_all_friends_btn').css("top", profileBottomY2);
+			}
+		}
+		if (profileBottomY > profileBottomY2) {
+			$('#profile_bottom').css("top", profileBottomY);
+		}
+		else {
+			$('#profile_bottom').css("top", profileBottomY2);
+		}
+		$('#profile_username_txt').focus();
+		if (!simple) {
+			TweenMax.from($('#profile_viewer .stats'), 0.6, {left:1035, delay:0.5, ease:Expo.easeOut});
+			TweenMax.from([$('#profile_username_txt'), $('#profile_username_txt').data("proxy"), $('#profile_viewer .username_lbl')], 0.6, {top:-123, delay:0.5, ease:Expo.easeOut});
+			TweenMax.from($('#profile_body'), 0.6, {top:651, delay:0.5, ease:Expo.easeOut});
+			TweenMax.from($('#profile_viewer .profile_avatar'), 0.6, {left:-320, ease:Expo.easeOut, delay:0.5, onComplete:function(){
+				onAvatarTweened(data);
+			}});
+		}
+		else {
+			onAvatarTweened(data);
+		}
+		hideAutoComplete($('#profile_username_txt'));
+		
+		if (moderator) {
+			//$('#profile_viewer .add_note_btn').show();
+		}
 	}
 	
 	window.drawCard = function(player, data)
@@ -789,12 +1277,20 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			console.error(err);
 		}
 	}
-	window.Eyal_tryStartMusic = function()
+	
+	
+	window.Eyal_tryStartMusicAsync = async function()
 	{
-		// Normal theme.
-		
 		let urlToPlay = Eyal_getNormalMusicURL()
 		
+		if(!player1)
+		{
+			await Eyal_delay(3);
+			
+			Eyal_tryStartMusic();
+			
+			return;
+		}
 		let lifepointsToUse = player1.lifepoints;
 		
 		if(player2.lifepoints < player1.lifepoints)
@@ -804,6 +1300,16 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		{
 			urlToPlay = Eyal_getVictoryMusicURL();
 		}
+		
+		if(urlToPlay == "Retry")
+		{
+			await Eyal_delay(3);
+			
+			Eyal_tryStartMusic();
+			
+			return;
+		}
+		
 		
 		if(Eyal_music.src != urlToPlay)
 		{
@@ -830,6 +1336,10 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			});
 		}
 	}
+	window.Eyal_tryStartMusic = function()
+	{	
+		Eyal_tryStartMusicAsync();
+	}
 	
 	window.Eyal_getNormalMusicURL = function(abcdef)
 	{
@@ -851,12 +1361,32 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			case "kaibaDSOD":
 				return "https://drive.google.com/uc?id=1b5a7Yl1JkIwLU3cVUPaooqM3IM7l_IJO&export=download"
 				break;
-				
+			
+			case "jadenGX":
+				return "https://drive.google.com/uc?id=1jnk9dynB12az5Gj51cdJEFD88n4TlnDD&export=download"
+				break;
 			case "alexisGX":
 				return "https://drive.google.com/uc?id=1pCNuYhwEfPSK6aVHnl_wCbh6HfKVqMT6&export=download";
 				break;
 				
-			
+			case "profile":
+				if(my_profile_data == null)
+					return "https://drive.google.com/uc?id=1b5a7Yl1JkIwLU3cVUPaooqM3IM7l_IJO&export=download"
+				
+				else if(my_profile_data.loading)
+					return "Retry";
+				
+				else if(typeof my_profile_data.song === 'undefined')
+					return "https://drive.google.com/uc?id=1b5a7Yl1JkIwLU3cVUPaooqM3IM7l_IJO&export=download"
+				
+				else if(typeof my_profile_data.song.original_url === 'undefined')
+					return "https://drive.google.com/uc?id=1b5a7Yl1JkIwLU3cVUPaooqM3IM7l_IJO&export=download"
+				
+				else if(my_profile_data.song.original_url == "")
+					return "https://drive.google.com/uc?id=1b5a7Yl1JkIwLU3cVUPaooqM3IM7l_IJO&export=download"
+				
+				return my_profile_data.song.original_url;
+				break;
 		}
 	}
 	
@@ -877,12 +1407,46 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 					return Eyal_getNormalMusicURL(abcdef + 1);
 				}
 				break;
-			case "kaibaDSOD":
+				
+			case "DMGX":
+				return "https://drive.google.com/uc?id=1CCOPyX3mwQfTUgPZRLyq6Bjf2aStjtq3&export=download";
+				break;
+			case "DSOD":
 				return "https://drive.google.com/uc?id=17n_G-tGRVyQb2T6j4JuX2jzHDsz7oN2Z&export=download";
 				break;
 				
-			case "kiteZEXAL":
+			case "5Ds":
+				return "https://drive.google.com/uc?id=1wr3gdiJBJ4zU4deuBX2LwP_Cz_P6wg8N&export=download"
+				break;
+			
+			case "ArcV":
+				return "https://drive.google.com/uc?id=1q23d0ySZflsMX9cdDR-0AwVvGD4UM9BJ&export=download"
+				break;
+				
+			case "ZEXAL":
+				return "https://drive.google.com/uc?id=1d1OzoqfZ2pgVBXXv5q00wo3vsq8ek34y&export=download"
+				break;
+			case "kiteAceZEXAL":
 				return "https://drive.google.com/uc?id=1usqlxqHby-dVcGjUxahZOKk4YlyVbbJl&export=download";
+				break;
+				
+			case "profile":
+				if(my_profile_data == null)
+					return "https://drive.google.com/uc?id=17n_G-tGRVyQb2T6j4JuX2jzHDsz7oN2Z&export=download"
+				
+				else if(my_profile_data.loading)
+					return "Retry";
+				
+				else if(typeof my_profile_data.song === 'undefined')
+					return "https://drive.google.com/uc?id=17n_G-tGRVyQb2T6j4JuX2jzHDsz7oN2Z&export=download"
+				
+				else if(typeof my_profile_data.song.original_url === 'undefined')
+					return "https://drive.google.com/uc?id=17n_G-tGRVyQb2T6j4JuX2jzHDsz7oN2Z&export=download"
+				
+				else if(my_profile_data.song.original_url == "")
+					return "https://drive.google.com/uc?id=17n_G-tGRVyQb2T6j4JuX2jzHDsz7oN2Z&export=download"
+				
+				return my_profile_data.song.original_url;
 				break;
 		}
 	}
@@ -945,7 +1509,12 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
         
         for(let abc=0;abc < player1.opponent.hand_arr.length;abc++)
         {
-            Eyal_addColoredLine("0000FF", player1.opponent.hand_arr[abc].data("cardfront").data("name"));    
+			let cardName = player1.opponent.hand_arr[abc].data("cardfront").data("name");
+			
+			if(cardName.length > 27)
+				cardName = cardName.slice(0, 27);
+			
+			Eyal_addCardHoverLine('<font color="0000FF">' + quote(cardName) + "</font>", player1.opponent.hand_arr[abc]);
         }
         
         addLine("==============================")
@@ -970,7 +1539,26 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			preview.removeImage();
 		
 		if(cardfront.data("effect").search(/(This card is an Evolve Monster)/i) != -1)
+		{
+			preview.find('.card_color').attr('src', "");
 			preview.find('.card_color').attr('src', 'https://i.ibb.co/XzGbZ6p/Evolution-cardtype.png')
+			preview.find('.name_txt').css("color", "white");
+		}
+		else if(cardfront.data("effect").search(/(This card is a Token)/i) != -1)
+		{
+			preview.find('.card_color').attr('src', IMAGES_START + "card/token_front2.jpg");
+		}
+		else if(cardfront.data("effect").search(/At the start of the Duel, flip this card over/i) != -1)
+		{
+			preview.find('.card_color').attr('src', IMAGES_START + "card/skill_front2.jpg");
+			
+			preview.find(".name_txt").css("color", "white")
+		}
+		if(cardfront.data("effect").search(/this card is DREAM-Attribute/i) != -1)
+		{
+			preview.find('.attribute').attr('src', "");
+			preview.find('.attribute').attr('src', "https://i.ibb.co/X2VSTR0/dream2-en.png")
+		}
 		
 		// Eyal282 here, adding URL to the card.
 		removeButton(preview, Eyal_openPreviewURL);
@@ -1026,8 +1614,6 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 
 		window.open('https://www.duelingbook.com/card?id=' + preview.data("id"));
 	}
-    removeButton($('#view .exit_btn'))
-    addButton($('#view .exit_btn'), Eyal_exitViewing);
 	
 	window.enterM1E = function()
 	{
@@ -1268,6 +1854,42 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		{
 			let Eyal_message = data.message;
 			
+			if(data.message == "/help" || data.message == "/cmds")
+			{
+				Eyal_addColoredLine("037F51", "Command List:");
+				
+				addLine("/drawx ==> Draw x cards");
+				addLine("/millx ==> Mill x cards of your top deck");
+				addLine("/banishx ==> Banish x cards of your top deck");
+				addLine("/banishfdx ==> Banish x cards of your top deck, face-down");
+				addLine("/discardhand ==> Discards your hand");
+				addLine("/banishhand ==> Banishes your hand");
+				addLine("/addx ==> Gain x LP");
+				addLine("/subx ==> Lose x LP.");
+				addLine("/pause ==> Pauses or Unpauses the game.");
+				addLine("/unpause ==> Identical to /pause in every way.");
+				Eyal_addColoredLine("037F51", "For Dueling Book Unlock commands, use " + data.message + "2");
+
+				return;
+			}
+			if(data.message == "/help2" || data.message == "/cmds2")
+			{
+				Eyal_addColoredLine("037F51", "DB Unlock Command List:");
+				
+				addLine("/search Skill D ==> Add a card that has 'Skill D' in name from your deck");
+				addLine("/send Skill D ==> Mill a card that has 'Skill D' in name from your deck");
+				addLine("/st Skill D ==> Places a card in S&T zone that has 'Skill D' in name from your deck");
+				addLine("/ban Skill D ==> Banish a card that has 'Skill D' in name from your deck");
+				addLine("/banfd Skill D ==> Banish a card face-down that has 'Skill D' in name from your deck");
+				addLine("/atk Aleister ==> SS in ATK a card that has 'Aleister' in name from your deck");
+				addLine("/def Aleister ==> SS in DEF a card that has 'Aleister' in name from your deck");
+				addLine("/snipe ==> Randomly selects a card in your opponent's hand, field and set monsters, in sequence.");
+				addLine("/rps ==> Randomly creates rock paper scissors selections.");
+				addLine("/gy ==> Silently shows either player's GY.");
+				addLine("/ld ==> Silently shows every Light and Dark in your GY.");
+				
+				return;
+			}
 			if(data.message == "/rps")
 			{
 				let arr = ["Rock", "Paper", "Scissors"];
@@ -1310,7 +1932,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 					if(cardName.length > 27)
 						cardName = cardName.slice(0, 27);
 					
-					Eyal_addColoredLine("0000FF", cardName);    
+					Eyal_addCardHoverLine('<font color="0000FF">' + quote(cardName) + "</font>", player1.opponent.grave_arr[abc]);
 				}
 				
 				for(let abc=0;abc < player1.grave_arr.length;abc++)
@@ -1320,7 +1942,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 					if(cardName.length > 27)
 						cardName = cardName.slice(0, 27);
 					
-					Eyal_addColoredLine("FF0000", cardName);    
+					Eyal_addCardHoverLine('<font color="FF0000">' + quote(cardName) + "</font>", player1.grave_arr[abc]); 
 				}
 				
 				addLine("==============================")
@@ -1359,11 +1981,11 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 					
 					if(player1.grave_arr[abc].data("cardfront").data("attribute") == "DARK")
 					{
-						Eyal_addColoredLine("68478D", cardName);    
+						Eyal_addCardHoverLine('<font color="68478D">' + quote(cardName) + "</font>", player1.grave_arr[abc]);
 					}
 					else if(player1.grave_arr[abc].data("cardfront").data("attribute") == "LIGHT")
 					{
-						Eyal_addColoredLine("FFC200", cardName);  
+						Eyal_addCardHoverLine('<font color="FFC200">' + quote(cardName) + "</font>", player1.grave_arr[abc]);
 					}
 				}
 				addLine("==============================")
@@ -1630,18 +2252,6 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			}
 			if (card.data("cardfront").data("monster_color") == "Token") {
 				menu.push({label:"Remove",data:"Remove Token"});
-				if (isIn(card, player1.hand_arr) < 0)
-				{
-					menu.push({ label: "To Hand", data: "To hand" });
-					menu.push({ label: "Banish", data: "Banish" });
-					if(isIn(card, player1.grave_arr) < 0)
-					{
-						menu.push({ label: "To Top of Deck", data: "To T Deck" });
-						menu.push({ label: "To Opponent's Deck", data: "To T Deck 2" });
-						menu.push({label:"To Opponent's Deck FU",data:"To T Deck 2 FU"});
-						menu.push({label:"To Main Deck FU",data:"To T Deck FU"});
-					}
-				}
 				if (isMonster(player1, card))
 				{
 					if (card.data("inDEF")) {
@@ -1768,8 +2378,16 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				//if (card.data("cardfront").data("pendulum") && isIn(card, player1.extra_arr) < 0 && (isMonster(player1, card) || isST(player1, card) || card == player1.pendulumRight || card == player1.pendulumLeft)) {
 					
 					// Eyal282 here, prevented extra deck from going to extra deck
-				if (card.data("cardfront").data("pendulum") && isIn(card, player1.extra_arr) < 0 && isIn(card, player1.main_arr) < 0 && isIn(card, player1.hand_arr) < 0) { // i think you should be able to return it from the gy to the extra deck
-					menu.push({label:"To Extra Deck FU",data:"To ED FU"});
+					
+				if(isIn(card, player1.extra_arr) < 0)
+				{
+					if ((card.data("cardfront").data("pendulum") && isIn(card, player1.main_arr) < 0 && isIn(card, player1.hand_arr) < 0)) { // i think you should be able to return it from the gy to the extra deck
+						menu.push({label:"To Extra Deck FU",data:"To ED FU"});
+					}
+					else if(isPendulumSneaker(card))
+					{
+						menu.push({label:"To Extra Deck FU",data:"Eyal To ED FU"});
+					}
 				}
 				if (!isExtraDeckCard(card) && isIn(card, player1.main_arr) < 0 && !card.data("isXyzMaterial")) {
 					
@@ -2416,6 +3034,8 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				cardMenuClicked(card, "SS ATK")
 			}
 			exitViewing();
+			
+			return;
 		}
 		
 		else if(data == "Eyal Banish FD")
@@ -2423,6 +3043,8 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			cardMenuClicked(card, "To GY");
 			cardMenuClicked(card, "Banish FD");
 			exitViewing();
+			
+			return;
 		}
 		
 		else if(data == "Eyal Excavate Top")
@@ -2438,6 +3060,8 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			}
 			
 			exitViewing();
+			
+			return;
 		}
 		
 		else if(data == "Eyal Declare Exodia")
@@ -2445,9 +3069,15 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			getConfirmation("Declare Victory?", "", Eyal_DeclareVictoryYes);
 			
 			exitViewing();
+			
+			return;
 		}
-
 		
+		else if(data == "Eyal To ED FU")
+		{
+			cardMenuClicked(card, "To T Deck");
+			cardMenuClicked(card, "To ED FU");
+		}
 		if (data == "Choose card") {
 			player1.temp_arr.push(card.data("id"));
 			if (player1.temp_arr.length == 3 && viewing == "Deck (Picking 3 Cards)" || player1.temp_arr.length == 2 && viewing == "Deck (Picking 2 Cards)" || player1.temp_arr.length == 1 && viewing == "Deck (Picking Card)") {
@@ -2666,7 +3296,13 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		for(let abc = 0;abc < player1.all_cards_arr.length;abc++)
 		{
 			if(isMonster(player1, player1.all_cards_arr[abc]) || isST(player1, player1.all_cards_arr[abc]) || (player1.fieldSpell && player1.fieldSpell[0] == player1.all_cards_arr[abc][0]))
-				cardMenuClicked(player1.all_cards_arr[abc], "To GY");
+			{
+				if(player1.all_cards_arr[abc].data("face_down"))
+					cardMenuClicked(player1.all_cards_arr[abc], "Banish FD");
+				
+				else
+					cardMenuClicked(player1.all_cards_arr[abc], "To GY");
+			}
 		}
 		
 		let Eyal_arr = [];
@@ -2992,6 +3628,11 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			if (dp[i].label.indexOf("Excavate Top ") >= 0) {
 				option.find('img').attr("src", IMAGES_START + "svg/card_menu_btn_up2.svg");
 			}
+			
+			// Eyal282 here
+			if (dp[i].data == "Eyal To ED FU")
+				option.find('img').attr("src", IMAGES_START + "svg/card_menu_btn_up2.svg");
+			
 			menu.find('#card_menu_content').append(option);
 		}
 		$('#viewing').append(menu);
@@ -4041,7 +4682,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			endAction();
 		}});
 		
-		if(duelist && Eyal_swapCardMenuForPlayer)
+		if(duelist && typeof Eyal_swapCardMenuForPlayer == "function")
 		{
 			Eyal_swapCardMenuForPlayer(player1);
 			Eyal_swapCardMenuForPlayer(player2);
@@ -4061,6 +4702,19 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		effect = effect.replaceAll("while in your ", "")
 		
 		if(effect.search(/This card can attack Pendulum/i) != -1)
+			return true;
+		
+		return false;
+	}
+	
+	window.isPendulumSneaker = function(card)
+	{
+		let effect = card.data("cardfront").data("effect")
+		effect = effect.replaceAll("face up", "face-up")
+		effect = effect.replaceAll("this monster", "this card")
+		effect = effect.replaceAll("to the", "to your")
+		
+		if(effect.search(/Add this card to your Extra Deck face-up/i) != -1)
 			return true;
 		
 		return false;
@@ -4402,4 +5056,155 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			questionE(card);
 		}
 	}
+	
+	window.Eyal_cardPoolChanged = function()
+	{
+		if($('#my_banlists .banlists2 .cardpool_sel').val() == "Eyal_clipboard")
+		{
+			getConfirmation("Make sure you have a .conf list of EDO Pro in your clipboard.", "Important notes:\n1. Every 10% progress it the decklist will save itself\n2. You cannot stop this action, and it will lag you.\n3. It will not delete the existing cardpool, only add cards.", Eyal_ClipboardBanlistYes);
+			$('#my_banlists .banlists2 .cardpool_sel').selectedIndex(0);
+		}
+	}
+	
+	window.Eyal_ClipboardBanlistYes = function()
+	{
+		Eyal_ClipboardBanlistYesAsync();
+
+	}
+	
+	window.Eyal_ClipboardBanlistYesAsync = async function()
+	{
+		let str = await navigator.clipboard.readText();
+		
+		let import_arr = str.split("\n");
+		
+		let cards = [];
+		
+		let lastPercent = 0;
+		
+		console.log("Percents of completion for clipboard banlist importing:");
+		for (let abc = 0;abc < import_arr.length;abc++)
+		{
+			curPercent = Math.floor((parseFloat(abc) / import_arr.length) * 100.0);
+		
+			if(lastPercent < curPercent)
+			{
+				if(curPercent % 10 == 0)
+				{
+					saveBanlistE();
+					
+					await Eyal_delay(1);
+				}
+				console.log("Progress: " + curPercent + "%");
+				
+				lastPercent = curPercent;
+			}
+			import_arr[abc] = import_arr[abc].trim();
+			
+			if(isNaN(import_arr[abc].charAt(0)))
+				continue;
+			
+			let splittedLine = import_arr[abc].split(" ", 2);
+			let cardId = parseInt(splittedLine[0]);
+			let cardLimit = splittedLine[1];
+			
+			if(isNaN(cardLimit))
+				continue;
+			
+			cardLimit = parseInt(cardLimit);
+			
+			if(cardLimit != 0 && cardLimit != 1 && cardLimit != 2 && cardLimit != 3)
+				continue;
+			
+			for(let i=0;i < Cards.length;i++)
+			{
+				if(parseInt(Cards[i].serial_number) == cardId)
+				{
+					let cardfront = Eyal_lookupCard(Cards[i].name);
+					
+					if(cardfront == undefined)
+						break;
+
+					switch(parseInt(cardLimit))
+					{
+						case 0:
+							addToBanlist(cardfront, $('.forbidden_section .banlist_cards'));
+						break;
+						
+						case 1:
+							addToBanlist(cardfront, $('.limited_section .banlist_cards'));
+						break;
+						
+						case 2:
+							addToBanlist(cardfront, $('.semi_limited_section .banlist_cards'));
+						break;
+						
+						case 3:
+							addToBanlist(cardfront, $('.unlimited_section .banlist_cards'));
+						break;
+					}
+				}
+			}
+		}
+		
+		saveBanlistE();
+	}
+	
+	window.Eyal_lookupCard = function(str)
+	{
+		if (!str) {
+			return;
+		}
+		var card = null;
+		for (var i = 0; i < Cards.length; i++) {
+			if (Cards[i] == null || Cards[i].name == null) {
+				continue;
+			}
+			
+			// Eyal282 here, this property breaks banlists and gives error "One or more cards are no longer available"
+			
+			if(Cards[i].hidden)
+					continue;
+				
+			if (Cards[i].name.toLowerCase() == str.toLowerCase()) {
+				card = Cards[i];
+				break;
+			}
+			else if (Cards[i].name.toLowerCase().indexOf(str.toLowerCase()) >= 0) {
+				card = Cards[i];
+			}
+		}
+		if (card) {
+			var cardfront = newCardFront();
+			cardfront.initializeFromData(card);
+			return cardfront;
+		}
+		
+		return undefined;
+	}
+	
+	if(typeof Eyal_lastNormalMusic !== 'undefined' && Eyal_lastNormalMusic != normalMusicDL)
+	{
+		Eyal_tryStartMusic();
+	}
+	else if(typeof Eyal_lastVictoryMusic !== 'undefined' && Eyal_lastVictoryMusic != victoryMusicDL)
+	{
+		Eyal_tryStartMusic();
+	} 
+	
+	window.Eyal_lastNormalMusic = normalMusicDL;
+	window.Eyal_lastVictoryMusic = victoryMusicDL;
+	// If Eyal_clipboard doesn't exist in select menu of the card pool in a tournament ban list
+	if($("#my_banlists .banlists2 .cardpool_sel option[value='Eyal_clipboard']").length <= 0)
+	{
+		$('#my_banlists .banlists2 .cardpool_sel').append(new Option("Copy from clipboard", "Eyal_clipboard"));	
+		$('#my_banlists .banlists2 .cardpool_sel').off("change");
+		$('#my_banlists .banlists2 .cardpool_sel').change(Eyal_cardPoolChanged);
+	}
+	
+	removeButton($('#view .exit_btn'))
+	addButton($('#view .exit_btn'), Eyal_exitViewing);
+	
+	$('.uploader .ability_btn').off("touchend");
+	$('.uploader .ability_btn').on("touchend", showAbilities);
 }
