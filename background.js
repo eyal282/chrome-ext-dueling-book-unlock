@@ -90,7 +90,7 @@ function performFastInjection(bSecond)
 	chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
 		if(tabs[0] && tabs[0].url && (tabs[0].url.search("www.duelingbook.com") != -1 || tabs[0].url.search("https://duelingbook.com") != -1))
 		{
-			if(tabs[0].id != undefined)
+			if(typeof tabs[0].id !== 'undefined')
 			{
 				chrome.storage.sync.get(['potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'limitedCardsSound', 'randomRPS'], function(result)
 				{
@@ -139,7 +139,7 @@ function performInjection()
 	chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
 		if(tabs[0] && tabs[0].url && (tabs[0].url.search("www.duelingbook.com") != -1 || tabs[0].url.search("https://duelingbook.com") != -1))
 		{
-			if(tabs[0].id != undefined)
+			if(typeof tabs[0].id !== 'undefined')
 			{
 				chrome.storage.sync.get(['potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'limitedCardsSound'], function(result)
 				{
@@ -194,7 +194,7 @@ function performCensorInjection()
 		if(tabs[0] && tabs[0].url && (tabs[0].url.search("www.duelingbook.com") != -1 || tabs[0].url.search("https://duelingbook.com") != -1))
 		{
 			console.log(tabs[0].url);
-			if(tabs[0].id != undefined)
+			if(typeof tabs[0].id !== 'undefined')
 			{
 				chrome.storage.sync.get(['potOfSwitch', 'femOfSwitch'], function(result)
 				{
@@ -444,7 +444,7 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 			Eyal_cards.push(search_arr[abc]);
 		}
 		
-		if(player1 != undefined && player1.all_cards_arr != undefined)
+		if(typeof player1 !== 'undefined' && player1 != null && typeof player1.all_cards_arr !== 'undefined')
 		{
 			for(let abc=0;abc < player1.all_cards_arr.length;abc++)
 			{
@@ -452,7 +452,7 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 			}
 		}
 		
-		if(player2 != undefined && player2.all_cards_arr != undefined)
+		if(typeof player2 !== 'undefined' && player2 != null && typeof player2.all_cards_arr !== 'undefined')
 		{
 			for(let abc=0;abc < player2.all_cards_arr.length;abc++)
 			{
@@ -460,7 +460,7 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 			}
 		}
 		
-		if(player3 != undefined && player3.all_cards_arr != undefined)
+		if(typeof player3 !== 'undefined' && player3 != null && typeof player3.all_cards_arr !== 'undefined')
 		{
 			for(let abc=0;abc < player3.all_cards_arr.length;abc++)
 			{
@@ -468,7 +468,7 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 			}
 		}
 		
-		if(player4 != undefined && player4.all_cards_arr != undefined)
+		if(typeof player4 !== 'undefined' && player4 != null && typeof player4.all_cards_arr !== 'undefined')
 		{
 			for(let abc=0;abc < player4.all_cards_arr.length;abc++)
 			{
@@ -481,7 +481,7 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 		{
 			for(let abc=0;abc < Eyal_cards.length;abc++)
 			{
-				if(Eyal_cards[abc].data == undefined)
+				if(typeof Eyal_cards[abc].data === 'undefined')
 					continue;
 				
 				if(Eyal_cards[abc].data("cardfront"))
@@ -495,7 +495,7 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 		}
 		for(let abc=0;abc < Eyal_cards.length;abc++)
 		{
-			if(Eyal_cards[abc].data == undefined)
+			if(typeof Eyal_cards[abc].data === 'undefined')
 				continue;
 			
 			if(Eyal_cards[abc].data("cardfront"))
@@ -579,7 +579,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		$('#front_page').append(Eyal_offlineDeckViewer)		
 	}
 	
-	if(Eyal_offlineDeckViewer.length > 0)
+	if(Eyal_offlineDeckViewer.length > 0 && typeof gotoDeckConstructor !== 'undefined')
 	{
 		Eyal_offlineDeckViewer.off("click");
 		Eyal_offlineDeckViewer.on("click", gotoDeckConstructor);
@@ -611,7 +611,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	}
 	
 	// We get the song by asking to load the profile while in a duel.
-	if(my_profile_data == null && websocket !== false && websocket.readyState == websocket.OPEN)
+	if(my_profile_data == null && typeof websocket !== 'undefined' && websocket !== false && websocket.readyState == websocket.OPEN)
 	{
 		my_profile_data = {};
 		my_profile_data.loading = true;
@@ -1876,6 +1876,8 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			{
 				Eyal_addColoredLine("037F51", "DB Unlock Command List:");
 				
+				addLine("/ex5 ==> Excavate 5 cards");
+				addLine("/excavate5 ==> Excavate 5 cards");
 				addLine("/search Skill D ==> Add a card that has 'Skill D' in name from your deck");
 				addLine("/send Skill D ==> Mill a card that has 'Skill D' in name from your deck");
 				addLine("/st Skill D ==> Places a card in S&T zone that has 'Skill D' in name from your deck");
@@ -1887,6 +1889,29 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				addLine("/rps ==> Randomly creates rock paper scissors selections.");
 				addLine("/gy ==> Silently shows either player's GY.");
 				addLine("/ld ==> Silently shows every Light and Dark in your GY.");
+				
+				return;
+			}
+			if(data.message.search(/\/ex/i) != -1 || data.message.search(/\/excavate/i) != -1)
+			{
+				Eyal_message = Eyal_message.replace(/\/ex/gi, "")
+				Eyal_message = Eyal_message.replace(/cavate/gi, "")
+				
+				if(isNaN(Eyal_message))
+					return;
+				
+				let num = parseInt(Eyal_message);
+				
+				if(num > 9)
+					return;
+				
+				if(num > player1.main_arr.length)
+					return;
+				
+				for(let abc=0;abc < num;abc++)
+				{
+					cardMenuClicked(player1.main_arr[abc], "To ED FU");
+				}
 				
 				return;
 			}
@@ -2723,6 +2748,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		showMenu(card, menu);
 	}
 	
+	
 	window.joinDuelResponse = function(data)
 	{
 		var arr = $('#joinlist .cell');
@@ -2754,9 +2780,78 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		});
 		$('#joinlist').append(cell);
 		
-		Eyal_notifyOfPotentialDuel();
+		let Eyal_players = $('#joinlist .cell').length;
+		
+		let Eyal_title = (`(${Eyal_players}) Duelingbook`)
+		
+		Eyal_setTitle(Eyal_title);
+		
+		if(Eyal_players == 1)
+			Eyal_notifyOfPotentialDuel();
 	}
 	
+	window.setupHosting = function() {
+		Eyal_setTitle(`Duelingbook`);
+		$('#host').hide();
+		$('#hosting').show();
+		$('#joining').hide();
+		$('#joining_pool').hide();
+		disablePools();
+		decklist_cb.disable(true);
+		$('#ar .format_cb').disable(true);
+		$('#ar .rules_cb').disable(true);
+		$('#ar .type_cb').disable(true);
+		$('#ar .join_btn').disable(true);
+		$('#hosting .accept_btn').disable(true);
+		$('#hosting .reject_btn').disable(true);
+		$('#joinlist').html("");
+	}
+	window.Eyal_acceptUser = function() {
+		var str = $('#joinlist .cell2.selected').data("username");
+		if (!str) {
+			return;
+		}
+		Send({"action":"Accept user", "username":str});
+		$('#joinlist').html("");
+		showDim();
+	}
+	
+	window.Eyal_cancelDuel = function()
+	{
+		hosting = false;
+		partner = null;
+		setupHost();
+		enablePools();
+		removeJoinButton(username);
+		Eyal_setTitle(`Duelingbook`);
+		Send({"action":"Cancel duel"});	
+	}
+	
+	window.removeFromJoinlist = function(data)
+	{
+		$('#joinlist .cell').each(function(){
+			if ($(this).data("username") == data.username) {
+				$(this).remove();
+				if ($('#joinlist .cell2.selected').length == 0) {
+					$('#hosting .accept_btn').disable(true);
+					$('#hosting .reject_btn').disable(true);
+				}
+				return false;
+			}
+		});
+		
+		let Eyal_players = $('#joinlist .cell').length;
+		
+		let Eyal_title = (`(${Eyal_players}) Duelingbook`)
+		
+		Eyal_setTitle(Eyal_title);
+	}
+	
+	window.Eyal_setTitle = function(str)
+	{
+		// May be edited because DB uses some weird title system...
+		document.title = str;
+	}
 	window.Eyal_notifyOfPotentialDuel = async function()
 	{
 		playSound(ChatInbound);
@@ -3404,9 +3499,12 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	}
 
 	// Makes deck viewer lower in height to fit new menu options.
-	document.getElementById('view').style.top = "130px"
 	
-	$("#life_txt").off("input")
+	if(document.getElementById('view'))
+		document.getElementById('view').style.top = "130px"
+	
+	if($("#life_txt").length > 0)
+		$("#life_txt").off("input")
 	
 	window.EyalExprEval = function(str)
 	{
@@ -4163,6 +4261,11 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				actionsQueue.push(function(){
 					endTurn(data);
 				});
+				
+				while($("#Imperm_Column").length > 0)
+				{
+					$("#Imperm_Column").remove();
+				}
 				break;
 			case "Add counter":
 				actionsQueue.push(function(){
@@ -4739,6 +4842,38 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		if(effect.search(/Shuffle this card face-up into your opponent's Deck/i) != -1)
 			return true;
 		
+		
+		// What's the distance between Special Summon and Tokens when testing if a card has:
+		// "Shuffle x face-up in your opponent's Deck.
+		
+		let pos = -1;
+		
+		for(let abc = 0;abc < player1.all_cards_arr.length;abc++)
+		{
+			let pos = -1;
+			
+			if(isMonster(player1, player1.all_cards_arr[abc]) || isST(player1, player1.all_cards_arr[abc]) || (player1.fieldSpell && player1.fieldSpell[0] == player1.all_cards_arr[abc][0]))
+			{
+				if(player1.all_cards_arr[abc].data("face_down"))
+					continue;
+				
+				while(pos < (pos = effect.search(/Shuffle /i, pos+1)))
+				{	
+				
+					let relativePos = effect.search(/face-up in your opponent’s Deck/i, pos+1);
+				
+				
+					if(relativePos == -1)
+						continue;
+					
+					else if(relativePos - pos < 35)
+						return true;
+				
+				}
+			}
+		}
+		
+		
 		return false;
 		
 	}
@@ -5027,6 +5162,36 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			else
 			{
 				playSound(Activate);
+				
+				if(card.data("cardfront").data("card_type") == "Trap" && card.data("cardfront").data("effect").search(/if this card was Set before activation and is on the field at resolution, for the rest of this turn all other Spell\/Trap effects in this column are negated/i) != -1)
+				{
+					console.log("Imperm")
+					
+					
+					let impermColumn = $(`<div id="Imperm_Column"></div>`)
+					
+					impermColumn.css("left", points[0] - 27);
+					impermColumn.css("top", points[1] - 10);
+					impermColumn.height(55);
+					impermColumn.width(55);
+					
+					let impermColumnImage = $(`<img src="https://images.duelingbook.com/card-pics/9201.jpg"></img>`)
+					
+					impermColumnImage.attr("id", "Imperm_Column");
+					impermColumnImage.css("opacity", 0.75);
+					impermColumnImage.height(55);
+					impermColumnImage.width(55);
+					impermColumn.click(function() {
+						while($("#Imperm_Column").length > 0)
+						{
+							$("#Imperm_Column").remove();
+						}
+					});
+					
+					impermColumn.append(impermColumnImage);
+					
+					$("#field").append(impermColumn);
+				}
 			}
 			questionE(card);
 		}
@@ -5153,7 +5318,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	window.Eyal_lookupCard = function(str)
 	{
 		if (!str) {
-			return;
+			return undefined;
 		}
 		var card = null;
 		for (var i = 0; i < Cards.length; i++) {
@@ -5202,9 +5367,36 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		$('#my_banlists .banlists2 .cardpool_sel').change(Eyal_cardPoolChanged);
 	}
 	
-	removeButton($('#view .exit_btn'))
-	addButton($('#view .exit_btn'), Eyal_exitViewing);
+	if(typeof removeButton !== 'undefined')
+	{
+		removeButton($('#view .exit_btn'))
+		addButton($('#view .exit_btn'), Eyal_exitViewing);
+	}
 	
-	$('.uploader .ability_btn').off("touchend");
-	$('.uploader .ability_btn').on("touchend", showAbilities);
+	if(typeof showAbilities !== 'undefined')
+	{
+		$('.uploader .ability_btn').off("touchend");
+		$('.uploader .ability_btn').on("touchend", showAbilities);
+	}
+	
+	if(typeof $('#hosting .cancel_btn') !== 'undefined')
+	{
+		$('#hosting .cancel_btn').off("click");
+		$('#hosting .cancel_btn').click(Eyal_cancelDuel);
+	}
+		$('').click(acceptUser);
+	$('#hosting .reject_btn').click(rejectUser);
+	$('#hosting .cancel_btn').click(cancelDuel);
+	
+	if(typeof $('#hosting .accept_btn') !== 'undefined')
+	{
+		$('#hosting .accept_btn').off("click");
+		$('#hosting .accept_btn').click(Eyal_acceptUser);
+	}
+	
+	if(typeof $('#hosting #joinlist') !== 'undefined')
+	{
+		$('#hosting .accept_btn').off("dblclick");
+		$('#hosting #joinlist').dblclick(Eyal_acceptUser);
+	}
 }

@@ -127,7 +127,6 @@ Arlownay
 Armor Break
 Armor Ninjitsu Art of Revival
 Armored Glass
-Arms Regeneration
 Arnis, the Empowered Warrior
 Aroma Gardening
 Aromage Jasmine
@@ -334,6 +333,7 @@ Cyber Slash Harpie Lady
 Cyber Tutu
 Cyber Tutubon
 Cyber Valkyrie
+Cyberse Sage
 Cyberse Witch
 Cyclamen the Rikka Fairy
 Cycle of the World
@@ -596,7 +596,9 @@ Fairy Cheer Girl
 Fairy Guardian
 Fairy Tail - Luna
 Fairy Tail - Rella
+Fairy Tail - Rochka
 Fairy Tail - Sleeper
+Fairy Tail - Snow
 Fairy Wind
 Fairy of the Fountain
 Fairy of the Spring
@@ -991,6 +993,7 @@ Live☆Twin Ki-sikil Frost
 Live☆Twin Lil-la
 Live☆Twin Lil-la Treat
 Lorelei, the Symphonic Arsenal
+Love Magus - Ciela
 Lucky Loan
 Lullabind
 Lumenize
@@ -1151,8 +1154,6 @@ Mithra the Thunder Vassal
 Mitsu the Insect Ninja
 Moon Dragon Quilla
 Morgan, the Enchantress of Avalon
-Morpheus, the Dream Mirror Black Knight
-Morpheus, the Dream Mirror White Knight
 Morpho Butterspy
 Mother Grizzly
 Mother Spider
@@ -1425,7 +1426,6 @@ Rose Girl
 Rose Lover
 Rose Paladin
 Rose Princess
-Rose Shaman
 Rose Spectre of Dunn
 Rose Witch
 Rose, Warrior of Revenge
@@ -1512,6 +1512,7 @@ Sishunder
 The Six Shinobi
 Sixth Sense
 Sky Scourge Invicil
+Sky Striker Ace - Azalea
 Sky Striker Ace - Hayate
 Sky Striker Ace - Kagari
 Sky Striker Ace - Kaina
@@ -1821,6 +1822,7 @@ Volcanic Queen
 Vortex the Whirlwind
 Waboku
 Wall of Illusion
+War Magus - Aakas
 War Rock Skyler
 Warrior Lady of the Wasteland
 Warrior of Tradition
