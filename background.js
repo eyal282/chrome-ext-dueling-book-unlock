@@ -1853,8 +1853,107 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		if(data.action == "Duel" && data.play == "Duel message")
 		{
 			let Eyal_message = data.message;
+		
+			if(actionsQueue.length > 0)
+			{
+				if(Eyal_messageStartsWith(Eyal_message, "/"))
+					return;
+				
+				else 
+				{
+					action = JSON.stringify(data, function(k,v){
+						if (v == null) {
+							v = undefined;
+						}
+						return v;
+					});
+					resend();
+					
+					return;
+				}
+			}
 			
-			if(data.message == "/help" || data.message == "/cmds")
+			if(Eyal_messageStartsWith(Eyal_message, "/card") || Eyal_messageStartsWith(Eyal_message, "/find"))
+			{
+				if(Eyal_messageStartsWith(Eyal_message, "/card"))
+					Eyal_message = Eyal_message.replace(/\/card/i, "")
+				
+				else if(Eyal_messageStartsWith(Eyal_message, "/find"))
+					Eyal_message = Eyal_message.replace(/\/find/i, "")
+				
+				if(Eyal_message.indexOf(" ") == 0)
+					Eyal_message = Eyal_message.replace(" ", "")
+				
+				let str = Eyal_message.toLowerCase();
+				
+				str = str.trim();
+				
+				if(str.length == 0)
+					return;
+				
+				let cardNamesFound = [];
+				
+				
+				for(let abc=0;abc < Cards.length;abc++)
+				{
+					if(Cards[abc].hidden)
+						continue;
+					
+					let cardName = Cards[abc].name.toLowerCase();
+					
+					if(cardName.search(str) == -1)
+						continue;
+					
+					else if(cardNamesFound.indexOf(Cards[abc].name) != -1)
+						continue;
+					
+					cardNamesFound.push(Cards[abc].name);
+				}
+				
+				if(cardNamesFound.length > 15)
+					Eyal_addColoredLine("FF0000", "Error: Found over 15 cards with that name.");
+				
+				else
+				{
+					Eyal_addColoredLine("00CCCC", `List of cards that contain "${str}":`);
+					
+					for(let abc=0;abc < cardNamesFound.length;abc++)
+					{
+						let card = Eyal_lookupCard(cardNamesFound[abc]);
+						
+						card.data("cardfront", card)
+						Eyal_addCardHoverLine('<font color="0000FF">' + quote(cardNamesFound[abc]) + "</font>", card);
+					}
+				}
+				
+				return;
+			}
+			if(Eyal_messageStartsWith(Eyal_message, "/help2") || Eyal_messageStartsWith(Eyal_message, "/cmds2"))
+			{
+				Eyal_addColoredLine("037F51", "DB Unlock Command List:");
+				
+				addLine("/ex5 ==> Excavate 5 cards");
+				addLine("/excavate5 ==> Excavate 5 cards");
+				addLine("/unext ==> Unexcavate cards from ED face-up to top deck");
+				addLine("/unexb ==> Unexcavate cards from ED face-up to bottom deck");
+				addLine("/unexg ==> Unexcavate cards from ED face-up to GY");
+				addLine("/search Skill D ==> Add a card that has 'Skill D' in name from your deck");
+				addLine("/send Skill D ==> Mill a card that has 'Skill D' in name from your deck");
+				addLine("/st Skill D ==> Places a card in S&T zone that has 'Skill D' in name from your deck");
+				addLine("/ban Skill D ==> Banish a card that has 'Skill D' in name from your deck");
+				addLine("/banfd Skill D ==> Banish a card face-down that has 'Skill D' in name from your deck");
+				addLine("/atk Aleister ==> SS in ATK a card that has 'Aleister' in name from your deck");
+				addLine("/def Aleister ==> SS in DEF a card that has 'Aleister' in name from your deck");
+				addLine("/snipe ==> Randomly selects a card in your opponent's hand, field and set monsters, in sequence.");
+				addLine("/rps ==> Randomly creates rock paper scissors selections.");
+				addLine("/gy ==> Silently shows either player's GY.");
+				addLine("/ld ==> Silently shows every Light and Dark in your GY.");
+				addLine("/card Skill ==> Checks every card in the game containing 'Skill'");
+				
+				return;
+			}
+			// So it won't double down on both /help and /help2.
+			else if(Eyal_messageStartsWith(Eyal_message, "/help") || Eyal_messageStartsWith(Eyal_message, "/cmds"))
 			{
 				Eyal_addColoredLine("037F51", "Command List:");
 				
@@ -1872,30 +1971,13 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 
 				return;
 			}
-			if(data.message == "/help2" || data.message == "/cmds2")
+			
+			if(Eyal_messageStartsWith(Eyal_message, "/ex"))
 			{
-				Eyal_addColoredLine("037F51", "DB Unlock Command List:");
+				Eyal_message = Eyal_message.replace(/\/ex/i, "")
 				
-				addLine("/ex5 ==> Excavate 5 cards");
-				addLine("/excavate5 ==> Excavate 5 cards");
-				addLine("/search Skill D ==> Add a card that has 'Skill D' in name from your deck");
-				addLine("/send Skill D ==> Mill a card that has 'Skill D' in name from your deck");
-				addLine("/st Skill D ==> Places a card in S&T zone that has 'Skill D' in name from your deck");
-				addLine("/ban Skill D ==> Banish a card that has 'Skill D' in name from your deck");
-				addLine("/banfd Skill D ==> Banish a card face-down that has 'Skill D' in name from your deck");
-				addLine("/atk Aleister ==> SS in ATK a card that has 'Aleister' in name from your deck");
-				addLine("/def Aleister ==> SS in DEF a card that has 'Aleister' in name from your deck");
-				addLine("/snipe ==> Randomly selects a card in your opponent's hand, field and set monsters, in sequence.");
-				addLine("/rps ==> Randomly creates rock paper scissors selections.");
-				addLine("/gy ==> Silently shows either player's GY.");
-				addLine("/ld ==> Silently shows every Light and Dark in your GY.");
-				
-				return;
-			}
-			if(data.message.search(/\/ex/i) != -1 || data.message.search(/\/excavate/i) != -1)
-			{
-				Eyal_message = Eyal_message.replace(/\/ex/gi, "")
-				Eyal_message = Eyal_message.replace(/cavate/gi, "")
+				if(Eyal_messageStartsWith(Eyal_message, "cavate"))
+					Eyal_message = Eyal_message.replace(/cavate/i, "")
 				
 				if(isNaN(Eyal_message))
 					return;
@@ -1910,12 +1992,40 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				
 				for(let abc=0;abc < num;abc++)
 				{
-					cardMenuClicked(player1.main_arr[abc], "To ED FU");
+					let Eyal_card = player1.main_arr[abc];
+					cardMenuClicked(Eyal_card, "To ED FU");
+					window.Eyal_excavatedArr.push(Eyal_card);
 				}
 				
 				return;
 			}
-			if(data.message == "/rps")
+			if(Eyal_messageStartsWith(Eyal_message, "/unext") || Eyal_messageStartsWith(Eyal_message, "/unexb") || Eyal_messageStartsWith(Eyal_message, "/unexg"))
+			{
+				for(let abc=0;abc < window.Eyal_excavatedArr.length;abc++)
+				{
+					if(actionsQueue.length == 0 && (window.Eyal_excavatedArr[abc].data("face_down") || isIn(window.Eyal_excavatedArr[abc], player1.extra_arr) < 0))
+					{
+						window.Eyal_excavatedArr.splice(abc, 1);
+						abc--;
+					}
+				}
+				for(let abc=0;abc < window.Eyal_excavatedArr.length;abc++)
+				{
+					if(Eyal_messageStartsWith(Eyal_message, "/unext"))
+						cardMenuClicked(window.Eyal_excavatedArr[abc], "To T Deck");
+					
+					else if(Eyal_messageStartsWith(Eyal_message, "/unexb"))
+						cardMenuClicked(window.Eyal_excavatedArr[abc], "To B Deck");	
+					
+					else if(Eyal_messageStartsWith(Eyal_message, "/unexg"))
+						cardMenuClicked(window.Eyal_excavatedArr[abc], "To GY");	
+				}
+				
+				window.Eyal_excavatedArr.length = 0;
+				
+				return;
+			}
+			if(Eyal_messageStartsWith(Eyal_message, "/rps"))
 			{
 				let arr = ["Rock", "Paper", "Scissors"];
 				
@@ -1928,7 +2038,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				
 				return;
 			}
-			if(data.message == "/gy")
+			if(Eyal_messageStartsWith(Eyal_message, "/gy"))
 			{
 				let count = 0;
 				
@@ -1973,7 +2083,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				addLine("==============================")
 				return;
 			}
-			else if(data.message == "/ld" || data.message == "/light" || data.message == "/dark")
+			else if(Eyal_messageStartsWith(Eyal_message, "/ld") || Eyal_messageStartsWith(Eyal_message, "/light") || Eyal_messageStartsWith(Eyal_message, "/dark"))
 			{
 				let count = 0;
 				
@@ -3150,7 +3260,10 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			{
 				for(let abc=0;abc < Eyal_excavated;abc++)
 				{
-					cardMenuClicked(player1.main_arr[abc], "To ED FU");
+					let Eyal_card = player1.main_arr[abc];
+					cardMenuClicked(Eyal_card, "To ED FU");
+					window.Eyal_excavatedArr.push(Eyal_card);
+					
 				}
 			}
 			
@@ -3943,7 +4056,8 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 					
 					// if the index of a string is 0, that string starts the message.
 					
-					if(data.message.indexOf('/snipe') == 0)
+					let Eyal_message = data.message
+					if(Eyal_messageStartsWith(Eyal_message, "/snipe"))
 					{
 						let opponentArr = [];
 						let opponentHand = player1.opponent.hand_arr.slice();
@@ -3968,25 +4082,25 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 						Eyal_snipeByArray(opponentArr);
 						
 					}
-					else if(data.message.indexOf('/search') == 0 || data.message.indexOf("/send") == 0 || data.message.indexOf("/ban") == 0 || data.message.indexOf("/atk") == 0 || data.message.indexOf("/def") == 0 || data.message.indexOf("/st") == 0)
+					else if(Eyal_messageStartsWith(Eyal_message, "/search") || Eyal_messageStartsWith(Eyal_message, "/send") || Eyal_messageStartsWith(Eyal_message, "/ban") || Eyal_messageStartsWith(Eyal_message, "/atk") || Eyal_messageStartsWith(Eyal_message, "/def") || Eyal_messageStartsWith(Eyal_message, "/st"))
 					{
 						let msg = data.message;
 						
 						let cardClickAction = "To hand";
 						let commandName = "/search";
 					
-						if(msg.indexOf('/search') == 0)
+						if(Eyal_messageStartsWith(Eyal_message, "/search"))
 						{
-							msg = msg.replace("/search", "");
+							msg = msg.substring(7);
 							
 							if(msg.indexOf(' ') == 0)
 								msg = msg.replace(" ", "");
 						}
 						
 						
-						else if(msg.indexOf('/send') == 0)
+						else if(Eyal_messageStartsWith(Eyal_message, "/send"))
 						{
-							msg = msg.replace("/send", "");
+							msg = msg.substring(5);
 							
 							if(msg.indexOf(' ') == 0)
 								msg = msg.replace(" ", "");
@@ -3995,9 +4109,9 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 							commandName = "/send";
 						}
 						
-						else if(msg.indexOf('/ban') == 0)
+						else if(Eyal_messageStartsWith(Eyal_message, "/ban"))
 						{
-							msg = msg.replace("/ban", "");
+							msg = msg.substring(4);
 							
 							if(msg.indexOf(' ') == 0)
 								msg = msg.replace(" ", "");
@@ -4006,9 +4120,9 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 							commandName = "/ban";
 						}
 						
-						else if(msg.indexOf('/atk') == 0)
+						else if(Eyal_messageStartsWith(Eyal_message, "/atk"))
 						{
-							msg = msg.replace("/atk", "");
+							msg = msg.substring(4);
 							
 							if(msg.indexOf(' ') == 0)
 								msg = msg.replace(" ", "");
@@ -4017,9 +4131,9 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 							commandName = "/atk";
 						}
 						
-						else if(msg.indexOf('/def') == 0)
+						else if(Eyal_messageStartsWith(Eyal_message, "/def"))
 						{
-							msg = msg.replace("/def", "");
+							msg = msg.substring(4);
 							
 							if(msg.indexOf(' ') == 0)
 								msg = msg.replace(" ", "");
@@ -4028,9 +4142,9 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 							commandName = "/def";
 						}
 						
-						else if(msg.indexOf('/st') == 0)
+						else if(Eyal_messageStartsWith(Eyal_message, "/st"))
 						{
-							msg = msg.replace("/st", "");
+							msg = msg.substring(3);
 							
 							if(msg.indexOf(' ') == 0)
 								msg = msg.replace(" ", "");
@@ -4801,6 +4915,10 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	window.isPendulumAttacker = function(card)
 	{
 		let effect = card.data("cardfront").data("pendulum_effect")
+		
+		if(typeof effect === 'undefined')
+			return false;
+		
 		effect = effect.replaceAll("from your ", "")
 		effect = effect.replaceAll("while in your ", "")
 		
@@ -4813,6 +4931,10 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	window.isPendulumSneaker = function(card)
 	{
 		let effect = card.data("cardfront").data("effect")
+		
+		if(typeof effect === 'undefined')
+			return false;
+		
 		effect = effect.replaceAll("face up", "face-up")
 		effect = effect.replaceAll("this monster", "this card")
 		effect = effect.replaceAll("to the", "to your")
@@ -4825,7 +4947,12 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 
 	window.isEitherTurnAttacker = function(card)
 	{
-		if(isMonster(player1, card) && card.data("cardfront").data("effect").search(/This card can attack during your opponent's battle phase/i) != -1)
+		let effect = card.data("cardfront").data("effect")
+		
+		if(typeof effect === 'undefined')
+			return false;
+		
+		if(isMonster(player1, card) && effect.search(/This card can attack during your opponent's battle phase/i) != -1)
 			return true;
 		
 		else if(isST(player1, card) && isPendulumAttacker(card))
@@ -4838,6 +4965,9 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	window.Eyal_IsCardAbleToShuffleToOpponentDeck = function(card)
 	{
 		let effect = card.data("cardfront").data("effect")
+		
+		if(typeof effect === 'undefined')
+			return false;
 		
 		if(effect.search(/Shuffle this card face-up into your opponent's Deck/i) != -1)
 			return true;
@@ -4880,7 +5010,6 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	
 	window.Eyal_IsEaterOfMillions = function(card)
 	{
-		
 		if(card.data("cardfront").data("name") == "Eater of Millions")
 			return true;
 		
@@ -4899,6 +5028,9 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	window.Eyal_CountTokensCardCanSummon = function(card)
 	{
 		let effect = card.data("cardfront").data("effect");
+		
+		if(typeof effect === 'undefined')
+			return 0;
 		
 		let pos = -1;
 		
@@ -4987,6 +5119,9 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	window.Eyal_IsCardExchangeOfSpirit = function(card)
 	{
 		let effect = card.data("cardfront").data("effect");
+	
+		if(typeof effect === 'undefined')
+			return false;
 		
 		// /word/gi --> /word/Global ( all occurences ) case insensitive.
 		effect = effect.replace(/graveyard/gi, "GY");
@@ -5002,6 +5137,9 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	window.Eyal_IsCardAbleToPayHalfLP = function(card)
 	{
 		let effect = card.data("cardfront").data("effect");
+		
+		if(typeof effect === 'undefined')
+			return false;
 		
 		effect = effect.replace(/Life Points/gi, "LP");
 		// /word/gi --> /word/Global ( all occurences ) case insensitive.
@@ -5019,6 +5157,8 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	{
 		let effect = card.data("cardfront").data("effect");
 
+		if(typeof effect === 'undefined')
+			return false;
 		
 		if(effect.search(/excavate the top/i) != -1)
 		{
@@ -5062,6 +5202,21 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		return spellCount;
 	}
 	
+	window.Eyal_isCardOnField = function(card)
+	{
+		return isMonster(player1, card) || isST(player1, card) || player1.fieldSpell && card[0] == player1.fieldSpell[0] || player1.pendulumLeft && card[0] == player1.pendulumLeft[0] || player1.pendulumRight && card[0] == player1.pendulumRight[0];
+	}
+	window.Eyal_messageStartsWith = function(Eyal_str, Eyal_substr)
+	{
+		
+		let Eyal_strToTest = Eyal_str.toLowerCase();
+		let Eyal_substrToTest = Eyal_substr.toLowerCase();
+		
+		if(Eyal_strToTest.indexOf(Eyal_substrToTest) == 0)
+			return true;
+		
+		return false;
+	}
 	window.Eyal_getRandomInt = function(min, max)
 	{
 		min = Math.ceil(min);
@@ -5346,6 +5501,20 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		}
 		
 		return undefined;
+	}
+	
+	if(typeof window.Eyal_excavatedArr === 'undefined')
+	{
+		window.Eyal_excavatedArr = [];
+	}
+	
+	for(let abc=0;abc < window.Eyal_excavatedArr.length;abc++)
+	{
+		if(actionsQueue.length == 0 && (window.Eyal_excavatedArr[abc].data("face_down") || isIn(window.Eyal_excavatedArr[abc], player1.extra_arr) < 0))
+		{
+			window.Eyal_excavatedArr.splice(abc, 1);
+			abc--;
+		}
 	}
 	
 	if(typeof Eyal_lastNormalMusic !== 'undefined' && Eyal_lastNormalMusic != normalMusicDL)
