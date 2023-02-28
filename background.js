@@ -613,7 +613,12 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		my_profile_data.loading = true;
 		loadMyProfile();
 	}
-	
+
+
+	if (typeof window.Eyal_waitingForAction === 'undefined')
+	{
+		window.Eyal_waitingForAction = false;
+    }
 
 	window.loadMyProfileResponse = function(data) {
 		my_profile_data = data;
@@ -1530,7 +1535,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		showPreview(); // moved from below because setCardName
 
 		preview.copyCard(cardfront);
-			
+
 		if(femOfSwitch && femaleCards.indexOf(cardfront.data("name")) != -1)
 			preview.removeImage();
 		
@@ -2107,7 +2112,9 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				for(let abc=0;abc < num;abc++)
 				{
 					let Eyal_card = player1.main_arr[abc];
-					cardMenuClicked(Eyal_card, "To ED FU");
+					cardMenuClicked(Eyal_card, "Banish");
+
+					window.Eyal_waitingForAction = true;
 					window.Eyal_excavatedArr.push(Eyal_card);
 				}
 				
@@ -2117,19 +2124,20 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			{
 				for(let abc=0;abc < window.Eyal_excavatedArr.length;abc++)
 				{
-					if(actionsQueue.length == 0 && (window.Eyal_excavatedArr[abc].data("face_down") || isIn(window.Eyal_excavatedArr[abc], player1.extra_arr) < 0))
+					if(window.Eyal_excavatedArr[abc].data("face_down") || isIn(window.Eyal_excavatedArr[abc], player1.banished_arr) < 0)
 					{
+
 						window.Eyal_excavatedArr.splice(abc, 1);
 						abc--;
 					}
 				}
 				for(let abc=0;abc < window.Eyal_excavatedArr.length;abc++)
 				{
-					if(Eyal_messageStartsWith(Eyal_message, "/unext"))
+					if (Eyal_messageStartsWith(Eyal_message, "/unext"))
 						cardMenuClicked(window.Eyal_excavatedArr[abc], "To T Deck");
-					
-					else if(Eyal_messageStartsWith(Eyal_message, "/unexb"))
-						cardMenuClicked(window.Eyal_excavatedArr[abc], "To B Deck");	
+
+					else if (Eyal_messageStartsWith(Eyal_message, "/unexb"))
+						cardMenuClicked(window.Eyal_excavatedArr[abc], "To B Deck");
 					
 					else if(Eyal_messageStartsWith(Eyal_message, "/unexg"))
 						cardMenuClicked(window.Eyal_excavatedArr[abc], "To GY");	
@@ -2293,7 +2301,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		var menu = [];
 		if (card.data("controller") != player1) {
 			if (isIn(card, player1.opponent.grave_arr) >= 0 || isIn(card, player1.opponent.banished_arr) >= 0) {
-				if (card.data("cardfront").data("card_type") == "Monster") {
+				if (card.data("cardfront").data("card_type") == "Monster" && !card.data("face_down")) {
 					if (hasAvailableMonsterZones(player1)) {
 						menu.push({label:"SS ATK",data:"SS ATK"});
 
@@ -2323,6 +2331,10 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 							menu.push({label:"Activate",data:"Activate Field Spell"});
 						}
 					}
+				}
+				
+				if (hasXyzMonster(player1)) {
+					menu.push({label:"Attach",data:"Attach"});
 				}
 			}
 			if ((viewing == "Opponent's Deck (partial)" || viewing == "Opponent's Deck (Top 3 Cards)" || viewing == "Opponent's Deck (Top 5 Cards)") && isIn(card, player1.opponent.main_arr) >= 0) {
@@ -2630,13 +2642,14 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 					
 				if(isIn(card, player1.extra_arr) < 0)
 				{
-					if ((card.data("cardfront").data("pendulum") && isIn(card, player1.main_arr) < 0 && isIn(card, player1.hand_arr) < 0)) { // i think you should be able to return it from the gy to the extra deck
+					if (card.data("cardfront").data("pendulum") && isIn(card, player1.main_arr) < 0 && isIn(card, player1.hand_arr) < 0 && isIn(card, player1.extra_arr) < 0) { // i think you should be able to return it from the gy to the extra deck // 1-15-23 added extra_arr to list
 						menu.push({label:"To Extra Deck FU",data:"To ED FU"});
 					}
-					else if(isPendulumSneaker(card))
+					// Eyal282 here, DB broke pendulum sneaking.
+					/*else if(isPendulumSneaker(card))
 					{
 						menu.push({label:"To Extra Deck FU",data:"Eyal To ED FU"});
-					}
+					}*/
 				}
 				if (!isExtraDeckCard(card) && isIn(card, player1.main_arr) < 0 && !card.data("isXyzMaterial")) {
 					
@@ -2703,6 +2716,17 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 					}
 					else if (card.data("cardfront").data("effect").includes("becomes revealed") || card.data("cardfront").data("effect").includes("remain revealed") || findCard(["Contract with Don Thousand"])) {
 						menu.push({label:"Stay Revealed",data:"Stay revealed"});
+					}
+				}
+				// Eyal282 here, for flipping banished cards
+				if (isIn(card, player1.banished_arr) >= 0) {
+					if (card.data("face_down"))
+					{
+						menu.push({label:"Banish", data:"Eyal Banish"});
+					}
+					else
+					{
+						menu.push({label:"Banish FD", data:"Eyal Banish FD"});
 					}
 				}
 				if (!card.data("face_down")) {
@@ -2817,9 +2841,9 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 								menu.push({label:"Banish first 6 ED",data:"Banish first 6 ED FD"});
 						}
 						
-						if (card.data("cardfront").data("name") == "Pot of Duality" && player1.main_arr.length >= 3) {
-							menu.push({label:"Banish 3 Cards",data:"Banish top 3 cards"});
-						}
+						//if (card.data("cardfront").data("name") == "Pot of Duality" && player1.main_arr.length >= 3) {
+							//menu.push({label:"Banish 3 Cards",data:"Banish top 3 cards"});
+						//}
 						if (card.data("cardfront").data("name") == "That Grass Looks Greener" && player1.main_arr.length > player1.opponent.main_arr.length) {
 							menu.push({label:"Mill " + String(player1.main_arr.length - player1.opponent.main_arr.length),data:"Mill difference"});
 						}
@@ -2833,6 +2857,9 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 							menu.push({label:"Resolve Effect",data:"Crescent effect"});
 						}
 						if (card.data("cardfront").data("name") == "Bingo Machine, Go!!!" && player1.main_arr.length >= 3) {
+							menu.push({label:"Resolve Effect",data:"Crescent effect"});
+						}
+						if (card.data("cardfront").data("name") == "My Friend Purrely" && player1.main_arr.length >= 3) {
 							menu.push({label:"Resolve Effect",data:"Crescent effect"});
 						}
 						if (card.data("cardfront").data("name") == "Exchange") {
@@ -2971,6 +2998,13 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				}
 				if (moderator >= 2 && isIn(card, player1.hand_arr) >= 0) {
 					menu.push({label:"Swap",data:"Swap"});
+				}
+			}
+			
+			if (hasXyzMonster(player1))
+			{
+				if (isIn(card, player1.grave_arr) >= 0 || isIn(card, player1.banished_arr) >= 0) {
+					menu.push({label:"Attach",data:"Attach"});
 				}
 			}
 		}
@@ -3447,6 +3481,15 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			return;
 		}
 		
+		else if(data == "Eyal Banish")
+		{
+			cardMenuClicked(card, "To GY");
+			cardMenuClicked(card, "Banish");
+			exitViewing();
+			
+			return;
+		}
+		
 		else if(data == "Eyal Banish FD")
 		{
 			cardMenuClicked(card, "To GY");
@@ -3465,7 +3508,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				for(let abc=0;abc < Eyal_excavated;abc++)
 				{
 					let Eyal_card = player1.main_arr[abc];
-					cardMenuClicked(Eyal_card, "To ED FU");
+					cardMenuClicked(Eyal_card, "Banish");
 					window.Eyal_excavatedArr.push(Eyal_card);
 					
 				}
@@ -3508,7 +3551,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			}
 			return;
 		}
-		if (data == "Overlay" || data == "OL ATK" || data == "OL DEF") {
+		if (data == "Overlay" || data == "OL ATK" || data == "OL DEF" || data == "Attach") {
 			olPlay = data;
 			overlaying_card = card;
 			if (countOverlayOptions(player1) == 0) {
@@ -4753,6 +4796,11 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 					overlay(player, data);
 				});
 				break;
+			case "Attach":
+				actionsQueue.push(function(){
+					attach(player, data);
+				});
+				break;
 			case "Detach":
 				actionsQueue.push(function(){
 					detach(player, data);
@@ -5007,7 +5055,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				});
 				break;
 			case "Pick 2 cards": // Hi-Speedroid Rubber Band Shooter
-			case "Pick 3 cards": // Spellbook Library of the Crescent, Power Tool Dragon, Lilith, Lady of Lament
+			case "Pick 3 cards": // Spellbook Library of the Crescent, Power Tool Dragon, Lilith, Lady of Lament, Bingo Machine, Go!!!, My Friend Purrely
 				if (duelist && player.username == username) {
 					viewingE(data.viewing, data);
 					next_callback = data.callback; // moved here from below
@@ -5854,7 +5902,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			// Eyal282 here, this property breaks banlists and gives error "One or more cards are no longer available"
 			
 			if(Cards[i].hidden)
-					continue;
+				continue;
 				
 			if (Cards[i].name.toLowerCase() == str.toLowerCase()) {
 				card = Cards[i];
@@ -5880,8 +5928,11 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	
 	for(let abc=0;abc < window.Eyal_excavatedArr.length;abc++)
 	{
-		if(actionsQueue.length == 0 && (window.Eyal_excavatedArr[abc].data("face_down") || isIn(window.Eyal_excavatedArr[abc], player1.extra_arr) < 0))
+		// Eyal_waitingForAction is automatically set to false when an action is made, to guarantee while we call a banish request, that this won't.
+		// won't eat the excavated cards before DB responds to the banish request.
+		if (actionsQueue.length == 0 && !window.Eyal_waitingForAction && (window.Eyal_excavatedArr[abc].data("face_down") || isIn(window.Eyal_excavatedArr[abc], player1.banished_arr) < 0))
 		{
+			console.log("Spice");
 			window.Eyal_excavatedArr.splice(abc, 1);
 			abc--;
 		}
@@ -5895,7 +5946,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	{
 		Eyal_tryStartMusic();
 	} 
-	
+
 	window.Eyal_lastNormalMusic = normalMusicDL;
 	window.Eyal_lastVictoryMusic = victoryMusicDL;
 	// If Eyal_clipboard doesn't exist in select menu of the card pool in a tournament ban list
@@ -5953,7 +6004,13 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 	
 	$("#search .custom_cb").off("change");
 	$("#search .custom_cb").change(Eyal_DeckConstructorCardPoolChanged);
-	
+
+
+	if (Eyal_waitingForAction)
+	{
+		if (actionsQueue.length > 0)
+			Eyal_waitingForAction = false;
+    }
 	// We're currently in https://www.duelingbook.com/card?id=513 
 	if(typeof master !== "undefined" && typeof card_id !== "undefined")
 	{
