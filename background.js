@@ -299,6 +299,11 @@ function fastInjectFunction(potOfSwitch, femOfSwitch, musicSliderDL, limitedCard
 {
 	if(duelist && typeof Eyal_swapCardMenuForPlayer == "function")
 	{
+		if(actionsQueue.indexOf(simultaneousDraw) >= 0)
+		{
+			window.GYwarning = [];
+		}
+		
 		Eyal_swapCardMenuForPlayer(player1);
 		Eyal_swapCardMenuForPlayer(player2);
 		
@@ -620,6 +625,243 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		window.Eyal_waitingForAction = false;
     }
 
+	window.Eyal_showDuelNSFW = function() 
+	{
+		$(this).siblings('.nsfw').css("opacity", 0);
+		$(this).siblings('.nsfw').hide();
+		$(this).hide();
+		
+		switch(this)
+		{
+			case $('#avatar1 .nsfw_btn')[0]:
+				if(typeof window.oldSleeves1 !== 'undefined')
+				{
+					player1.sleeve = window.oldSleeves1;
+					window.oldSleeves1 = undefined;
+					loadSleeves(player1);
+				}
+			break;
+			
+			case $('#avatar2 .nsfw_btn')[0]:
+				if(typeof window.oldSleeves2 !== 'undefined')
+				{
+					player2.sleeve = window.oldSleeves2;
+					window.oldSleeves2 = undefined;
+					loadSleeves(player2);
+				}
+			break;
+			
+			case $('#avatar3 .nsfw_btn')[0]:
+				if(typeof window.oldSleeves3 !== 'undefined')
+				{
+					player3.sleeve = window.oldSleeves3;
+					window.oldSleeves3 = undefined;
+					loadSleeves(player3);
+				}
+			break;
+			
+			case $('#avatar4 .nsfw_btn')[0]:
+				if(typeof window.oldSleeves4 !== 'undefined')
+				{
+					player4.sleeve = window.oldSleeves4;
+					window.oldSleeves4 = undefined;
+					loadSleeves(player4);
+				}
+			break;
+		}
+		
+		
+	}
+	
+	if(typeof window.GYwarning === 'undefined')
+	{
+		window.GYwarning = [];
+	}
+
+	window.Eyal_startTurnE = function() {
+		if (awaiting_start_turn) {
+			return;
+		}
+		
+		let Eyal_count = 0;
+		
+		if(window.GYwarning.length > 0)
+		{
+			let Eyal_msg = "You have End Phase GY effects:<br>"
+			let Eyal_max = 5;
+			
+			let Unique_arr = [];
+			for(let abc=0;abc < window.GYwarning.length;abc++)
+			{
+				if(Eyal_count == Eyal_max)
+					break;
+				
+				else if(isIn(window.GYwarning[abc], player1.grave_arr) == -1)
+					continue;
+				
+				else if(Unique_arr.indexOf(window.GYwarning[abc].data("id")) >= 0)
+					continue;
+				
+				Eyal_msg = Eyal_msg + window.GYwarning[abc].data("cardfront").data("name") + "<br>"
+				Eyal_count++;
+				Unique_arr.push(window.GYwarning[abc].data("id"));
+			}
+			console.log("Success")	
+			
+			if(Eyal_count > 0)
+			{
+				getConfirmation("GY Warning", Eyal_msg, undefined, undefined, true);
+			}
+		}
+		
+		if(Eyal_count == 0)
+		{
+			Send({"action":"Duel", "play":"Start turn", "draw":$('#auto_draw_cb').is(":checked")});
+		}
+		
+		
+		window.GYwarning = [];
+	}
+	window.Eyal_endTurnE = function()
+	{
+		
+		let Eyal_count = 0;
+		
+		if(window.GYwarning.length > 0)
+		{
+			let Eyal_msg = "You have End Phase GY effects:<br>"
+			let Eyal_max = 5;
+			
+			let Unique_arr = [];
+			
+			for(let abc=0;abc < window.GYwarning.length;abc++)
+			{
+				if(Eyal_count == Eyal_max)
+					break;
+				
+				else if(isIn(window.GYwarning[abc], player1.grave_arr) == -1)
+					continue;
+				
+				else if(Unique_arr.indexOf(window.GYwarning[abc].data("id")) >= 0)
+					continue;
+				
+				Eyal_msg = Eyal_msg + window.GYwarning[abc].data("cardfront").data("name") + "<br>"
+				Eyal_count++;
+				Unique_arr.push(window.GYwarning[abc].data("id"));
+			}
+			
+			console.log("Success")
+			
+			
+			if(Eyal_count > 0)
+			{
+				getConfirmation("GY Warning", Eyal_msg, undefined, undefined, true);
+			}
+		}
+		
+		if(Eyal_count == 0)
+		{
+			Send({"action":"Duel", "play":"End turn"});
+		}
+		
+		window.GYwarning = [];
+	}
+	
+	window.toGY = function(player, data)
+	{
+		var card = removeCard(player, data);
+		if (!card) {
+			card = removeFromBanished(player.opponent, data);
+		}
+		updateController(card.data("owner"), card);
+		card.data("cardfront").reinitialize(data.card);
+		card.data("face_down", false);
+		$('#field').append(card);
+		TweenMax.set(card, {"z":card.getGraveZ()})
+		card.data("owner").grave_arr.unshift(card);
+		TweenMax.to(card, easeSeconds, {left:card.data("owner").graveX, top:card.data("owner").graveY, scale:0.1485, rotation:card.data("owner").rot, rotationY:ABOUT_ZERO, ease:Linear.easeNone, onComplete:function(){
+			shiftGrave(card.data("owner"));
+			endAction();
+		}});
+		playSound(Move);
+		
+		if(card.data("owner") == player1 && card && card.data("cardfront").data("effect").search(/During the End Phase, if this card is in the GY because it was sent there this turn:/i) != -1)
+		{
+			window.GYwarning.push(card)
+		}
+	}
+
+	window.mill = function(player, data)
+	{
+		var card = removeTopCardFromDeck(player);
+		updateController(card.data("owner"), card);
+		card.data("cardfront").reinitialize(data.card);
+		$('#field').append(card);
+		TweenMax.set(card, {"z":card.getGraveZ()})
+		card.data("owner").grave_arr.unshift(card);
+		TweenMax.to(card, easeSecondsBanish, {left:card.data("owner").graveX, top:card.data("owner").graveY, rotation:card.data("owner").rot, rotationY:ABOUT_ZERO, ease:Linear.easeNone, onComplete:function(){
+			shiftGrave(card.data("owner"));
+			endAction();
+		}});
+		playSound(Move);
+		
+		if(card.data("owner") == player1 && card && card.data("cardfront").data("effect").search(/During the End Phase, if this card is in the GY because it was sent there this turn:/i) != -1)
+		{
+			window.GYwarning.push(card)
+		}
+	}
+	
+	window.Eyal_hideDuelNSFW = function()
+	{
+		if (solo && this == $('#avatar2 .rating')[0])
+		{
+			return;
+		}
+		$(this).siblings('.nsfw').css("opacity", 1);
+		$(this).siblings('.nsfw').show();
+		$(this).siblings('.nsfw_btn').show();
+		$(this).siblings('.nsfw_btn').val("Show Image");
+		
+		switch(this)
+		{
+			case $('#avatar1 .rating')[0]:
+				if(typeof window.oldSleeves1 === 'undefined')
+				{
+					window.oldSleeves1 = player1.sleeve;
+					player1.sleeve = '1.jpg';
+					loadSleeves(player1)
+				}
+			break;
+			
+			case $('#avatar2 .rating')[0]:
+				if(typeof window.oldSleeves2 === 'undefined')
+				{
+					window.oldSleeves2 = player2.sleeve;
+					player2.sleeve = '1.jpg';
+					loadSleeves(player2)
+				}
+			break;
+			
+			case $('#avatar3 .rating')[0]:
+				if(typeof window.oldSleeves3 === 'undefined')
+				{
+					window.oldSleeves3 = player3.sleeve;
+					player3.sleeve = '1.jpg';
+					loadSleeves(player3)
+				}
+			break;
+			
+			case $('#avatar4 .rating')[0]:
+				if(typeof window.oldSleeves4 === 'undefined')
+				{
+					window.oldSleeves4 = player4.sleeve;
+					player4.sleeve = '1.jpg';
+					loadSleeves(player4)
+				}
+			break;
+		}
+	}
+	
 	window.loadMyProfileResponse = function(data) {
 		my_profile_data = data;
 		my_profile_data.loading = false;
@@ -6002,6 +6244,66 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		}));
 	}
 	
+	if($('#avatar1 .nsfw_btn').length > 0)
+	{
+		$('#avatar1 .nsfw_btn').off("click");
+		$('#avatar1 .nsfw_btn').click(Eyal_showDuelNSFW);
+	}
+	
+	if($('#avatar2 .nsfw_btn').length > 0)
+	{
+		$('#avatar2 .nsfw_btn').off("click");
+		$('#avatar2 .nsfw_btn').click(Eyal_showDuelNSFW);
+	}
+	
+	if($('#avatar3 .nsfw_btn').length > 0)
+	{
+		$('#avatar3 .nsfw_btn').off("click");
+		$('#avatar3 .nsfw_btn').click(Eyal_showDuelNSFW);
+	}
+	
+	if($('#avatar4 .nsfw_btn').length > 0)
+	{
+		$('#avatar4 .nsfw_btn').off("click");
+		$('#avatar4 .nsfw_btn').click(Eyal_showDuelNSFW);
+	}
+	
+	if($('#avatar1 .rating').length > 0)
+	{
+		$('#avatar1 .rating').off("click");
+		$('#avatar1 .rating').click(Eyal_hideDuelNSFW);
+	}
+	
+	if($('#avatar2 .rating').length > 0)
+	{
+		$('#avatar2 .rating').off("click");
+		$('#avatar2 .rating').click(Eyal_hideDuelNSFW);
+	}
+	
+	if($('#avatar3 .rating').length > 0)
+	{
+		$('#avatar3 .rating').off("click");
+		$('#avatar3 .rating').click(Eyal_hideDuelNSFW);
+	}
+	
+	if($('#avatar4 .rating').length > 0)
+	{
+		$('#avatar4 .rating').off("click");
+		$('#avatar4 .rating').click(Eyal_hideDuelNSFW);
+	}
+
+	if($('#end_turn').length > 0)
+	{
+		$('#end_turn').off("click");
+		$('#end_turn').click(Eyal_endTurnE);
+	}
+	
+	if($('#start_turn').length > 0)
+	{
+		$('#start_turn').off("click");
+		$('#start_turn').click(Eyal_startTurnE);
+	}
+		
 	$("#search .custom_cb").off("change");
 	$("#search .custom_cb").change(Eyal_DeckConstructorCardPoolChanged);
 
