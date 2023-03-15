@@ -1,0 +1,429 @@
+;Credit to UnluckyGamer ( manuel#7722 ) for helping make this list.
+
+; Normal Monsters
+Dark Magician
+Blue-Eyes White Dragon
+Red-Eyes Black Dragon
+
+; Effect Monsters
+The Winged Dragon of Ra - Immortal Phoenix
+Blue-Eyes Jet Dragon
+Curse Necrofear
+Rainbow Dragon
+Destiny HERO - Plasma
+Armed Dragon Thunder LV10
+Ancient Gear Reactor Dragon
+Meklord Astro Dragon Triskelion
+Earthbound Immortal Wiraqocha Rasca
+Caius the Shadow Monarch
+Erebus the Underworld Monarch
+Amazement Administrator Arlekino
+Apoqliphort Towers
+Danger! Bigfoot!
+Danger! Nessie!
+Elementsaber Lapauila Mana
+Umbramirage the Elemental Lord
+Dogmatika Fleurdelis, the Knighted
+The Iris Swordsoul
+Doomking Balerdroch
+Dual Assembwurm
+Eldlich the Golden Lord
+Evil★Twins Ki-sikil & Lil-la
+Floowandereeze & Snowl
+Galaxy-Eyes Photon Dragon
+Gameciel, the Sea Turtle Kaiju
+Great Shogun Shien
+Harr, Generaider Boss of Storms
+Icejade Kosmochlor
+Judgment Dragon
+Lord of the Heavenly Prison
+Machina Citadel
+Lovely Labrynth of The Silver Castle
+Knightmare Corruptor Iblee
+Mekk-Knight Blue Sky
+Mekk-Knight Purple Nightfall
+Mermail Abyssmegalo
+Nibiru, the Primal Being
+Protecting Spirit Loagaeth
+Starry Night, Starry Dragon
+Superancient Deepsea King Coelacanth
+U.A. Playmaker
+Dinovrestler Pankratops
+Ultimate Conductor Tyranno
+Vampire Voivode
+War Rock Meteoragon
+Witchcrafter Golem Aruru
+Water Enchantress of the Temple
+Therion "King" Regulus
+
+; Ritual Monsters
+Evigishki Gustkraken
+Nekroz of Areadbhair
+Megalith Aratron
+Blue-Eyes Chaos MAX Dragon
+Demise, King of Armageddon
+Demise, Supreme King of Armageddon
+Revendread Slayer
+Drytron Meteonis Draconids
+Herald of Ultimateness
+
+; Fusion Monsters
+Elemental HERO Flame Wingman
+Elemental HERO Brave Neos
+Masked HERO Dark Law
+Evil HERO Malicious Bane
+Destiny HERO - Destroyer Phoenix Enforcer
+Cyber End Dragon
+Cyberdark End Dragon
+Armityle the Chaos Phantasm - Phantom of Fury
+ABC-Dragon Buster
+Buster Blader, the Dragon Destroyer Swordsman
+Dinomorphia Kentregina
+Dragonmain Sheou
+Egiptian God Slime
+El Shaddoll Winda
+El Shaddoll Construct
+Eldlich the Mad Golden Lord
+Fossil Warrior Skull King
+Gem-Knight Ruby
+Gem-Knight Master Diamond
+Gladiator Beast Gaiodiaz
+Gladiator Beast Domitianus
+Imperion Magnum the Superconductive Battlebot
+Infernoid Tierra
+Invoked Mechaba
+King Dragun
+Lunalight Leo Dancer
+Millennium-Eyes Restrict
+Despia Quaeritis
+Albion the Branded Dragon
+Mirrorjade the Iceblade Dragon
+Guardian Chimera
+Myutant Synthesis
+Oneiros, the Dream Mirror Erlking
+Oneiros, the Dream Mirror Tormentor
+Prank-Kids Battle Butler
+Starving Venom Fusion Dragon
+Starving Venom Predapower Fusion Dragon
+The First Darklord
+Thunder Dragon Colossus
+Thunder Dragon Titan
+Ultra Beetrooper Abslute Hercules
+Hugin the Runick Wings
+
+; Synchro Monsters
+Junk Warrior
+Stardust Dragon
+Shooting Quasar Dragon
+Shooting Majestic Star Dragon
+Red Dragon Archfiend
+Blackwing Full Armor Master
+Ruddy Rose Dragon
+Void Ogre Dragon
+Odin, Father of the Aesir
+Trishula, Dragon of the Ice Barrier
+Colossal Fighter
+Clear Wing Synchro Dragon
+Hi-Speedroid Chanbara
+Hi-Speedroid Clear Wing Rider
+Windwitch - Diamond Bell
+Ukiyoe-P.U.N.K. Amazing Dragon
+Virtual World Kyubi - Shenshen
+Baronne de Fleur
+PSY-Framelord Omega
+Penguin Brave
+Coral Dragon
+Adamancipator Risen - Dragite
+Cryston Quariongandrax
+Ursarctic Septentrion
+Swordsoul Supreme Sovereign - Chengying
+Ally of Justice Catastor
+Borreload Savage Dragon
+Chaos Ruler, the Chaotic Magical Dragon
+Karakuri Super Shogun mdl 00N "Bureibu"
+Legendary Six Samurai - Shi En
+Locomotion R-Genex
+Masterflare Hyperion
+Flower Cardian Moonflowerviewing
+Flamvell Uruquizas
+Geomathmech Final Sigma
+Infernoble Knight Emperor Charles
+Magikey Fiend - Transfurlmine
+Shiranui Shogunsaga
+Shiranui Sunsaga
+Yoko, the Graceful Mayakashi
+Zoroa, the Magistus Conflagrant Calamity
+
+; Xyz Monsters
+Number 39: Utopia
+Number S39: Utopia the Lightning
+Number F0: Utopic Future
+Number F0: Utopic Draco Future
+Number 38: Hope Harbinger Dragon Titanic Galaxy
+Galaxy-Eyes Cipher X Dragon
+Bujintei Susanowo
+Bujinki Amaterasu
+Constellar Pleiades
+Constellar Ptolemy M7
+Cyber Dragon Infinity
+Dark Rebellion Xyz Dragon
+Digital Bug Rhinsebus
+Dingirsu, the Orcust of the Evening Star
+True King of All Calamities
+Divine Arsenal AA-Zeus - Sky Thunder
+Evilswarm Ophion
+Exosister Mikailis
+Gear Giant X
+Ghostrick Alucard
+Gunkan Suship Uni-class Super-Dreadnought
+Inzektor Exa-Beetle
+CXyz N.As.Ch. Knight
+Number C101: Silent Honor DARK
+Joyous Melffys
+Lyrilusc - Ensemblue Robin
+Madolche Queen Tiramisu
+Mecha Phantom Beast Dracossack
+Number 86: Heroic Champion - Rhongomyniad
+Number C88: Gimmick Puppet DIsaster Leo
+Raidraptor - Ultimate Falcon
+Springans Ship - Exblowrer
+Super Quantal Mech King Great Magnus
+Superdreadnought Rail Cannon Gustav Max
+Superdreadnought Rail Cannon Juggernaut Liebe
+Teardrop the Rikka Queen
+Time Thief Redoer
+Toadally Awesome
+Traptrix Rafflesia
+Zoodiac Drident
+Number C1: Numeron Chaos Gate Sunya
+Gigantic Spright
+
+; Pendulum Monsters
+Odd-Eyes Pendulum Dragon
+Odd-Eyes Pendulumgraph Dragon
+Supreme King Z-ARC
+Abyss Actor - Superstar
+Astrograph Sorcerer
+Mythical Beast Master Cerberus
+Endymion, the Mighty Master of Magic
+Antihuman Intelligence ME-PSY-YA
+Dinomist Rex
+Dosolfachord Coolia
+Zefraath
+Mamonaka the Vaylantz United
+Mayosenju Daibak
+
+; Link Monsters
+Decode Talker
+Firewall Dragon
+Accesscode Talker
+Borrelsword Dragon
+Borrelcode Dragon
+Topologic Zeroboros
+Salamangreat Heatleo
+Trickstar Holly Angel
+Marincess Wonder Heart
+Dark Templar @Ignister
+Decode Talker Heatsoul
+Altergeist Hexstia
+Altergeist Memorygant
+Gouki the Master Ogre
+Apollousa, Bow of the Goddess
+Infinitrack Fortress Megaclops
+Black Luster Soldier - Soldier of Chaos
+Blackbeard, the Plunder Patroll Captain
+Celestial Knightlord Parshath
+Cosmic Slicer Zer'oll
+Evil★Twin's Trouble Sunny
+Folgo, Justice Fur Hire
+Gaia Saber, the Lightning Shadow
+Ghostrick Festival
+Giant Beetroper Invincible Atlas
+Heavy metalfoes Electrumite
+Neyond the Pendulum
+Isolde, Two Tales of the Noble Knights
+Magical Musketeer Max
+Nephtys, the Sacred Flame
+Predaplant Verte Anaconda
+Rasterliger
+Reptilianne Echidna
+Scareclaw Tri-Heart
+S-Force Justify
+Simorgh, Bird of Sovereignty
+Cryston Halqifibrax
+Sky Striker Ace - Kagari
+SPYRAL Double Helix
+Subterror Behemoth Fiendess
+Auram the World Chalice Blademaster
+Ib the World Chalice Priestess
+Ningirsu the World Chalice Warrior
+X-Krawler Neurogos
+X-Krawler Qualiark
+X-Krawler Synaphysis
+Knightmare Unicorn
+Knightmare Gryphon
+Mekk-Knight Spectrum Supreme
+Crusadia Equimax
+Longirsu, the Orcust Orchestrator
+Mekk-Knight Crusadia Avramax
+World Gears of Theurlogical Demiurgy
+The Phantom Knights of Rusty Bardiche
+The Weather Painter Rainbow
+Traffic Ghost
+Tri-Brigade Shuraig the Omnous Omen
+Unchained Abomination
+Underworld Goddess of the Closed World
+Union Carrier
+Yuki-Onna, the Absolute Zero Mayakashi
+Zerrziel, Ruler of the Evil Eyed
+
+;Win_Condition_Cards
+Exodia the Forbidden One
+Destiny Board
+Ghostrick Angel of Mischief
+Musical Sumo Dice Games
+
+;Additional monsters added by Unlucky Gamer.
+
+; Normal Monsters
+Elemental HERO Neos
+
+; Effect Monsters
+Obelisk the Tormentor
+Slifer the Sky Dragon
+The Winged Dragon of Ra
+The Winged Dragon of Ra - Sphere Mode
+Ancient Gear Golem
+Earthbound Immortal Aslla piscu
+Earthbound Immortal Ccapac Apu
+Earthbound Immortal Ccarayhua
+Earthbound Immortal Chacu Challhua
+Earthbound Immortal Cusillu
+Earthbound Immortal Uru
+Meklord Astro Mekanikle
+Meklord Emperor Wisel
+Meklord Emperor Skiel
+Meklord Emperor Granel
+
+; Fusion Monsters
+Hugin the Runick Wings
+
+; Synchro Monsters
+Power Tool Dragon
+Ancient Fairy Dragon
+Black Rose Dragon
+Black-Winged Dragon
+
+; Xyz Monsters
+
+; Pendulum Monsters
+
+; Link Monsters
+; I:P Masquerena ( She's a DARK and it sounds stupid... )
+
+
+;Additional monsters added by Eyal282
+
+; Normal Monsters
+
+
+; Effect Monsters
+Exodia Necross
+Exodia, the Legendary Defender
+Exodius the Ultimate Forbidden Lord
+The Legendary Exodia Incarnate
+Gren Maju Da Eiza
+King of the Skull Servants
+Madolche Puddingcess Chocolat-a-la-Mode
+Machina Ruinforce
+Inspector Boarder
+Wandering Gryphon Rider
+Kashtira Fenrir
+Lady Labrynth of the Silver Castle
+Lovely Labrynth of the Silver Castle
+Grinder Golem
+Gogogo Golem - Golden Form
+SPYRAL Sleeper
+Vanquish Soul - Kaiser Varius
+Vanquish Soul - Heavy Borger
+Vanquish Soul - Pluton HG
+Jioh the Gravity Ninja
+Jinzo
+Dark Magician of Chaos
+Chaos Sorcerer
+Black Luster Soldier - Envoy of the Beginning
+Chaos Emperor Dragon - Envoy of the End
+Chaos Dragon Levianeer
+Dark Armed Dragon
+Light and Darkness Dragon
+Lava Golem
+Thunder King, the Lightningstrike Kaiju
+Radian, the Multidimensional Kaiju
+Kumongous, the Sticky String Kaiju
+Jizukiru, the Star Destroying Kaiju
+Gadarla, the Mystery Dust Kaiju
+Dogoran, the Mad Flame Kaiju
+Alpha, the Master of Beasts
+
+; Fusion Monsters
+Frightfur Cruel Whale
+Tearlaments Kaleido-Heart
+Tearlaments Rulkallos
+Tearlaments Kitkallos
+Red-Eyes Dark Dragoon
+Naturia Exterio
+The Last Warrior from Another Planet
+Thousand-Eyes Restrict
+
+; Synchro Monsters
+Goyo Guardian
+Colossal Fighter
+Naturia Beast
+Crystal Wing Synchro Dragon
+Hot Red Dragon Archfiend Abyss
+Superheavy Samurai Steam Train King
+Red Supernova Dragon
+Draco Berserker of the Tenyi
+Swordsoul Sinister Sovereign - Qixing Longyuan
+Gold Pride - Star Leon
+Gold Pride - Nytro Blaster
+
+;Xyz Monsters
+D/D/D Deviser King Deus Machinex
+Number 4: Stealth Kragen
+Number 41: Bagooska the Terribly Tired Tapir
+Number 81: Superdreadnought Rail Cannon Super Dora
+Number 96: Dark Mist
+Number C96: Dark Storm
+Number 100: Numeron Dragon
+Number C1000: Numerounius
+Number iC1000: Numerounius Numerounia
+
+Kashtira Arise-Heart
+Kashtira Shangri-Ira
+Castel, the Skyblaster Musketeer
+Lyrilusc - Assembled Nightingale
+
+; Pendulum Monsters
+
+
+; Link Monsters
+The Arrival Cyberse @Ignister
+Firewall Dragon Darkfluid - Neo Tempest Terahertz
+Firewall Dragon Darkfluid
+G Golem Dignified Trilithon
+Ancient Warriors Oath - Double Dragon Lords
+
+
+;Win_Condition_Cards
+;Exodia, the Legendary Defender
+;Exodius the Ultimate Forbidden Lord
+;F.A. Winners
+;Number 88: Gimmick Puppet of Leo
+;Jackpot 7
+;Final Countdown
+;Flying Elephant
+;Number iC1000: Numerounius Numerounia
+;Phantasm Spiral Assault
+;Vennominaga the Deity of Poisonous Snakes
+;Victory Dragon

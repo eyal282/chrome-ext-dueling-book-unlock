@@ -164,14 +164,32 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 });
 
+document.addEventListener('DOMContentLoaded', function () {
 
+	let slider = document.querySelector('input[id="musicSliderMD"]');
+	
+	if(slider.id == 'musicSliderMD')
+	{
+		chrome.storage.sync.get(['musicSliderMD'], function(result) {
+			if(result && result.musicSliderMD > 0)
+				slider.value = result.musicSliderMD;
+
+		});
+		
+		slider.addEventListener('change', function () {
+			chrome.storage.sync.set({musicSliderMD: slider.value}, function() {});
+		});
+	}
+});
+
+/*
 function conLog(text)
 {
 	let cons = document.getElementById('consoleLog');
 	
 	cons.innerHTML = "a" + text;
 }
-
+*/
 function getIndexByValue(options, value)
 {
 	for(let abc=0;abc < options.length;abc++)
