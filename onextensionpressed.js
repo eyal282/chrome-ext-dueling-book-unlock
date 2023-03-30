@@ -69,6 +69,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function () {
 
+	let checkbox = document.querySelector('input[id="cardLogging"]');
+	
+	if(checkbox.id == 'cardLogging')
+	{
+		chrome.storage.sync.get(['cardLogging'], function(result) {
+		
+			// Default to true..
+			if(result && result.cardLogging == false)
+				checkbox.checked = false;
+			
+			else
+				checkbox.checked = true;
+
+		});
+		
+		checkbox.addEventListener('change', function () {
+			chrome.storage.sync.set({cardLogging: checkbox.checked}, function() {});
+		});
+	}
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+
 	let checkbox = document.querySelector('input[id="randomRPS"]');
 	
 	if(checkbox.id == 'randomRPS')

@@ -328,11 +328,14 @@ Black-Winged Dragon
 
 
 ; Effect Monsters
+Doodle Beast - Tyranno
+Arcana Force XXI - The World
 Exodia Necross
 Exodia, the Legendary Defender
 Exodius the Ultimate Forbidden Lord
 The Legendary Exodia Incarnate
 Gren Maju Da Eiza
+Eater of Millions
 King of the Skull Servants
 Madolche Puddingcess Chocolat-a-la-Mode
 Machina Ruinforce
@@ -363,16 +366,39 @@ Kumongous, the Sticky String Kaiju
 Jizukiru, the Star Destroying Kaiju
 Gadarla, the Mystery Dust Kaiju
 Dogoran, the Mad Flame Kaiju
+Surgical Striker - H.A.M.P.
 Alpha, the Master of Beasts
+Floowandereeze & Empen
+Raiza the Mega Monarch
+Caius the Mega Monarch
+Granmarg the Mega Monarch
+Mobius the Mega Monarch
+Thestalos the Mega Monarch
+Zaborg the Mega Monarch
+Ehther the Heavenly Monarch
+Erebus the Underworld Monarch
+
+; Ritual Monsters
+Hungry Burger
 
 ; Fusion Monsters
+Gate Guardian of Thunder and Wind
+Gate Guardian of Water and Thunder
+Gate Guardian of Wind and Water
+Gate Guardians Combined
+Gate Guardian
 Frightfur Cruel Whale
 Tearlaments Kaleido-Heart
 Tearlaments Rulkallos
 Tearlaments Kitkallos
 Red-Eyes Dark Dragoon
 Naturia Exterio
+Ancient Gear Megaton Golem
+Chaos Ancient Gear Giant
+Ultimate Ancient Gear Golem
+Ojama King
 The Last Warrior from Another Planet
+Master of Oz
 Thousand-Eyes Restrict
 
 ; Synchro Monsters
@@ -384,6 +410,10 @@ Hot Red Dragon Archfiend Abyss
 Superheavy Samurai Steam Train King
 Red Supernova Dragon
 Draco Berserker of the Tenyi
+Yazi, Evil of the Yang Zing
+Baxia, Brightness of the Yang Zing
+Psychic End Punisher
+White Aura Whale
 Swordsoul Sinister Sovereign - Qixing Longyuan
 Gold Pride - Star Leon
 Gold Pride - Nytro Blaster

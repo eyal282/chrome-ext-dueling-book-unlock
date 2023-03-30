@@ -206,10 +206,12 @@ Bloom Prima the Melodious Choir
 Blue Moon
 Blue Mountain Butterspy
 Bond Between Teacher and Student
+Boo-Boo Game
 Botanical Girl
 Bountiful Artemis
 Bounzer Guard
 Box of Friends
+Brave Beauty of Ruby Regard - Bradamante
 Break Away
 Bright Future
 Brotherhood of the Fire Fist - Peacock
@@ -250,6 +252,7 @@ Chamber Dragonmaid
 Change of Heart
 Chaos Goddess
 Chaos Hunter
+Chaos Witch
 Charming Resort Staff
 Chemical Cure Blue
 Chemical Cure Purple
@@ -422,6 +425,7 @@ Different Dimension Ground
 Dimension Fusion
 Dimension Reversion
 Dimension Wall
+Dinomorphia Kentregina
 Disciple of Nephthys
 Disenchanter
 Disgraceful Charity
@@ -604,6 +608,7 @@ Fairy of the Fountain
 Fairy of the Spring
 Fairy's Gift
 Fairy's Hand Mirror
+Fairyant the Circular Sorcerer
 Fairywitch
 Fallen Angel in Darkness
 Fallen Angel of Roses
@@ -667,6 +672,7 @@ Freezing Dance
 Freya, Spirit of Victory
 Fricka's Mediation
 Full Armored Crystalzero Lancer
+Furi the Orb Mikanko
 Fusion Conscription
 Future Samurai
 G.B. Hunter
@@ -748,7 +754,7 @@ Goddess of Sweet Revenge
 Goddess of Whim
 Goddess with the Third Eye
 Gold Moon Coin
-Golden Rule
+Gold Pride - Captain Carrie
 Goldenhair, the Newest Plunder Patroll
 Gorgon
 Gorgon Charm
@@ -781,6 +787,7 @@ Guts Guard
 Gwenhwyfar, Queen of Noble Arms
 Gyakutenno Megami
 HERO's Bond
+Ha-Re the Sword Mikanko
 Half Counter
 Hallowed Life Barrier
 Hand of Nephthys
@@ -1198,6 +1205,7 @@ Nephthys, the Sacred Flame
 Nephthys, the Sacred Preserver
 Next World
 Next to be Lost
+Ni-Ni the Mirror Mikanko
 Night Papilloperative
 Night Wing Sorceress
 Ninaruru, the Magistus Glass Goddess
@@ -1221,6 +1229,7 @@ Nursepia Pink Demon
 Nuvia the Wicked
 Ocean of Regeneration
 Oh Tokenbaum!
+Ohime the Manifested Mikanko
 One-Length LaMoon
 Opera the Melodious Diva
 Orange Shaman
@@ -1440,6 +1449,7 @@ Ruddy Rose Witch
 Ruin, Angel of Oblivion
 Ruin, Queen of Oblivion
 Ruin, Supreme Queen of Oblivion
+S-Force Nightchaser
 S-Force Rappa Chiyomaru
 SPYGAL Misty
 SPYRAL MISSION - Recapture
@@ -1451,8 +1461,10 @@ Sacred Serpent's Wake
 Saffira, Queen of Dragons
 Sage of Silence
 Sagitta, Maverick Fur Hire
+Saincred Magician
 Salamangreat Foxer
 Sapphire Revive
+Sari of the Silverwing Axe
 Satellarknight Deneb
 Satellarknight Vega
 Sax Knuckles, the Fist Music Maiden
@@ -1477,6 +1489,7 @@ Shadow Tamer
 Shadow of Eyes
 Shadowpriestess of Ohm
 Shaman of the Tenyi
+Shamisen Samsara Sorrowcat
 Shapesister
 Shared Ride
 Shining Friendship
@@ -1512,7 +1525,6 @@ Sishunder
 The Six Shinobi
 Sixth Sense
 Sky Scourge Invicil
-Sky Striker Ace - Azalea
 Sky Striker Ace - Hayate
 Sky Striker Ace - Kagari
 Sky Striker Ace - Kaina
@@ -1799,6 +1811,8 @@ Vampire Sucker
 Vampire Vamp
 Vampire's Domain
 Vanadis of the Nordic Ascendant
+Vanquish Soul - Dr. Madlove
+Vanquish Soul - Panthera
 Vanquishing Light
 Vector Change
 Vendread Anima
