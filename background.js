@@ -189,8 +189,13 @@ function performInjection()
 		{
 			if(typeof tabs[0].id !== 'undefined')
 			{
-				chrome.storage.sync.get(['potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'musicSliderMD', 'limitedCardsSound', 'cardLogging'], function(result)
+				chrome.storage.sync.get(['unlockCardMechanics', 'potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'musicSliderMD', 'limitedCardsSound', 'cardLogging'], function(result)
 				{
+					let unlockCardMechanics = true;
+					
+					if(result && result.unlockCardMechanics == false)
+						unlockCardMechanics = false;
+					
 					let potOfSwitch = false;
 					
 					if(result && result.potOfSwitch == true)
@@ -234,7 +239,7 @@ function performInjection()
 					
 					chrome.scripting.executeScript(
 					{
-						args: [potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, limitedCardsSound, cardLogging, femaleCards, animationCards, edisonCards],
+						args: [unlockCardMechanics, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, limitedCardsSound, cardLogging, femaleCards, animationCards, edisonCards],
 						target: {tabId: tabs[0].id},
 						world: "MAIN", // Main world is mandatory to edit other website functions
 						func: injectFunction,
@@ -596,18 +601,22 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 	Eyal_checkCensors();
 }
 
-function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, limitedCardsSound, cardLogging, femaleCards, animationCards, edisonCards)
+function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, limitedCardsSound, cardLogging, femaleCards, animationCards, edisonCards)
 {
+	window.Eyal_unlockCardMechanics = unlockCardMechanics;
 	window.Eyal_EdisonCardpool = edisonCards;
 	
 	window.Eyal_OnKeyPressed = function(evt)
 	{
-		// ESC
-		if (evt.keyCode == 27)
+		if(Eyal_unlockCardMechanics)
 		{
-			if(viewing)
+			// ESC
+			if (evt.keyCode == 27)
 			{
-				$("#view .exit_btn").click();
+				if(viewing)
+				{
+					$("#view .exit_btn").click();
+				}
 			}
 		}
 	}
@@ -2941,37 +2950,69 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 
 	window.findCard = function(arr, hand, grave, like)
 	{
-		var no_question = true;
-		var cards = [player1.m1, player1.m2, player1.m3, player1.m4, player1.m5, player1.s1, player1.s2, player1.s3, player1.s4, player1.s5, player1.pendulumLeft, player1.pendulumRight, player1.fieldSpell, player2.m1, player2.m2, player2.m3, player2.m4, player2.m5, player2.s1, player2.s2, player2.s3, player2.s4, player2.s5, player2.pendulumLeft, player2.pendulumRight, player2.fieldSpell, linkLeft, linkRight, player1.skillCard, player2.skillCard];
-		if (hand) {
-			for (var k = 0; k < player1.hand_arr.length; k++) {
-				cards.push(player1.hand_arr[k]);
+		if(Eyal_unlockCardMechanics)
+		{
+			var no_question = true;
+			var cards = [player1.m1, player1.m2, player1.m3, player1.m4, player1.m5, player1.s1, player1.s2, player1.s3, player1.s4, player1.s5, player1.pendulumLeft, player1.pendulumRight, player1.fieldSpell, player2.m1, player2.m2, player2.m3, player2.m4, player2.m5, player2.s1, player2.s2, player2.s3, player2.s4, player2.s5, player2.pendulumLeft, player2.pendulumRight, player2.fieldSpell, linkLeft, linkRight, player1.skillCard, player2.skillCard];
+			if (hand) {
+				for (var k = 0; k < player1.hand_arr.length; k++) {
+					cards.push(player1.hand_arr[k]);
+				}
 			}
-		}
-		if (grave) {
-			for (k = 0; k < player1.grave_arr.length; k++) {
-				cards.push(player1.grave_arr[k]);
+			if (grave) {
+				for (k = 0; k < player1.grave_arr.length; k++) {
+					cards.push(player1.grave_arr[k]);
+				}
 			}
-		}
-		for (var i = 0; i < arr.length;i ++) {
-			if(arr[i] != "Question")
-				continue;
-			
-			no_question = false;
-			
-			for (var j = 0; j < cards.length; j++) {
-				if (cards[j]) {
-					if (cards[j].data("face_down")) { // Question
-						continue;
-					}
-					//if (cards[j].data("cardfront").data("treated_as") == arr[i] && !cards[j].data("face_down")) {
-					if (cards[j].data("cardfront").data("treated_as") == arr[i] || like && cards[j].data("cardfront").data("treated_as") && cards[j].data("cardfront").data("treated_as").indexOf(arr[i]) >= 0) {
-						return true;
+			for (var i = 0; i < arr.length;i ++) {
+				if(arr[i] != "Question")
+					continue;
+				
+				no_question = false;
+				
+				for (var j = 0; j < cards.length; j++) {
+					if (cards[j]) {
+						if (cards[j].data("face_down")) { // Question
+							continue;
+						}
+						//if (cards[j].data("cardfront").data("treated_as") == arr[i] && !cards[j].data("face_down")) {
+						if (cards[j].data("cardfront").data("treated_as") == arr[i] || like && cards[j].data("cardfront").data("treated_as") && cards[j].data("cardfront").data("treated_as").indexOf(arr[i]) >= 0) {
+							return true;
+						}
 					}
 				}
 			}
+			return no_question;
 		}
-		return no_question;
+		// Original function content.
+		else
+		{
+			var cards = [player1.m1, player1.m2, player1.m3, player1.m4, player1.m5, player1.s1, player1.s2, player1.s3, player1.s4, player1.s5, player1.pendulumLeft, player1.pendulumRight, player1.fieldSpell, player2.m1, player2.m2, player2.m3, player2.m4, player2.m5, player2.s1, player2.s2, player2.s3, player2.s4, player2.s5, player2.pendulumLeft, player2.pendulumRight, player2.fieldSpell, linkLeft, linkRight, player1.skillCard, player2.skillCard];
+			if (hand) {
+				for (var k = 0; k < player1.hand_arr.length; k++) {
+					cards.push(player1.hand_arr[k]);
+				}
+			}
+			if (grave) {
+				for (k = 0; k < player1.grave_arr.length; k++) {
+					cards.push(player1.grave_arr[k]);
+				}
+			}
+			for (var i = 0; i < arr.length;i ++) {
+				for (var j = 0; j < cards.length; j++) {
+					if (cards[j]) {
+						if (cards[j].data("face_down")) { // Question
+							continue;
+						}
+						//if (cards[j].data("cardfront").data("treated_as") == arr[i] && !cards[j].data("face_down")) {
+						if (cards[j].data("cardfront").data("treated_as") == arr[i] || like && cards[j].data("cardfront").data("treated_as") && cards[j].data("cardfront").data("treated_as").indexOf(arr[i]) >= 0) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
 	}
 	
 	
@@ -3373,7 +3414,13 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		resend();
 	}
 
-	window.Eyal_cardMenuE = function() {	
+	window.Eyal_cardMenuE = function()
+	{	
+		if(!Eyal_unlockCardMechanics)
+		{
+			cardMenuE();
+			return;
+		}
 		if (!Duelist()) {
 			menu_reason = "You are not a duelist";
 			return;
@@ -4454,83 +4501,6 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 		}
 		toHandFromBanished(player, data);
 		toHandFromField(player, data);
-	}
-	
-	
-	window.startDuel = function(data) {
-		console.log('startDuel');
-		console.log(data)
-		hideDim();
-		duel_active = true;
-		links = data.links;
-		tag_duel = !!data.tag_duel;
-		speed = (data.format == "su" || data.format == "sr");
-		rush = !!data.rush || (data.format == "ru" || data.format == "rr");
-		solo = (data.format == "so");
-		rated = data.rated;
-		match_type = data.type;
-		duelFormat = data.format;
-		automaticTourney = !!data.automatic_tourney;
-		if (data.type == "m") {
-			match = true;
-		}
-		lifepointMax = 8000;
-		if (tag_duel && duelId >= 9943145) {
-			lifepointMax = 16000;
-		}
-		if (speed) {
-			lifepointMax = 4000;
-			if (tag_duel) {
-				lifepointMax = 6000;
-			}
-		}
-		duelId = data.id;
-		lastDuelId = data.id;
-		duelHash = data.hash;
-		deckData = data;
-		player1 = new Player();
-		player2 = new Player();
-		players = [player1, player2];
-		turn_player = player1; // it has to be someone
-		if (tag_duel) {
-			player3 = new Player();
-			player4 = new Player();
-			if (data.player3.username == username) {
-				switchDuelists(data, "player1", "player3");
-				
-				// because player1 and player3 share grave, banished, and field, it's only given to player1 in the data. so, when you switch the data, you need to give those back to player1, since it's player1's grave, banished, and field that's used in initDuel
-				data.player1.grave = data.player3.grave;
-				data.player1.banished = data.player3.banished;
-				data.player1.field = data.player3.field;
-				
-				turn_player = player3; // makes sure correct rps backs show
-			}
-			if (switched) {
-				switchDuelists(data, "player3", "player4");
-			}
-			player3.username = data.player3.username;
-			player4.username = data.player4.username;
-			player3.opponent = player2;
-			player4.opponent = player1;
-			player3.skill = data.player3.skill;
-			player4.skill = data.player4.skill;
-			player3.still_good = data.player3.still_good;
-			player4.still_good = data.player4.still_good;
-		}
-		player1.username = data.player1.username;
-		player2.username = data.player2.username;
-		player1.opponent = player2;
-		player2.opponent = player1;
-		player1.skill = data.player1.skill;
-		player2.skill = data.player2.skill;
-		player1.start = data.player1.start;
-		player2.start = data.player2.start;
-		player1.still_good = data.player1.still_good;
-		player2.still_good = data.player2.still_good;
-		if (zooming) {
-			//unZoom();
-		}
-		turnCount = ~~data.turnCount;
 	}
 
 	window.Connect = function()
@@ -5665,7 +5635,7 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				dp[abc].label = "Banish random";
 		}
 		
-		if(isED && !wasAdded)
+		if(isED && !wasAdded && Eyal_unlockCardMechanics)
 		{
 			if (countFaceDownExtraDeckCards(player1) >= 1)
 				dp.push({label:"Banish random FD",data:"Banish random ED card FD"});
@@ -8827,9 +8797,11 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				
 			let cards = [];
 			
+			let optimizing_arr = [];
+			
 			for(let abc=0;abc < import_arr.length;abc++)
 			{
-				let passcode = import_arr[abc].substring(0, import_arr[abc].indexOf(" "));
+				let passcode = parseInt(import_arr[abc].substring(0, import_arr[abc].indexOf(" ")));
 				
 				let limit = parseInt(import_arr[abc].substring(import_arr[abc].indexOf(" "), import_arr[abc].length))
 				
@@ -8839,30 +8811,23 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				
 				// Not dealing with anime variants of cards...
 				else if(limit == -1)
-						continue;
+					continue;
 				
-				for (var i = 0; i < window.Eyal_old_cards.length; i++)
+				optimizing_arr[passcode] = limit;
+			}
+			
+			for(let abc=0;abc < Eyal_old_cards.length;abc++)
+			{
+				let passcode = parseInt(Eyal_old_cards[abc].serial_number);
+					
+				if(typeof optimizing_arr[passcode] !== "undefined")
 				{
-					if (window.Eyal_old_cards[i] == null || window.Eyal_old_cards[i].name == null) {
-						continue;
-					}
+					let card = jQuery.extend({}, window.Eyal_old_cards[abc]);
 					
-					// Eyal282 here, this property breaks banlists and gives error "One or more cards are no longer available"
+					card.tcg_limit = optimizing_arr[passcode];
+					card.ocg_limit = optimizing_arr[passcode];
 					
-					if(window.Eyal_old_cards[i].hidden)
-						continue;
-						
-					// Second part is to ensure we get no duplicates, while keeping alt arts.
-					else if (window.Eyal_old_cards[i].serial_number == passcode && Eyal_old_cards.find(x => x.id == window.Eyal_old_cards[i].id))
-					{
-						// Create a clone, don't touch original!!!
-						let card = jQuery.extend({}, window.Eyal_old_cards[i]);
-						
-						card.tcg_limit = limit;
-						card.ocg_limit = limit;
-						
-						Cards.push(card);
-					}
+					Cards.push(card);
 				}
 			}
 		}
@@ -8875,13 +8840,15 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			
 			Cards.length = 0;
 			
-			let import_arr = [].concat(window.Eyal_MDCardpool);
+			let import_arr = [].concat(Eyal_MDCardpool);
 				
 			let cards = [];
 			
+			let optimizing_arr = [];
+			
 			for(let abc=0;abc < import_arr.length;abc++)
 			{
-				let passcode = import_arr[abc].substring(0, import_arr[abc].indexOf(" "));
+				let passcode = parseInt(import_arr[abc].substring(0, import_arr[abc].indexOf(" ")));
 				
 				let limit = parseInt(import_arr[abc].substring(import_arr[abc].indexOf(" "), import_arr[abc].length))
 				
@@ -8891,30 +8858,23 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				
 				// Not dealing with anime variants of cards...
 				else if(limit == -1)
-						continue;
+					continue;
 				
-				for (var i = 0; i < window.Eyal_old_cards.length; i++)
+				optimizing_arr[passcode] = limit;
+			}
+			
+			for(let abc=0;abc < Eyal_old_cards.length;abc++)
+			{
+				let passcode = parseInt(Eyal_old_cards[abc].serial_number);
+					
+				if(typeof optimizing_arr[passcode] !== "undefined")
 				{
-					if (window.Eyal_old_cards[i] == null || window.Eyal_old_cards[i].name == null) {
-						continue;
-					}
+					let card = jQuery.extend({}, window.Eyal_old_cards[abc]);
 					
-					// Eyal282 here, this property breaks banlists and gives error "One or more cards are no longer available"
+					card.tcg_limit = optimizing_arr[passcode];
+					card.ocg_limit = optimizing_arr[passcode];
 					
-					if(window.Eyal_old_cards[i].hidden)
-						continue;
-						
-					// Second part is to ensure we get no duplicates, while keeping alt arts.
-					else if (window.Eyal_old_cards[i].serial_number == passcode && Eyal_old_cards.find(x => x.id == window.Eyal_old_cards[i].id))
-					{
-						// Create a clone, don't touch original!!!
-						let card = jQuery.extend({}, window.Eyal_old_cards[i]);
-						
-						card.tcg_limit = limit;
-						card.ocg_limit = limit;
-						
-						Cards.push(card);
-					}
+					Cards.push(card);
 				}
 			}
 		}
@@ -8927,13 +8887,15 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 			
 			Cards.length = 0;
 			
-			let import_arr = [].concat(window.Eyal_EdisonCardpool);
+			let import_arr = [].concat(Eyal_EdisonCardpool);
 				
 			let cards = [];
 			
+			let optimizing_arr = [];
+			
 			for(let abc=0;abc < import_arr.length;abc++)
 			{
-				let passcode = import_arr[abc].substring(0, import_arr[abc].indexOf(" "));
+				let passcode = parseInt(import_arr[abc].substring(0, import_arr[abc].indexOf(" ")));
 				
 				let limit = parseInt(import_arr[abc].substring(import_arr[abc].indexOf(" "), import_arr[abc].length))
 				
@@ -8943,30 +8905,23 @@ function injectFunction(potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL,
 				
 				// Not dealing with anime variants of cards...
 				else if(limit == -1)
-						continue;
+					continue;
 				
-				for (var i = 0; i < window.Eyal_old_cards.length; i++)
+				optimizing_arr[passcode] = limit;
+			}
+			
+			for(let abc=0;abc < Eyal_old_cards.length;abc++)
+			{
+				let passcode = parseInt(Eyal_old_cards[abc].serial_number);
+					
+				if(typeof optimizing_arr[passcode] !== "undefined")
 				{
-					if (window.Eyal_old_cards[i] == null || window.Eyal_old_cards[i].name == null) {
-						continue;
-					}
+					let card = jQuery.extend({}, window.Eyal_old_cards[abc]);
 					
-					// Eyal282 here, this property breaks banlists and gives error "One or more cards are no longer available"
+					card.tcg_limit = optimizing_arr[passcode];
+					card.ocg_limit = optimizing_arr[passcode];
 					
-					if(window.Eyal_old_cards[i].hidden)
-						continue;
-						
-					// Second part is to ensure we get no duplicates, while keeping alt arts.
-					else if (window.Eyal_old_cards[i].serial_number == passcode && Eyal_old_cards.find(x => x.id == window.Eyal_old_cards[i].id))
-					{
-						// Create a clone, don't touch original!!!
-						let card = jQuery.extend({}, window.Eyal_old_cards[i]);
-						
-						card.tcg_limit = limit;
-						card.ocg_limit = limit;
-						
-						Cards.push(card);
-					}
+					Cards.push(card);
 				}
 			}
 		}

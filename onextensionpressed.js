@@ -1,6 +1,29 @@
 
 
 document.addEventListener('DOMContentLoaded', function () {
+
+	let checkbox = document.querySelector('input[id="unlockCardMechanics"]');
+	
+	if(checkbox.id == 'unlockCardMechanics')
+	{
+		chrome.storage.sync.get(['unlockCardMechanics'], function(result) {
+		
+			// Default to true..
+			if(result && result.unlockCardMechanics == false)
+				checkbox.checked = false;
+			
+			else
+				checkbox.checked = true;
+
+		});
+		
+		checkbox.addEventListener('change', function () {
+			chrome.storage.sync.set({unlockCardMechanics: checkbox.checked}, function() {});
+		});
+	}
+});
+
+document.addEventListener('DOMContentLoaded', function () {
 	let checkbox = document.querySelector('input[id="potOfSwitch"]');
 	
 	if(checkbox.id == 'potOfSwitch')
