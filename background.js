@@ -2018,6 +2018,9 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 			player.all_cards_arr[abc].find('.content:first').off("contextmenu");
 			player.all_cards_arr[abc].find('.content:first').contextmenu(function()
 			{
+				if(!Eyal_unlockCardMechanics)
+					return;
+				
 				event.preventDefault();
 				
 				let card = player.all_cards_arr[abc];
@@ -2063,10 +2066,34 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 							getConfirmation("Send all cards to the GY?", "", Eyal_ZeusYes);	
 						break;
 						
+						case "Black Rose Dragon":
+						case "Final Destiny":
+						case "Ojama Delta Hurricane!!":
+							getConfirmation("Send all cards to the GY?", "", Eyal_OjamaDeltaYes);	
+						break;
+						
 						case "Raigeki":
 						case "Dark Hole":
 						case "Cyber Jar":
+						case "Torrential Tribute":
+						case "Giant Trap Hole":
+						case "Time Wizard":
 							getConfirmation("Send all monsters to the GY?", "", Eyal_RaigekiYes);	
+						break;
+						
+						// In GY only
+						case "Elemental HERO Absolute Zero":
+						case "Prank-Kids Battle Butler":
+						case "Mirrorjade the Iceblade Dragon":
+						case "Volcanic Scattershot":
+							if(Eyal_findCardByIdReal(card.data("id")))
+							{
+								
+							}
+							else
+							{
+								getConfirmation("Send all monsters to the GY?", "", Eyal_RaigekiYes);	
+							}
 						break;
 						
 						case "Harpie's Feather Duster":
@@ -2247,6 +2274,18 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 			
 			if(window.Eyal_zeusCard.data("id") == card.data("id"))
 				continue;
+
+			cardMenuClicked(card, "To GY");
+		}
+	}
+	
+	window.Eyal_OjamaDeltaYes = function()
+	{
+		Eyal_CheckPlayerZones(true);
+
+		for(let abc=0;abc < Eyal_Player1Field.length;abc++)
+		{
+			let card = Eyal_Player1Field[abc].card;
 
 			cardMenuClicked(card, "To GY");
 		}
@@ -3418,7 +3457,8 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 	{	
 		if(!Eyal_unlockCardMechanics)
 		{
-			cardMenuE();
+			let boundFunc = cardMenuE.bind(this);
+			boundFunc();
 			return;
 		}
 		if (!Duelist()) {
@@ -4996,7 +5036,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 					
 					if(data.indexOf("SS ATK") >= 0 || data.indexOf("SS DEF") >= 0 || data == "Normal Summon" || (data == "Set monster" && isIn(card, player1.hand_arr) >= 0))
 					{
-						if(Eyal_IsCardKaiju(card))
+						if(Eyal_unlockCardMechanics && Eyal_IsCardKaiju(card))
 						{
 							startChooseMonsterZones2();
 						}
@@ -7704,9 +7744,12 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		$("#deck_hidden").off("contextmenu");
 		$("#deck_hidden").contextmenu(function()
 		{
+			if(!Eyal_unlockCardMechanics)
+				return;
+			
 			event.preventDefault();
 			
-			getConfirmation("Secretly check your Deck?", "This will not shuffle it, and order is random.<br>It won't work unless you viewed Deck once this duel.",  Eyal_SecretDeckYes, undefined, true);
+			getConfirmation("Secretly check your Deck?", "This will not shuffle it, and order is random.<br>It won't work unless you viewed Deck once this duel.", Eyal_SecretDeckYes, undefined, true);
 		});
 	}
 	
@@ -7715,6 +7758,9 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		$("#extra_hidden").off("contextmenu");
 		$("#extra_hidden").contextmenu(function()
 		{
+			if(!Eyal_unlockCardMechanics)
+				return;
+			
 			event.preventDefault();
 			
 			getConfirmation("Secretly check your Extra Deck?", "It won't work unless you viewed Extra Deck once this duel.", Eyal_SecretExtraDeckYes, undefined, true);
@@ -7726,6 +7772,9 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		$("#banished_hidden").off("contextmenu");
 		$("#banished_hidden").contextmenu(function()
 		{
+			if(!Eyal_unlockCardMechanics)
+				return;
+			
 			event.preventDefault();
 			
 			if(window.Eyal_excavatedArr.length > 0)
@@ -7740,6 +7789,9 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		$("#grave_hidden").off("contextmenu");
 		$("#grave_hidden").contextmenu(function()
 		{
+			if(!Eyal_unlockCardMechanics)
+				return;
+			
 			event.preventDefault();
 			
 			if(window.player1.grave_arr.length > 0)
@@ -7750,10 +7802,13 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 	}
 	
 	if($("#opp_grave_hidden").length > 0)
-	{
+	{		
 		$("#opp_grave_hidden").off("contextmenu");
 		$("#opp_grave_hidden").contextmenu(function()
 		{
+			if(!Eyal_unlockCardMechanics)
+				return;
+			
 			event.preventDefault();
 			
 			if(window.player1.opponent.grave_arr.length > 0)
