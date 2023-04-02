@@ -1,3 +1,4 @@
+# This file does not exist in the extension files, instead it's loaded through jQuery fetch.
 11714098 3 N Not_HT Not_Floodgate
 12694768 3 N Not_HT Not_Floodgate
 13026402 3 R Not_HT Not_Floodgate
