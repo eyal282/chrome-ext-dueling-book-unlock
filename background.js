@@ -33,7 +33,9 @@ if(femaleCards.length == 0)
 	
 		let eyal_arr = [];
 		
-		eyal_arr = _res.split('\r\n');
+		_res = _res.replaceAll("\r", "");
+		
+		eyal_arr = _res.split('\n');
 		
 		for(let abc=0;abc < eyal_arr.length;abc++)
 		{
@@ -52,7 +54,9 @@ if(edisonCards.length == 0)
 	
 		let eyal_arr = [];
 		
-		eyal_arr = _res.split('\r\n');
+		_res = _res.replaceAll("\r", "");
+		
+		eyal_arr = _res.split('\n');
 		
 		for(let abc=0;abc < eyal_arr.length;abc++)
 		{
@@ -71,7 +75,9 @@ if(animationCards.length == 0)
 	
 		let eyal_arr = [];
 		
-		eyal_arr = _res.split('\r\n');
+		_res = _res.replaceAll("\r", "");
+		
+		eyal_arr = _res.split('\n');
 		
 		for(let abc=0;abc < eyal_arr.length;abc++)
 		{
@@ -1123,7 +1129,6 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				Eyal_count++;
 				Unique_arr.push(window.GYwarning[abc].data("id"));
 			}
-			console.log("Success")	
 			
 			if(Eyal_count > 0)
 			{
@@ -1166,8 +1171,6 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				Eyal_count++;
 				Unique_arr.push(window.GYwarning[abc].data("id"));
 			}
-			
-			console.log("Success")
 			
 			
 			if(Eyal_count > 0)
@@ -2215,8 +2218,6 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 			
 			foundAny = true;
 			
-			console.log(card);
-			
 			if(card.data("cardfront").data("monster_color") == "Token")
 			{
 				foundToken = true;
@@ -2682,7 +2683,6 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				break;
 			}
 			
-			console.log(player1.grave_arr[abc].data("cardfront").data("name"))
 			if(player1.grave_arr[abc].data("cardfront").data("name") == "Treeborn Frog")
 			{
 				treebornFound = true;
@@ -2700,7 +2700,6 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		
 		if(playerST.length > 0)
 		{
-			console.log("Fail")
 			treebornFound = false;
 		}
 		
@@ -7685,9 +7684,13 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 			window.Eyal_TrueAllCardsArr.push(player1.all_cards_arr[abc]);
 		}
 		
-		// Remove duplicates.
+		// Remove duplicates. This doesn't appear to like using the original variable.
 		// Remember not to use m.cardfront.id, only m.id, as cardfront ID is not unique 
-		window.Eyal_TrueAllCardsArr = [...new Map(window.Eyal_TrueAllCardsArr.map((m) => [m.data("id"), m])).values()];
+		let dummy_arr = [];
+		dummy_arr = [...new Map(window.Eyal_TrueAllCardsArr.map((m) => [m.data("id"), m])).values()];
+		window.Eyal_TrueAllCardsArr = [].concat(dummy_arr);
+		
+		
 	}
 	
 	window.Eyal_SecretDeckYes = function()
@@ -8277,7 +8280,6 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		
 		for(let abc=0;abc < player1.banished_arr.length;abc++)
 		{
-			console.log(player1.banished_arr[abc]);
 			if(!player1.banished_arr[abc].data("face_down") && player1.banished_arr[abc].data("cardfront").data("name") == "Aleister the Invoker")
 				aleister = player1.banished_arr[abc];
 		}
@@ -8351,8 +8353,10 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
             }
 		}
 
-		// Remove duplicates.
-		cardsToSummon = [...new Map(cardsToSummon.map((m) => [m.data("cardfront").data("name"), m])).values()];
+		// Remove duplicates. This doesn't appear to like using the original variable.
+		let dummy_arr = [];
+		dummy_arr = [...new Map(cardsToSummon.map((m) => [m.data("cardfront").data("name"), m])).values()];
+		cardsToSummon = [].concat(dummy_arr);
 
 		if (cardsToSummon.length < 4)
 		{
@@ -8557,7 +8561,6 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 					let realZone = Eyal_STZones[abc].zone - 1;
 					
 					window.Eyal_RealImpermColumns[realZone] = true;
-					console.log(Eyal_RealImpermColumns);
 					break;
 				};
 			}
@@ -8730,9 +8733,17 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 	}
 	window.Eyal_cardPoolChanged = function()
 	{
+		for(let abc=0;abc < $('#my_banlists .banlists2 .cardpool_sel')[0].length;abc++)
+		{
+			if($('#my_banlists .banlists2 .cardpool_sel').val() == $('#my_banlists .banlists2 .cardpool_sel')[0][abc].value)
+			{
+				$('#my_banlists .banlists2 .cardpool_sel').selectedIndex(abc)
+			}
+		}
+		
 		if($('#my_banlists .banlists2 .cardpool_sel').val() == "Eyal_clipboard")
 		{
-			getConfirmation("Make sure you have a .conf list of EDO Pro in your clipboard.", "Important notes:<br>1. Every 10% progress the decklist will save itself<br>2. You cannot stop this action, and it will lag you.<br>3. It will not delete the existing cardpool, only add cards.", Eyal_ClipboardBanlistYes, undefined, true);
+			getConfirmation("Make sure you have a .conf list of EDO Pro in your clipboard.", "Important notes:<br>1. This won't delete existing cards<br>2. Slow PCs will freeze until done.", Eyal_ClipboardBanlistYes, undefined, true);
 			$('#my_banlists .banlists2 .cardpool_sel').selectedIndex(0);
 		}
 	}
@@ -8747,80 +8758,170 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 	{
 		let str = await navigator.clipboard.readText();
 		
+		str = str.replaceAll("\r", "");
 		let import_arr = str.split("\n");
 		
 		let cards = [];
+			
+		if(str.length == 0)
+			return;
 		
-		let lastPercent = 0;
-		
-		console.log("Percents of completion for clipboard banlist importing:");
-		for (let abc = 0;abc < import_arr.length;abc++)
+		if ($('#my_banlists .banlists2 .banlist_name_txt').val() == "")
 		{
-			curPercent = Math.floor((parseFloat(abc) / import_arr.length) * 100.0);
+			errorE("Name is blank");
+			return;
+		}
 		
-			if(lastPercent < curPercent)
-			{
-				if(curPercent % 10 == 0)
-				{
-					saveBanlistE();
-					
-					await Eyal_delay(1);
-				}
-				console.log("Progress: " + curPercent + "%");
-				
-				lastPercent = curPercent;
-			}
-			import_arr[abc] = import_arr[abc].trim();
+		// Maybe it's changed in the meanwhile...
+		let final_name = $('#my_banlists .banlists2 .banlist_name_txt').val()
 			
-			if(isNaN(import_arr[abc].charAt(0)))
+		let optimizing_arr = [];
+		
+		for(let abc=0;abc < import_arr.length;abc++)
+		{
+			let passcode = parseInt(import_arr[abc].substring(0, import_arr[abc].indexOf(" ")));
+			
+			let limit = parseInt(import_arr[abc].substring(import_arr[abc].indexOf(" "), import_arr[abc].length))
+			
+			// For inventory based cardpools
+			if(limit > 3)
+				limit = 3;
+			
+			// Not dealing with anime variants of cards...
+			else if(limit == -1)
 				continue;
 			
-			let splittedLine = import_arr[abc].split(" ", 2);
-			let cardId = parseInt(splittedLine[0]);
-			let cardLimit = splittedLine[1];
-			
-			if(isNaN(cardLimit))
-				continue;
-			
-			cardLimit = parseInt(cardLimit);
-			
-			if(cardLimit != 0 && cardLimit != 1 && cardLimit != 2 && cardLimit != 3)
-				continue;
-			
-			for(let i=0;i < Cards.length;i++)
-			{
-				if(parseInt(Cards[i].serial_number) == cardId)
-				{
-					let cardfront = Eyal_lookupCard(Cards[i].name);
-					
-					if(cardfront == undefined)
-						break;
+			optimizing_arr[passcode] = limit;
+		}
 
-					switch(parseInt(cardLimit))
-					{
-						case 0:
-							addToBanlist(cardfront, $('.forbidden_section .banlist_cards'));
-						break;
-						
-						case 1:
-							addToBanlist(cardfront, $('.limited_section .banlist_cards'));
-						break;
-						
-						case 2:
-							addToBanlist(cardfront, $('.semi_limited_section .banlist_cards'));
-						break;
-						
-						case 3:
-							addToBanlist(cardfront, $('.unlimited_section .banlist_cards'));
-						break;
-					}
+		let forbidden_arr = [];
+		let limited_arr = [];
+		let semi_limited_arr = [];
+		let unlimited_arr = [];
+		
+		for(let abc=0;abc < Cards.length;abc++)
+		{
+			// Eyal282 here, this property breaks banlists and gives error "One or more cards are no longer available"		
+			if(Cards[abc].hidden)
+				continue;
+			
+			let passcode = parseInt(Cards[abc].serial_number);
+			
+			if(typeof Cards[abc].serial_number !== "undefined" && typeof optimizing_arr[passcode] !== "undefined")
+			{
+				let limit = optimizing_arr[passcode];
+				
+				if(limit != 0 && limit != 1 && limit != 2 && limit != 3)
+					continue;
+				
+				switch(parseInt(limit))
+				{
+					case 0:
+						forbidden_arr.push({name: Cards[abc].name, id: Cards[abc].id});
+					break;
+					
+					case 1:
+						limited_arr.push({name: Cards[abc].name, id: Cards[abc].id});
+					break;
+					
+					case 2:
+						semi_limited_arr.push({name: Cards[abc].name, id: Cards[abc].id});
+					break;
+					
+					case 3:
+						unlimited_arr.push({name: Cards[abc].name, id: Cards[abc].id});
+					break;
 				}
 			}
 		}
+				
 		
-		saveBanlistE();
+		// Remove duplicates. This doesn't appear to like using the original variable.
+		let dummy_arr = [];
+		dummy_arr = [...new Map(forbidden_arr.map((m) => [m.name, m])).values()];
+		forbidden_arr = [].concat(dummy_arr);
+
+		// Remove duplicates. This doesn't appear to like using the original variable.
+		dummy_arr = [];
+		dummy_arr = [...new Map(limited_arr.map((m) => [m.name, m])).values()];
+		limited_arr = [].concat(dummy_arr);
+
+		// Remove duplicates. This doesn't appear to like using the original variable.
+		dummy_arr = [];
+		dummy_arr = [...new Map(semi_limited_arr.map((m) => [m.name, m])).values()];
+		semi_limited_arr = [].concat(dummy_arr);
+		
+		// Remove duplicates. This doesn't appear to like using the original variable.
+		dummy_arr = [];
+		dummy_arr = [...new Map(unlimited_arr.map((m) => [m.name, m])).values()];
+		unlimited_arr = [].concat(dummy_arr);
+
+		for(let abc=0;abc < forbidden_arr.length;abc++)
+		{
+			forbidden_arr[abc] = forbidden_arr[abc].id;
+		}
+		for(let abc=0;abc < limited_arr.length;abc++)
+		{
+			limited_arr[abc] = limited_arr[abc].id;
+		}
+		
+		for(let abc=0;abc < semi_limited_arr.length;abc++)
+		{
+			semi_limited_arr[abc] = semi_limited_arr[abc].id;
+		}
+		
+		for(let abc=0;abc < unlimited_arr.length;abc++)
+		{
+			unlimited_arr[abc] = unlimited_arr[abc].id;
+		}
+		
+		Send({
+			"action":"Save banlist",
+			"id":banlistId,
+			"name":final_name,
+			"extends":~~$('.banlists2 .extends_sel').val(),
+			//"official":~~$('.banlists2 .official_cb').is(":checked"),
+			"cardpool":~~$('.banlists2 .cardpool_sel').val(),
+			"tcg":~~$('.banlists2 .tcg_cb').is(":checked"),
+			"ocg":~~$('.banlists2 .ocg_cb').is(":checked"),
+			"min":$('.banlists2 .min_date_cb').is(":checked") ? $('.banlists2 .min_date_dp').val() : null,
+			"max":$('.banlists2 .max_date_cb').is(":checked") ? $('.banlists2 .max_date_dp').val() : null,
+			"forbidden":{
+				"cards":forbidden_arr,
+			},
+			"limited":{
+				"cards":limited_arr,
+			},
+			"semi_limited":{
+				"cards":semi_limited_arr,
+			},
+			"unlimited":{
+				"cards":unlimited_arr,
+			}
+		});
+		showDim();
+		unsavedChanges = false;
+		
+		
+		banlistBackE();
 	}
 	
+	window.Eyal_FastAddToBanlist = function(card, div)
+	{
+		if (div.parents('.banlist_sections').find('.cardfront').filter(function()
+		{
+			return $(this).data("id") == card.data("id");
+		}).length > 0)
+		{
+			return;
+		}
+		
+		var c = new CardFront();
+		c.copyCard(card);
+		div.append(c);
+		c.setCardName();
+		
+	}
 	window.Eyal_DeckConstructorCardPoolChanged = async function()
 	{
 		let currentVal = $(`#search .custom_cb option[value='${$("#search .custom_cb").val()}']`)
@@ -8875,7 +8976,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 			{
 				let passcode = parseInt(Eyal_old_cards[abc].serial_number);
 					
-				if(typeof optimizing_arr[passcode] !== "undefined")
+				if(typeof Eyal_old_cards[abc].serial_number !== "undefined" && typeof optimizing_arr[passcode] !== "undefined")
 				{
 					let card = jQuery.extend({}, window.Eyal_old_cards[abc]);
 					
@@ -8922,7 +9023,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 			{
 				let passcode = parseInt(Eyal_old_cards[abc].serial_number);
 					
-				if(typeof optimizing_arr[passcode] !== "undefined")
+				if(typeof Eyal_old_cards[abc].serial_number !== "undefined" && typeof optimizing_arr[passcode] !== "undefined")
 				{
 					let card = jQuery.extend({}, window.Eyal_old_cards[abc]);
 					
@@ -8969,7 +9070,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 			{
 				let passcode = parseInt(Eyal_old_cards[abc].serial_number);
 					
-				if(typeof optimizing_arr[passcode] !== "undefined")
+				if(typeof Eyal_old_cards[abc].serial_number !== "undefined" && typeof optimizing_arr[passcode] !== "undefined")
 				{
 					let card = jQuery.extend({}, window.Eyal_old_cards[abc]);
 					
@@ -9012,8 +9113,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				continue;
 			}
 			
-			// Eyal282 here, this property breaks banlists and gives error "One or more cards are no longer available"
-			
+			// Eyal282 here, this property breaks banlists and gives error "One or more cards are no longer available"		
 			if(Cards[i].hidden)
 				continue;
 				
@@ -9049,7 +9149,8 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		window.Eyal_MDCardpool = null;
 		
 		$.get('https://raw.githubusercontent.com/eyal282/chrome-ext-dueling-book-unlock/master/md_cardpool.txt', function(data) {
-			window.Eyal_MDCardpool = data.split("\r\n");
+			data = data.replaceAll("\r", "");
+			window.Eyal_MDCardpool = data.split("\n");
 		}, 'text');
 
 	}
@@ -9070,7 +9171,6 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		// won't eat the excavated cards before DB responds to the banish request.
 		if (actionsQueue.length == 0 && !window.Eyal_waitingForAction && (window.Eyal_excavatedArr[abc].data("face_down") || isIn(window.Eyal_excavatedArr[abc], player1.banished_arr) < 0))
 		{
-			console.log("Spice");
 			window.Eyal_excavatedArr.splice(abc, 1);
 			abc--;
 		}
