@@ -2116,8 +2116,6 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		getInput(`Choose new ${originalStat.toUpperCase()}:`, `x = old ${originalStat.toUpperCase()}, y = current ${originalStat.toUpperCase()}`, defaultStat, 999, Eyal_editStatsYes);
 	}
 	
-	Eyal_createEditStatsButtons();
-	
 	window.Eyal_createEditStatsButtons = function()
 	{
 		let Eyal_globalList = document.querySelectorAll("eyal")
@@ -2133,6 +2131,8 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 			}
 		}
 	}
+	
+	Eyal_createEditStatsButtons();
 	
 	window.Eyal_swapCardMenuForPlayer = function(player)
 	{
@@ -2628,7 +2628,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				clearInterval(jarInterval)
 				window.Eyal_excavatedArr = [];
 				
-				TweenMax.globalTimeScale(1);
+				//TweenMax.globalTimeScale(1);
 				return;
 			}
 			
@@ -3633,12 +3633,15 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 			else if(Eyal_messageStartsWith(Eyal_message, "/help3") || Eyal_messageStartsWith(Eyal_message, "/cmds3"))
 			{
 				addLine("/rps ==> Randomly creates rock paper scissors selections.");
-				addLine("/gy ==> Silently shows either player's GY.");
 				addLine("/ld ==> Silently shows every Light and Dark in your GY.");
 				addLine("/card Skill ==> Find's a card named Skill, or abbreviated Skill");
 				addLine("/calc (10 + 10) * 20 ==> Silently calculates, prints result.");
 				addLine("/calc2 (10 + 10) * 20 ==> calculates, forces you to say formula = result.");
-				
+				addLine("/unext ==> Depracated. Right click banish pile to unexcavate.");
+				addLine("/unexb ==> Depracated. Right click banish pile to unexcavate.");
+				addLine("/unexg ==> Depracated. Right click banish pile to unexcavate.");
+				addLine("/snipe ==> Deprecated. In order to snipe face-down cards, right click them");
+				addLine("/gy ==> Deprecated. In order to silently show a GY, right click it.);
 				return;
 			}
 			else if(Eyal_messageStartsWith(Eyal_message, "/help2") || Eyal_messageStartsWith(Eyal_message, "/cmds2"))
@@ -3647,18 +3650,15 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				
 				addLine("/ex5 ==> Excavate 5 cards");
 				addLine("/excavate5 ==> Excavate 5 cards");
-				addLine("/unext ==> Depracated. Right click banish pile to unexcavate.");
-				addLine("/unexb ==> Depracated. Right click banish pile to unexcavate.");
-				addLine("/unexg ==> Depracated. Right click banish pile to unexcavate.");
 				addLine("/search Skill D ==> Add a card that has 'Skill D' in name from your deck");
 				addLine("/dig Eldlixir*Golden Land ==> View deck for only cards with 'Eldlixir' or 'Golden Land' in name.");
+				addLine("/pend <card name> ==> Conducts a pendulum mechanic with a given card in deck");
 				addLine("/send Skill D ==> Mill a card that has 'Skill D' in name from your deck");
 				addLine("/st Skill D ==> Places a card in S&T zone that has 'Skill D' in name from your deck");
 				addLine("/ban Skill D ==> Banish a card that has 'Skill D' in name from your deck");
 				addLine("/banfd Skill D ==> Banish a card face-down that has 'Skill D' in name from your deck");
 				addLine("/atk Eldlich ==> SS in ATK a card that has 'Eldlich' in name from your deck");
 				addLine("/def Eldlich ==> SS in DEF a card that has 'Eldlich' in name from your deck");
-				addLine("/snipe ==> Deprecated. In order to snipe face-down cards, right click them");
 				
 				Eyal_message = Eyal_message.substring(0, 5);
 				
