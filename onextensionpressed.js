@@ -23,6 +23,28 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 });
 
+
+document.addEventListener('DOMContentLoaded', function () {
+
+	let checkbox = document.querySelector('input[id="silentCommands"]');
+	
+	if(checkbox.id == 'silentCommands')
+	{
+		chrome.storage.sync.get(['silentCommands'], function(result) {
+			if(result && result.silentCommands == true)
+				checkbox.checked = true;
+			
+			else
+				checkbox.checked = false;
+
+		});
+		
+		checkbox.addEventListener('change', function () {
+			chrome.storage.sync.set({silentCommands: checkbox.checked}, function() {});
+		});
+	}
+});
+
 document.addEventListener('DOMContentLoaded', function () {
 	let checkbox = document.querySelector('input[id="potOfSwitch"]');
 	

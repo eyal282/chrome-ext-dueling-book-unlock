@@ -3,9 +3,7 @@ chrome.webNavigation.onCommitted.addListener(function(e) {
 }, {url: [{hostSuffix: 'duelingbook.com'}]});
 
 
-const femaleCards = [];
 const edisonCards = [];
-const animationCards = [];
 
 function Eyal_ReadFile(_path, _cb)
 {
@@ -27,27 +25,6 @@ function Eyal_ReadFile(_path, _cb)
 	});
 };
 
-if(femaleCards.length == 0)
-{
-	Eyal_ReadFile("./censored_card_names.txt", function(_res){
-	
-		let eyal_arr = [];
-		
-		_res = _res.replaceAll("\r", "");
-		
-		eyal_arr = _res.split('\n');
-		
-		for(let abc=0;abc < eyal_arr.length;abc++)
-		{
-			if(eyal_arr[abc][0] == ';')
-				continue;
-			
-			femaleCards.push(eyal_arr[abc]);
-		}
-		
-	});
-}
-
 if(edisonCards.length == 0)
 {
 	Eyal_ReadFile("./edison_cardpool.txt", function(_res){
@@ -64,27 +41,6 @@ if(edisonCards.length == 0)
 				continue;
 			
 			edisonCards.push(eyal_arr[abc]);
-		}
-		
-	});
-}
-
-if(animationCards.length == 0)
-{
-	Eyal_ReadFile("./masterduel_cards_with_animations.txt", function(_res){
-	
-		let eyal_arr = [];
-		
-		_res = _res.replaceAll("\r", "");
-		
-		eyal_arr = _res.split('\n');
-		
-		for(let abc=0;abc < eyal_arr.length;abc++)
-		{
-			if(eyal_arr[abc][0] == ';')
-				continue;
-			
-			animationCards.push(eyal_arr[abc]);
 		}
 		
 	});
@@ -200,7 +156,7 @@ function performFastInjection(bSecond)
 					
 					chrome.scripting.executeScript(
 					{
-						args: [potOfSwitch, femOfSwitch, musicSliderDL, limitedCardsSound, cardLogging, randomRPS, bSecond, femaleCards, animationCards],
+						args: [potOfSwitch, femOfSwitch, musicSliderDL, limitedCardsSound, cardLogging, randomRPS, bSecond],
 						target: {tabId: tabs[0].id},
 						world: "MAIN", // Main world is mandatory to edit other website functions
 						func: fastInjectFunction,
@@ -219,12 +175,17 @@ function performInjection()
 		{
 			if(typeof tabs[0].id !== 'undefined')
 			{
-				chrome.storage.sync.get(['unlockCardMechanics', 'potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'musicSliderMD', 'limitedCardsSound', 'cardLogging'], function(result)
+				chrome.storage.sync.get(['unlockCardMechanics', 'silentCommands', 'potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'musicSliderMD', 'limitedCardsSound', 'cardLogging'], function(result)
 				{
 					let unlockCardMechanics = true;
 					
 					if(result && result.unlockCardMechanics == false)
 						unlockCardMechanics = false;
+					
+					let silentCommands = false;
+					
+					if(result && result.silentCommands == true)
+						silentCommands = true;
 					
 					let potOfSwitch = false;
 					
@@ -269,7 +230,7 @@ function performInjection()
 					
 					chrome.scripting.executeScript(
 					{
-						args: [unlockCardMechanics, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, limitedCardsSound, cardLogging, femaleCards, animationCards, edisonCards],
+						args: [unlockCardMechanics, silentCommands, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, limitedCardsSound, cardLogging, edisonCards],
 						target: {tabId: tabs[0].id},
 						world: "MAIN", // Main world is mandatory to edit other website functions
 						func: injectFunction,
@@ -303,7 +264,7 @@ function performCensorInjection()
 					
 					chrome.scripting.executeScript(
 					{
-						args: [potOfSwitch, femOfSwitch, femaleCards],
+						args: [potOfSwitch, femOfSwitch],
 						target: {tabId: tabs[0].id},
 						world: "MAIN", // Main world is mandatory to edit other website functions
 						func: censorInjectFunction,
@@ -430,7 +391,7 @@ function fastInjectFunction(potOfSwitch, femOfSwitch, musicSliderDL, limitedCard
 	}
 }
 
-function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
+function censorInjectFunction(potOfSwitch, femOfSwitch)
 {
 	window.loadThumbnails = function(data) {
 		$('#' + currentLabel + ' .prev_thumb_btn').hide();
@@ -588,7 +549,7 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 		}
 		
 	
-		if(femOfSwitch && femaleCards.length > 0)
+		if(femOfSwitch && typeof Eyal_femaleCards !== "undefined")
 		{
 			for(let abc=0;abc < Eyal_cards.length;abc++)
 			{
@@ -598,7 +559,7 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 				if(Eyal_cards[abc].data("cardfront"))
 					Eyal_cards[abc] = Eyal_cards[abc].data("cardfront");
 				
-				if(femaleCards.indexOf(Eyal_cards[abc].data("name")) != -1)
+				if(Eyal_femaleCards.indexOf(Eyal_cards[abc].data("name")) != -1)
 				{
 					Eyal_cards[abc].removeImage();
 				}
@@ -639,7 +600,7 @@ function censorInjectFunction(potOfSwitch, femOfSwitch, femaleCards)
 	Eyal_checkCensors();
 }
 
-function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, limitedCardsSound, cardLogging, femaleCards, animationCards, edisonCards)
+function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, limitedCardsSound, cardLogging, edisonCards)
 {
 	// Expression eval. What is this black magic? How does it even work?
 	// https://www.npmjs.com/package/math-expression-evaluator/v/2.0.2?activeTab=code
@@ -650,12 +611,16 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 	}
 	
 	window.Eyal_unlockCardMechanics = unlockCardMechanics;
+	window.Eyal_silentCommands = silentCommands;
 	window.Eyal_EdisonCardpool = edisonCards;
 	
 	window.Eyal_ActionQueueDoNothing = function()
 	{
 		return;
 	}
+	
+	if(typeof Eyal_checkHeartbeat !== "undefined")
+		console.log("Beat");
 	
 	window.Eyal_OnKeyPressed = function(evt)
 	{
@@ -2055,9 +2020,6 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		Eyal_tryStartMusicAsync(bForceContinue);
 	}
 	
-	if(typeof Eyal_checkHeartbeat !== "undefined")
-		console.log("Beat");
-	
 	window.Eyal_EditCardStatsMenu = function()
 	{
 		let objId = $(this).attr("id");
@@ -2077,6 +2039,48 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		
 		switch(card.data("cardfront").data("name"))
 		{
+			case "Borreload Savage Dragon":
+			
+				if(originalStat == "atk")
+				{
+					Eyal_CheckPlayerZones(true);
+					
+					let Eyal_cards;
+					
+					if(card.data("controller") == player1)
+					{
+						Eyal_cards = Eyal_Player1STZones;
+					}
+					else
+					{
+						Eyal_cards = Eyal_Player2STZones;
+					}
+					
+					let foundCard = null;
+					
+					for(let abc=0;abc < Eyal_cards.length;abc++)
+					{
+						if(Eyal_cards[abc].card.data("cardfront").data("monster_color") != "Link")
+							continue;
+						
+						if(foundCard != null)
+						{
+							foundCard = -1;
+							break;
+						}
+						else
+						{
+							foundCard = Eyal_cards[abc].card;
+						}
+					}
+					
+					if(foundCard != -1 && foundCard != null && !isNaN(foundCard.data("cardfront").data("atk")))
+					{
+						defaultStat = `x + ${foundCard.data("cardfront").data("atk")} / 2`;
+					}
+				}
+			break;
+			
 			// A bit dangerous, as a player may have the highest link already in GY.
 			/*
 			case "Accesscode Talker":
@@ -2097,8 +2101,25 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				defaultStat = `x + (1000 * ${highestLink})`;
 			break;
 			*/
+			
+			case "Eater of Millions":
+				let count = 0;
+				let Eyal_arr = [].concat(player1.banished_arr, player2.banished_arr);
+				
+				for(let abc=0;abc < Eyal_arr.length;abc++)
+				{
+					if(Eyal_arr[abc].data("face_down"))
+						count++;
+				}
+				defaultStat = `100 * ${count}`;
+			break;
+			
 			case "Gren Maju Da Eiza":
-				defaultStat = `400 * ${player1.banished_arr.length}`;
+				defaultStat = `400 * ${card.data("controller").banished_arr.length}`;
+			break;
+			
+			case "Tragoedia":
+				defaultStat = `600 * ${card.data("controller").hand_arr.length}`;
 			break;
 			
 			case "Swordsoul Supreme Sovereign - Chengying":
@@ -2118,6 +2139,111 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 	
 	window.Eyal_createEditStatsButtons = function()
 	{
+		// Edit stats on replays.
+		if(typeof getInput === "function" && typeof addButton === "function" && typeof hideDisplayBoxes === "function" && $("#input").length == 0)
+		{
+			$(document.body).append($(`<div id="input">
+				<span class="title_txt">Choose new ATK:</span>
+				<div class="body_txt selectable">x = old ATK, y = current ATK</div>
+				<input class="input_txt" type="text">
+				<div class="ok_btn">
+					<img src="https://images.duelingbook.com/svg/ok_btn_up.svg" alt="OK">
+				</div>
+				<div class="cancel_btn">
+					<img src="https://images.duelingbook.com/svg/cancel_btn_up.svg" alt="Cancel">
+				</div>
+			</div>`));
+			
+			addButton($('#input .ok_btn'), inputOK);
+			addButton($('#input .cancel_btn'), cancelCallback);
+			
+			hideDisplayBoxes();
+			
+			$('html > head').append($(`<style>input
+			{
+				writing-mode: horizontal-tb !important;
+				font-style: ;
+				font-variant-ligatures: ;
+				font-variant-caps: ;
+				font-variant-numeric: ;
+				font-variant-east-asian: ;
+				font-variant-alternates: ;
+				font-weight: ;
+				font-stretch: ;
+				font-size: ;
+				font-family: ;
+				font-optical-sizing: ;
+				font-kerning: ;
+				font-feature-settings: ;
+				font-variation-settings: ;
+				text-rendering: auto;
+				color: fieldtext;
+				letter-spacing: normal;
+				word-spacing: normal;
+				line-height: normal;
+				text-transform: none;
+				text-indent: 0px;
+				text-shadow: none;
+				display: inline-block;
+				text-align: start;
+				appearance: auto;
+				-webkit-rtl-ordering: logical;
+				cursor: text;
+				background-color: field;
+				margin: 0em;
+				padding: 1px 2px;
+				border-width: 2px;
+				border-style: inset;
+				border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
+				border-image: initial;
+			}</style>`));
+			
+			$('html > head').append($(`<style>#msg, #confirm, #confirm2, #input, #combo
+			{
+				left: 212px;
+				top: 170px;
+				width: 600px;
+				height: 300px;
+				font-family: "Arial Rounded MT Bold";
+				background-image: url('https://images.duelingbook.com/svg/msg_background.svg');
+				background-size: contain;
+				/* background-size: cover; */
+				z-index: 45;
+			}</style>`));
+		
+			$('html > head').append($(`<style>.textinput
+			{
+				font-family: "Arial";
+				font-size: 12px !important;
+				padding-left: 3.5px;
+				background-color: white;
+				border-left: 1px solid #C9CBCC;
+				border-top: 1px solid #6D6F70;
+				border-right: 1px solid #C9CBCC;
+				border-bottom: 1px solid #D3D5D6;
+				font-weight: normal;
+				line-height: 20px;
+				pointer-events: none;
+				/* overflow: hidden; */
+				color: black;
+				/* white-space: nowrap; */
+			}</style>`));
+			
+			$('#input .input_txt').on('input', function(){
+				var regex = $(this).data("regex");
+				if ($(this).val().match(regex)) {
+					$(this).val($(this).val().replace(regex, ""));
+				}
+			});
+			
+			$('textarea').on('input blur', function(){
+					$(this).text($(this).val());
+				});
+				$('.textarea').addClass("selectable");
+				$('input').click(function(){ // for super_cb
+					$(this).focus();
+				});
+		}
 		let Eyal_globalList = document.querySelectorAll("eyal")
 
 		for (let abc = 0; abc < Eyal_globalList.length; abc++)
@@ -2126,7 +2252,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 			
 			if(objId.startsWith("Eyal_new_"))
 			{	
-				$(Eyal_globalList[abc]).off("click");
+				$(Eyal_globalList[abc]).off("mouseup");
 				$(Eyal_globalList[abc]).mouseup(Eyal_EditCardStatsMenu);
 			}
 		}
@@ -2185,6 +2311,11 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 						case "Nibiru, the Primal Being":
 							window.Eyal_nibiruCard = card;
 							getConfirmation("Tribute all of your monsters?", "This will force you to say how much ATK/DEF you tributed.", Eyal_NibiruYes);	
+						break;
+						
+						
+						case "Card Destruction":
+							getConfirmation("Replace hand?", "Discard hand, draw hand.", Eyal_CardDestructionYes);	
 						break;
 						
 						case "Morphing Jar":
@@ -2569,6 +2700,24 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		}
 	}
 	
+	window.Eyal_CardDestructionYes = function()
+	{
+		if(player1.main_arr.length < player1.hand_arr.length)
+			return;
+		
+		let count = 0;
+		
+		for(let abc=0;abc < player1.hand_arr.length;abc++)
+		{
+			cardMenuClicked(player1.hand_arr[abc], "To GY");
+			count++;
+		}
+		
+		for(let abc=0;abc < count;abc++)
+		{
+			cardMenuClicked(player1.main_arr[abc], "Draw card");
+		}
+	}
 	window.Eyal_MorphingJarYes = function()
 	{
 		if(player1.main_arr.length < 5)
@@ -2848,8 +2997,11 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
     
     window.Eyal_exitViewing = function(e, b)
     {
-		$("#ed_select").hide();
-		Eyal_ed_select.stop();
+		if($("#ed_select").length > 0)
+		{
+			$("#ed_select").hide();
+			Eyal_ed_select.stop();
+		}
 		
 		Eyal_GenerateTrueAllCardsArray();
 		
@@ -2920,7 +3072,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 
 		preview.copyCard(cardfront);
 
-		if(femOfSwitch && femaleCards.indexOf(cardfront.data("name")) != -1)
+		if(femOfSwitch && Eyal_femaleCards.indexOf(cardfront.data("name")) != -1)
 			preview.removeImage();
 		
 		if(cardfront.data("effect").search(/(This card is an Evolve Monster)/i) != -1)
@@ -3641,7 +3793,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				addLine("/unexb ==> Depracated. Right click banish pile to unexcavate.");
 				addLine("/unexg ==> Depracated. Right click banish pile to unexcavate.");
 				addLine("/snipe ==> Deprecated. In order to snipe face-down cards, right click them");
-				addLine("/gy ==> Deprecated. In order to silently show a GY, right click it.);
+				addLine("/gy ==> Deprecated. In order to silently show a GY, right click it.");
 				return;
 			}
 			else if(Eyal_messageStartsWith(Eyal_message, "/help2") || Eyal_messageStartsWith(Eyal_message, "/cmds2"))
@@ -3712,7 +3864,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				
 				return;
 			}
-			if(Eyal_messageStartsWith(Eyal_message, "/ex"))
+			else if(Eyal_messageStartsWith(Eyal_message, "/ex"))
 			{
 				Eyal_message = Eyal_message.replace(/\/ex/i, "")
 				
@@ -3741,7 +3893,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				
 				return;
 			}
-			if(Eyal_messageStartsWith(Eyal_message, "/unext") || Eyal_messageStartsWith(Eyal_message, "/unexb") || Eyal_messageStartsWith(Eyal_message, "/unexg"))
+			else if(Eyal_messageStartsWith(Eyal_message, "/unext") || Eyal_messageStartsWith(Eyal_message, "/unexb") || Eyal_messageStartsWith(Eyal_message, "/unexg"))
 			{
 				for(let abc=0;abc < window.Eyal_excavatedArr.length;abc++)
 				{
@@ -3768,7 +3920,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				
 				return;
 			}
-			if(Eyal_messageStartsWith(Eyal_message, "/rps"))
+			else if(Eyal_messageStartsWith(Eyal_message, "/rps"))
 			{
 				let arr = ["Rock", "Paper", "Scissors"];
 				
@@ -3781,7 +3933,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				
 				return;
 			}
-			if(Eyal_messageStartsWith(Eyal_message, "/gy"))
+			else if(Eyal_messageStartsWith(Eyal_message, "/gy"))
 			{
 				let count = 0;
 				
@@ -3909,7 +4061,24 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				
 				return;
 			}
+			
+			if(Eyal_silentCommands)
+			{
+				let fakeData = {};
+				fakeData.fake = true;
+				fakeData.username = username;
+				fakeData.play = "Duel message";
+				fakeData.message = Eyal_message; 
+				
+				// fake duelResponse returns true if a command was consumed.
+				if(duelResponse(fakeData))
+				{
+					// Return immediately, don't send the action over to DB.
+					return;
+				}
+			}
 		}
+			
 
 		action = JSON.stringify(data, function(k,v){
 			if (v == null) {
@@ -4173,7 +4342,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				if(isIn(card, player1.extra_arr) >= 0)
 					menu.push({label:"Set",data:"Set monster"});
 			}
-			else if (hasAvailableMonsterZones(player1) && !card.data("isXyzMaterial") && card.data("cardfront").data("effect").search(/Special Summon this card/i) != -1 && !isMonster(player1, card))
+			else if (!card.data("face_down") && hasAvailableMonsterZones(player1) && !card.data("isXyzMaterial") && card.data("cardfront").data("effect").search(/Special Summon this card/i) != -1 && !isMonster(player1, card))
 			{
 				menu.push({ label: "S. Summon ATK", data: "SS ATK" });
 				menu.push({ label: "S. Summon DEF", data: "SS DEF" });
@@ -4353,8 +4522,9 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 					//if (findEffect("bottom", true, true, true) && isIn(card, player1.extra_arr) < 0 || findCard(["Small World"])) {
 					//if (findEffect("bottom", true, true, true) && isIn(card, player1.extra_arr) < 0) {
 						
-					// Eyal282 here, I allowed extra deck face up to be returned to bottom because adamancipators.
-					if (findEffect("bottom") && (isIn(card, player1.extra_arr) < 0 || !card.data("face_down"))) {
+					
+					if (allowToBottom || findEffect("bottom") || Eyal_findCardReal(["Tearlament"], true, true, true) && isIn(card, player1.extra_arr) < 0)
+					{
 						menu.push({label:"To Bottom of Deck",data:"To B Deck"});
 					}
 				}
@@ -4844,6 +5014,165 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		playSound(ChatOutbound);
 		await Eyal_delay(0.7);
 	}
+	
+	window.toDeck = function(player, data)
+	{
+		var rotY = 180 + ABOUT_ZERO;
+		var revealing = true;
+		var card = getFieldCard(player, data);
+		if (card) {
+			revealing = false;
+			card = removeCard(player, data);
+		}
+		else {
+			card = removeFromHand(player, data);
+			if (card) {
+				revealing = false;
+			}
+		}
+		if (!card) {
+			card = removeFromBanished(player, data, false);
+		}
+		if (!card) {
+			card = removeCard(player, data);
+		}
+		if (!card) {
+			card = removeFromDeck(player.opponent, data); // Opponent's Deck (partial)
+		}
+		if (card.data("face_down")) {
+			revealing = false;
+			card.data("face_down", false);
+		}
+		if (data.discreet) {
+			revealing = false;
+		}
+		updateController(card.data("owner"), card);
+		$('#field').append(card);
+		if (data.play.indexOf("FU") >= 0) {
+			card.data("face_up", true);
+			rotY = ABOUT_ZERO;
+		}
+		if (data.play == "To B Deck") 
+		{
+			if (revealing) 
+			{
+				revealAndToBottomOfDeck(card.data("controller"), card, data);
+				return;
+			}
+			else {
+				card.data("owner").main_arr.push(card);
+				addDeckChildren(player);
+			}
+		}
+		else if (data.play == "To B Deck 2") {
+			player.opponent.main_arr.push(card);
+			updateController(player.opponent, card);
+		}
+		else if (data.play.indexOf("To T Deck 2") == 0) {
+			player.opponent.main_arr.unshift(card);
+			updateController(player.opponent, card);
+			TweenMax.set(card, {"z":player.opponent.main_arr.length + 30});
+		}
+		else {
+			if (revealing) {
+				revealAndToTopOfDeck(card.data("controller"), card, data);
+				return;
+			}
+			else {
+				card.data("owner").main_arr.unshift(card);
+				TweenMax.set(card, {"z":card.getDeckZ()});
+			}
+		}
+		
+		
+		let cardsInteracted = [];
+		
+		let rotYOffset = -45;
+		
+		if(card.data("owner") == player1.opponent)
+			rotYOffset = 45;
+		
+		if(data.play == "To B Deck")
+		{
+			var mX = 0;
+			
+			for (let abc = card.data("owner").main_arr.length - 1; abc > -1; abc--)
+			{
+				
+				TweenMax.to(card.data("owner").main_arr[abc], easeSeconds / 2, {rotationY: rotY + rotYOffset, left:card.data("owner").deckX + 10 + mX});
+				
+				cardsInteracted.push({card: card.data("owner").main_arr[abc], mX: mX, rotY: rotY});
+				
+				mX += card.data("owner").mX;
+				
+			}
+		}
+		TweenMax.to(card, easeSeconds, {left:card.data("controller").deckX, top:card.data("controller").deckY, scale:0.1485, rotation:card.data("controller").rot, rotationY:rotY, ease:Linear.easeNone, onComplete:function(){
+			
+			for(let abc=0;abc < cardsInteracted.length;abc++)
+			{
+				TweenMax.to(cardsInteracted[abc].card, easeSeconds / 2, {rotationY: cardsInteracted[abc].rotY, left: card.data("owner").deckX + cardsInteracted[abc].mX});
+			}
+			
+			shiftDeck(card.data("controller"));
+			endAction();
+		}});
+	}
+	
+	window.revealAndToBottomOfDeck = function(player, card, data)
+	{
+		let cardsInteracted = [];
+		
+		let rotYOffset = -45;
+		
+		if(card.data("owner") == player1.opponent)
+			rotYOffset = 45;
+		
+		if(data.play == "To B Deck")
+		{
+			var mX = 0;
+			
+			for (let abc = card.data("owner").main_arr.length - 1; abc > -1; abc--)
+			{
+				// Eyal282 here
+				var rotY = 180 + ABOUT_ZERO;
+				
+				if (card.data("owner").main_arr[abc].data("face_up") || card.data("owner").deck_face_up) {
+					if (card.data("owner").main_arr[abc].data("cardfront").data("initialized")) {
+						rotY = ABOUT_ZERO;
+					}
+				}
+				
+				TweenMax.to(card.data("owner").main_arr[abc], easeSeconds / 2, {rotationY: rotY + rotYOffset, left:card.data("owner").deckX + 10 + mX});
+				
+				cardsInteracted.push({card: card.data("owner").main_arr[abc], mX: mX, rotY: rotY});
+				
+				mX += card.data("owner").mX;
+				
+			}
+		}
+		
+		$('#field').append(card);
+		TweenMax.set(card, {"z":0});
+		card.data("cardfront").reinitialize(data.card);
+		TweenMax.to(card, easeSeconds, {left:512, top:280, scale:0.5, rotation:0, rotationY:ABOUT_ZERO, onComplete:function(){ 
+			previewCard(card);
+			TweenMax.to(card, easeSeconds, {left:player.deckX, top:player.deckY, scale:0.1485, rotation:player.rot, rotationY:180 + ABOUT_ZERO, delay:0.5, onStart:function(){
+				player.main_arr.push(card);
+				addDeckChildren(player);
+			}, onComplete:function(){ 
+				for(let abc=0;abc < cardsInteracted.length;abc++)
+				{
+					TweenMax.to(cardsInteracted[abc].card, easeSeconds / 2, {rotationY: cardsInteracted[abc].rotY, left: card.data("owner").deckX + cardsInteracted[abc].mX});
+				}
+				
+				shiftDeck(player);
+				endAction();
+			}});
+		}});
+		playSound(Reveal);
+	}
+
 	window.declare = function(player, data)
 	{
 		var spark_mc = createSVGAnimation(spark, "spark", 110, 110, 24, spark.json);
@@ -5059,6 +5388,16 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		}
 		
 		
+		if(window.Eyal_debug && typeof data === "Object")
+		{
+			if(typeof window.Eyal_debug == "string")
+			{
+				if(data.username == window.Eyal_debug || data.username == player1.username)
+					console.log(data);
+			}
+			else
+				console.log(data);
+		}
 		// Send the data to the original function, it is a garbage idea to edit the original function...
 		handleData(e);
 	}
@@ -6539,179 +6878,40 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 	}
 
 
-	window.duelResponse = function(data) {
-		
-		// Not working..
-		if (window.Eyal_Debug)
+	if(typeof window.Eyal_originalDuelResponse === "undefined")
+	{
+		Function.prototype.clone = function()
 		{
-		
-			console.log("Eyal_duelResponse:");
-			console.log(data);
-		}
-			//duelActions++;
-			//saveGamestate(duelActions);
-		
-		if (SOFT_PLAYS.indexOf(data.play) < 0) {
-			$('.red_target').hide();
-			$('.blue_target').hide();
-			$('.green_target').hide();
-		}
-		var player;
-		if (data.username == player1.username) {
-			player = player1;
-		}
-		else if (data.username == player2.username) {
-			player = player2;
-		}
-		else if (tag_duel && data.username == player3.username) {
-			player = player3;
-		}
-		else if (tag_duel && data.username == player4.username) {
-			player = player4;
-		}
-		if (actionsQueue.length > 0) {
-			//console.log("actionsQueue.length = " + actionsQueue.length);
-			for (var i = 0; i < actionsQueue.length; i++) {
-				//console.log("actionsQueue[i] = " + actionsQueue[i]);
+			var that = this;
+			var temp = function temporary() { return that.apply(this, arguments); };
+			for(var key in this) {
+				if (this.hasOwnProperty(key)) {
+					temp[key] = this[key];
+				}
 			}
-		}
+			return temp;
+		};
 		
-		if (data.owner && data.id) {
-			actionsQueue.push(function(){
-				//updateOwner(getPlayer(data.owner), getDuelCard(data.id));
-				updateOwner(getCurrentOwner(data.owner), getDuelCard(data.id)); // the owner is always the active_player on a team
-				endAction();
-			});
-		}
+		window.Eyal_originalDuelResponse = window.duelResponse.clone();
+	}
+	
+	window.duelResponse = function(data)
+	{
+		if(!data.fake)
+			Eyal_originalDuelResponse(data);
 		
-		switch (data.play) {
-			case "Rejoin duel":
-				rejoinDuel(player, data);
-				break;
-			case "Add watcher":
-				addWatcher(data);
-				break;
-			case "Remove watcher":
-				removeWatcher(data);
-				enableAdminE();
-				break;
-			case "Watcher message":
-				watchChatPrint(data);
-				break;
-			case "Siding":
-				// Eyal282 here
-				window.
-				initSiding(data);
-				addLine(escapeHTML(data.message));
-				break;
-			case "Siding with cards":
-				initSiding(data);
-				addLine(escapeHTML(data.message));
-				createSidingHoles(data);
-				initSideCardFromData(data);
-				break;
-			case "Begin next duel":
-				beginNextDuel(data);
-				break;
-			case "Back to RPS":
-				exitRPS();
-				exitTP();
-				exitDueling();
-				exitSiding();
-				duel_active = true;
-				if (duelist) {
-					updateActive(true);
-				}
-				else {
-					$('#draw_btn').hide();
-						$('#mulligan_btn').hide();
-				}
-				initRPSStart();
-				gameLossSound = getGameLossSound();
-				gameWinSound = getGameWinSound();
-				if (switched) {
-					if (tag_duel) {
-						switchDuelists(data, "player1", "player2", "player3", "player4");
-					}
-					else {
-						switchDuelists(data, "player1", "player2");
-					}
-				}
-				else if (tag_duel && data.player3.username == username) {
-					switchDuelists(data, "player1", "player3");
-				}
-				deckData = data;
-				if (data.starting) {
-					if (match_type == "m") {
-						addLine("Starting new match");
-					}
-					else if (match_type == "n") {
-						addLine("Starting new single");
-					}
-				}
-				$('#draw_btn').val("Offer Draw");
-				initSleeves();
-				$('.all_good').hide();
-				break;
-			case "Admit defeat":
-				hideDim();
-				admittedDefeat(player, data);
-				break;
-			case "Left duel":
-				leftDuel(player, data);
-				break;
-			case "Quit duel":
-				quitDuel(player, data);
-				break;
-			case "Game loss":
-			case "Match loss":
-				gamelossed(player, data);
-				break;
-			case "Loss":
-				loss(player, data);
-				break;
-			case "Cancel game":
-				gameCanceled(data);
-				break;
-			case "Frozen":
-				if (data.targeted_username) {
-					addLine(data.targeted_username + " has been frozen");
-				}
-				else {
-					addLine(data.username + " has been frozen");
-				}
-				break;
-			case "Beginner":
-				if (data.targeted_username) {
-					addLine(data.targeted_username + " has been set as a beginner");
-				}
-				else {
-					addLine(data.username + " has been set as a beginner");
-				}
-				break;
-			case "RPS":
-				determineWinner(data);
-				break;
-			case "Typing":
-				typingE(player);
-				break;
+		switch(data.play)
+		{
 			case "Duel message":
-				if(!data.fake)
-					duelChatPrint(data);
-				
-				if (player) {
-					player.stopTyping();
-				}
 				if (duelist && data.username == username)
 				{
-					duelChatTimerE();
 					
 					// Eyal282, check if this condition we're in prevents an opponent from being able to search for us.
 					
 					// if the index of a string is 0, that string starts the message.
 					
 					let Eyal_message = data.message;
-
+					
 					if(Eyal_messageStartsWith(Eyal_message, "/snipe"))
 					{
 						let opponentArr = [];
@@ -6736,8 +6936,10 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 						
 						Eyal_snipeByArray(opponentArr);
 						
+						return true;
+						
 					}
-					else if(Eyal_messageStartsWith(Eyal_message, "/search") || Eyal_messageStartsWith(Eyal_message, "/send") || Eyal_messageStartsWith(Eyal_message, "/ban") || Eyal_messageStartsWith(Eyal_message, "/atk") || Eyal_messageStartsWith(Eyal_message, "/def") || Eyal_messageStartsWith(Eyal_message, "/st") || Eyal_messageStartsWith(Eyal_message, "/pend"))
+					else if(!Eyal_messageStartsWith(Eyal_message, "/banish") && (Eyal_messageStartsWith(Eyal_message, "/search") || Eyal_messageStartsWith(Eyal_message, "/send") || Eyal_messageStartsWith(Eyal_message, "/ban") || Eyal_messageStartsWith(Eyal_message, "/atk") || Eyal_messageStartsWith(Eyal_message, "/def") || Eyal_messageStartsWith(Eyal_message, "/st") || Eyal_messageStartsWith(Eyal_message, "/pend")))
 					{
 						let msg = data.message;
 						
@@ -6827,8 +7029,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 						{
 							addLine("Error: Use 4+ characters of the name")
 						}
-						// /banish11 doesn't work and sends chat messages unfortunately...
-						else if(!Eyal_messageStartsWith(Eyal_message, "/banish"))
+						else
 						{
 							cardMenuClicked(new Card(), "View deck");
 							
@@ -6884,6 +7085,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 											s5_select.play();
 											
 											// Note to self: any cardMenuClicked hides this.
+											
 											$('#ed_select').show();
 											Eyal_ed_select.play();
 										}
@@ -6906,176 +7108,22 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 								}
 							}, 50); 
 						}
+						
+						return true;
 					}
 				}
 				break;
-			case "Reset deck":
-			case "Swap cards":
-				hideDim();
-				$('#reset_btn').disable(false);
-				updateSideCards(data);
-				checkSidingCards();
-				break;
-			case "Pause game":
-				pauseGame(player, data);
-				break;
-			case "Resume game":
-				resumeGame(data);
-				break;
-			case "Reset game":
-				actionsQueue.push(function(){
-					resetGame(player, data);
-				});
-				break;
-			case "Call admin":
-				addLine(escapeHTML(player.username) + " has called a judge");
-				$('#call_admin_btn').disable(true);
-				awaiting_admin = true;
-				if (duelist && player.username == username) {
-					$('#call_admin_btn').disable(false);
-					$('#call_admin_btn').val("Cancel Call");
-				}
-				break;
-			case "Cancel call":
-				addLine(escapeHTML(player.username) + " cancelled the call");
-				awaiting_admin = false;
-				if (duelist) {
-					$('#call_admin_btn').disable(false);
-					$('#call_admin_btn').val("Call Judge");
-				}
-				break;
-			case "Offer draw":
-				addLine(escapeHTML(player.username) + " has made a draw offer");
-				if (isPlayer2(player.username)) {
-					$('#draw_btn').val("Accept Draw");
-					return;
-				}
-				$('#draw_btn').val("Revoke Draw");
-				break;
-			case "Revoke draw":
-				addLine(escapeHTML(player.username) + " has revoked the draw offer");
-				$('#draw_btn').val("Offer Draw");
-				break;
-			case "Accept draw":
-				acceptDraw(player, data);
-				break;
-			case "Offer rematch":
-				addLine(escapeHTML(player.username) + " offered a rematch");
-				if (isPlayer2(player.username)) {
-					$('#rematch_btn').val("Accept Rematch");
-					return;
-				}
-				$('#rematch_btn').val("Revoke Rematch");
-				break;
-			case "Revoke rematch":
-				addLine(escapeHTML(player.username) + " has revoked the rematch offer");
-				$('#rematch_btn').val("Offer Rematch");
-				break;
-			case "Accept rematch":
-				used_allotted_rematch = 1;
-				$('#rematch_btn').val("Offer Rematch");
-				break;
-			case "Done siding":
-				if (!duelist && player == Player1()) {
-					$('#done_siding1').show();
-				}
-				else if (duelist && player.username == username) {
-					clearHoles();
-					$('#done_siding_btn').hide();
-					$('#done_siding1').show();
-				}
-				else if (player == Player2()) {
-					$('#done_siding2').show();
-				}
 				
-				// Eyal282 here.
+			case "Done siding":
 				playSound(Decided)
 				break;
-			case "Pick first":
-				pickFirstResponse(data);
 				
-				// Eyal282 here.
+			case "Pick first":
 				window.Eyal_TrueAllCardsArr = [];
 				window.Eyal_DigString = undefined;
 				break;
-			case "Target card":
-				actionsQueue.push(function(){
-					targetCardResponse(player, data); // when not using actionsQueue, it messed up replays
-				});
-				break;
-				break;
-			case "Stop viewing":
-				stopViewing(data);
-				break;
-			case "Shuffle deck":
-				actionsQueue.push(function(){
-					shuffleDeck(player, data);
-				});
-				break;
-			case "Shuffle hand":
-				actionsQueue.push(function(){
-					shuffleHand2(player, data);
-				});
-				break;
-			case "Permission event":
-				permissionEvent(data);
-				break;
-			case "Permission granted":
-				removePermission();
-				break;
-			case "Permission denied":
-				addLine(escapeHTML(data.username) + " denied permission");
-				if (isPlayer1(data.username)) {
-					if ($('#status1 .status_txt').text() == "Waiting for permission") {
-						$('#status1 .status_txt').text("");
-					}
-				}
-				else if (isPlayer2(data.username)) {
-					if ($('#status2 .status_txt').text() == "Waiting for permission") {
-						$('#status2 .status_txt').text("");
-					}
-				}
-				break;
-			case "Start turn":
-				actionsQueue.push(function(){
-					turn_player = getPlayer(data.username);
-					startTurn();
-				});
-				break;
-			case "Enter DP":
-				actionsQueue.push(function(){
-					enterDP();
-				});
-				break;
-			case "Enter SP":
-				actionsQueue.push(function(){
-					enterSP();
-				});
-				break;
-			case "Enter M1":
-				actionsQueue.push(function(){
-					enterM1();
-				});
-				break;
-			case "Enter BP":
-				actionsQueue.push(function(){
-					enterBP();
-				});
-				break;
-			case "Enter M2":
-				actionsQueue.push(function(){
-					enterM2();
-				});
-				break;
-			case "Enter EP":
-				actionsQueue.push(function(){
-					enterEP();
-				});
-				break;
+				
 			case "End turn":
-				actionsQueue.push(function(){
-					endTurn(data);
-				});
 				
 				let Eyal_list = document.querySelectorAll("div")
 
@@ -7089,460 +7137,9 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 				window.Eyal_RealImpermColumns = [false, false, false, false, false];
 				
 				break;
-			case "Add counter":
-				actionsQueue.push(function(){
-					addCounter(player, data);
-				});
-				break;
-			case "Remove counter":
-				actionsQueue.push(function(){
-					removeCounter(player, data);
-				});
-				break;
-			case "Die":
-				actionsQueue.push(function(){
-					dieRoll(player, data);
-				});
-				break;
-			case "Coin":
-				actionsQueue.push(function(){
-					coinFlip(player, data);
-				});
-				break;
-			case "Life points":
-				actionsQueue.push(function(){
-					updateLifePoints(player, data);
-				});
-				break;
-			case "View deck":
-				if (duelist && player.username == username) {
-					if (seen_deck == false) {
-						//seen_deck = true;
-						viewingE(data.viewing, data);
-					}
-				}
-				showViewing(data);
-				break;
-			case "View GY":
-			case "View GY 2":
-			case "View Banished":
-			case "View Banished 2":
-			case "View ED 2":
-			case "View Graveyard":
-			case "View Extra Deck":
-			case "View Opponent's Banished":
-			case "View Opponent's Graveyard":
-			case "View Opponent's Public Extra Deck":
-				showViewing(data);
-				break;
-			case "View ED":
-				if (duelist && player.username == username) {
-					if (seen_extra == false) {
-						seen_extra = true;
-						viewingE("Extra Deck", data);
-					}
-				}
-				showViewing(data);
-				break;
-			case "Show deck":
-			case "Show hand":
-			case "Show ED":
-			case "Show Extra Deck":
-				actionsQueue.push(function(){
-					showE(data.viewing, data);
-				});
-				break;
-			case "Reveal":
-			case "Reveal card from hand":
-			case "Reveal card from deck":
-			case "Reveal from Extra":
-				actionsQueue.push(function(){
-					reveal(player, data);
-				});
-				break;
-			case "Move":
-				actionsQueue.push(function(){
-					move(player, data);
-				});
-				break;
-			case "Overlay":
-				actionsQueue.push(function(){
-					overlay(player, data);
-				});
-				break;
-			case "Attach":
-				actionsQueue.push(function(){
-					attach(player, data);
-				});
-				break;
-			case "Detach":
-				actionsQueue.push(function(){
-					detach(player, data);
-				});
-				break;
-			case "Attack":
-				actionsQueue.push(function(){
-					attack(player, data);
-				});
-				break;
-			case "Attack directly":
-				actionsQueue.push(function(){
-					attackDirectly(player, data);
-				});
-				break;
-			case "Draw card":
-				actionsQueue.push(function(){
-					drawCard(player, data);
-				});
-				break;
-			case "To hand":
-			case "To hand 2":
-			case "To hand from deck":
-			case "To hand from field":
-			case "To hand from grave":
-			case "To hand from Extra":
-			case "To hand from banished":
-				actionsQueue.push(function(){
-					toHand(player, data);
-				});
-				break;
-			case "To B Deck":
-			case "To B Deck 2":
-			case "To T Deck":
-			case "To T Deck 2":
-			case "To T Deck FU":
-			case "To T Deck 2 FU": // Parasite Paracide
-				actionsQueue.push(function(){
-					toDeck(player, data);
-				});
-				break;
-			case "To GY":
-			case "To grave from deck":
-			case "To grave from field":
-			case "To grave from hand":
-			case "To Grave from Extra":
-			case "To grave from banished":
-			case "To grave from opponent's banished":
-				actionsQueue.push(function(){
-					toGY(player, data);
-				});
-				break;
-			case "Mill":
-				actionsQueue.push(function(){
-					mill(player, data);
-				});
-				break;
-			case "Banish":
-			case "Banish FD":
-			case "Banish from deck":
-			case "Banish top card of deck":
-			case "Banish top card of deck FD":
-			case "Banish FD from deck":
-			case "Banish from field":
-			case "Banish from field FD":
-			case "Banish from hand":
-			case "Banish from hand FD":
-			case "Banish Xyz Material":
-			case "Banish from Extra":
-			case "Banish from Extra FD":
-			case "Banish from grave":
-			case "Banish from grave FD":
-			case "Banish from opponent's grave":
-				actionsQueue.push(function(){
-					banish(player, data);
-				});
-				break;
-			case "To ED":
-			case "To ED FU":
-			case "To Extra from field":
-			case "To Extra FU from field":
-			case "To Extra from grave":
-			case "To Extra FU from grave":
-			case "To Extra from banished":
-			case "To Extra FU from banished":
-				actionsQueue.push(function(){
-					toED(player, data);
-				});
-				break;
-			case "Normal Summon":
-				actionsQueue.push(function(){
-					normalSummon(player, data);
-				});
-				break;
-			case "SS ATK":
-			case "SS DEF":
-			case "SS ATK from hand":
-			case "SS ATK from deck":
-			case "SS ATK from Extra":
-			case "SS ATK from grave":
-			case "SS ATK from banished":
-			case "SS ATK from opponent's grave":
-			case "SS ATK from opponent's banished":
-			case "SS DEF from hand":
-			case "SS DEF from deck":
-			case "SS DEF from Extra":
-			case "SS DEF from grave":
-			case "SS DEF from banished":
-			case "SS DEF from opponent's grave":
-			case "SS DEF from opponent's banished":
-					actionsQueue.push(function(){
-						specialSummon(player, data);
-					});
-				break;
-			case "OL ATK":
-			case "OL DEF":
-			case "OL ATK from Extra":
-			case "OL DEF from Extra":
-				actionsQueue.push(function(){
-					olSummon(player, data);
-				});
-				break;
-			case "Summon token":
-			case "Summon Token":
-				actionsQueue.push(function(){
-					summonToken(player, data);
-				});
-				break;
-			case "Remove Token":
-				actionsQueue.push(function(){
-					removeToken(player, data);
-				});
-				break;
-			case "Flip":
-			case "Flip monster":
-				actionsQueue.push(function(){
-					flip(player, data);
-				});
-				break;
-			case "Flip Summon":
-				actionsQueue.push(function(){
-					flipSummon(player, data);
-				});
-				break;
-			case "To ATK":
-				actionsQueue.push(function(){
-					toATK(player, data);
-				});
-				break;
-			case "To DEF":
-				actionsQueue.push(function(){
-					toDEF(player, data);
-				});
-				break;
-			case "Activate ST":
-			case "Activate Spell":
-			case "Activate Spell from hand":
-				actionsQueue.push(function(){
-					activateST(player, data);
-				});
-				break;
-			case "To ST":
-			case "To ST from deck":
-			case "To ST from hand":
-			case "To ST from grave":
-				actionsQueue.push(function(){
-					toST(player, data);
-				});
-				break;
-			case "Set monster":
-			case "Set monster from hand":
-				actionsQueue.push(function(){
-					setMonster(player, data);
-				});
-				break;
-			case "Set ST":
-			case "Set ST from deck":
-			case "Set ST from hand":
-			case "Set monster to ST from hand":
-				actionsQueue.push(function(){
-					setST(player, data);
-				});
-				break;
-			case "Activate Field Spell":
-			case "Activate Field Spell from hand":
-				actionsQueue.push(function(){
-					activateFieldSpell(player, data);
-				});
-				break;
-			case "Activate Field Spell 2":
-				actionsQueue.push(function(){
-					activateFieldSpell2(player, data);
-				});
-				break;
-			case "Set Field Spell":
-			case "Set Field Spell from hand":
-			case "Set Field Spell from deck":
-				actionsQueue.push(function(){
-					setFieldSpell(player, data);
-				});
-				break;
-			case "Set Field Spell 2": // Set Rotation
-			case "Set Field Spell from deck to opponent's field":
-				actionsQueue.push(function(){
-					setFieldSpell2(player, data);
-				});
-				break;
-			case "Activate Pendulum Left":
-			case "Activate Pendulum Left from field":
-			case "Activate Pendulum Left from hand":
-				actionsQueue.push(function(){
-					activatePendulumLeft(player, data);
-				});
-				break;
-			case "Activate Pendulum Right":
-			case "Activate Pendulum Right from field":
-			case "Activate Pendulum Right from hand":
-				actionsQueue.push(function(){
-					activatePendulumRight(player, data);
-				});
-				break;
-			case "Activate Skill":
-				actionsQueue.push(function(){
-					activateSkill(player, data);
-				});
-				break;
-			case "Set Skill":
-				actionsQueue.push(function(){
-					setSkill(player, data);
-				});
-				break;
-			case "Change control":
-				actionsQueue.push(function(){
-					changeControl(player, data);
-				});
-				break;
-			case "Add random card from deck to hand": // Crescent effect
-				actionsQueue.push(function(){
-					addRandomCardFromDeckToHand(player, data);
-				});
-				break;
-			case "Turn top card face-up": // Grave Lure
-			case "Turn top card of deck face-up":
-				actionsQueue.push(function(){
-					turnTopCardOfDeckFU(player, data);
-				});
-				break;
-			case "Flip deck": // Convulsion of Nature
-			case "Flip deck back":
-				actionsQueue.push(function(){
-					flipDeck(player, data);
-				});
-				break;
-			case "Pick 2 cards": // Hi-Speedroid Rubber Band Shooter
-			case "Pick 3 cards": // Spellbook Library of the Crescent, Power Tool Dragon, Lilith, Lady of Lament, Bingo Machine, Go!!!, My Friend Purrely
-				if (duelist && player.username == username) {
-					viewingE(data.viewing, data);
-					next_callback = data.callback; // moved here from below
-				}
-				showViewing(data);
-				break;
-			case "Cynet Storm": // Cynet Storm
-				actionsQueue.push(function(){
-					cynetStorm(player, data);
-				});
-				break;
-			case "Exchange cards": // Exchange
-				actionsQueue.push(function(){
-					exchangeCards(player, data);
-				});
-				break;
-			case "Attach top card from Deck 2": // Time Thief Redoer
-				actionsQueue.push(function(){
-					attachTopCardFromDeck2(player, data);
-				});
-				break;
-			case "Swap":
-				swap(player, data);
-				return;
-			case "New card":
-				actionsQueue.push(function(){
-					newCard(player, data);
-				});
-				break;
-			case "Initialize cards":
-				initalizeCards(player, data);
-				break;
-				
-			// DEPRACATED PLAYS
-			case "Flip decks":
-				actionsQueue.push(function(){
-					flipDecks(player, data);
-				});
-				break;
-			case "Flip decks back":
-				actionsQueue.push(function(){
-					flipDecksBack(player, data);
-				});
-				break;
-			case "Turn face-down":
-				actionsQueue.push(function(){
-					turnFaceDown(player, data);
-				});
-				break;
-			case "Add proxy":
-				actionsQueue.push(function(){
-					addProxy(player, data);
-				});
-				break;
-			case "Declare":
-				actionsQueue.push(function(){
-					declare(player, data);
-				});
-				break;
-			case "Stay revealed":
-				actionsQueue.push(function(){
-					stayRevealed(player, data);
-				});
-				break;
-			case "Stop revealing":
-				actionsQueue.push(function(){
-					stopRevealing(player, data);
-				});
-				break;
-			case "Good":
-				actionsQueue.push(function(){
-					allGood(player, data);
-				});
-				break;
-			case "Stop good":
-				actionsQueue.push(function(){
-					stopGood(player, data);
-				});
-				break;
-			case "Thinking":
-				//actionsQueue.push(function(){
-					thinking(player, data);
-					typingE(player);
-				//});
-				break;
-			case "Countdown":
-				//actionsQueue.push(function(){
-					updateCountdown(player, data);
-				//});
-				break;
-			case "Message":
-				//addLine(data.line);
-				break;
 		}
 		
-		if (data.line) {
-			addLine(escapeHTML(data.line));
-		}	
-		//if (duelist) {
-			if (data.log) {
-				if (data.log instanceof Array) {
-					for (i = 0; i < data.log.length; i++) {
-						data.log[i].seconds = data.seconds;
-					}
-				}
-				else {
-					data.log.seconds = data.seconds;
-				}
-				duelLogPrint(data.log);
-			}
-		//}
-		
-		performNextAction();
+		return false;
 	}
 	
 	window.normalSummon = function(player, data) {
@@ -7620,7 +7217,7 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 		if(!limitedCardsSound)
 			return;
 		
-		else if(animationCards.indexOf(card.data("cardfront").data("name")) == -1)
+		else if(Eyal_animationCards.indexOf(card.data("cardfront").data("name")) == -1)
 			return;
 		
 		else if(musicSliderMD == 0.0)
@@ -9819,15 +9416,66 @@ function injectFunction(unlockCardMechanics, potOfSwitch, femOfSwitch, normalMus
 	
 	if(typeof window.Eyal_MDCardpool === "undefined")
 	{
-		window.Eyal_MDCardpool = null;
+		window.Eyal_MDCardpool = [];
 		
-		$.get('https://raw.githubusercontent.com/eyal282/chrome-ext-dueling-book-unlock/master/md_cardpool.txt', function(data) {
+		$.get('https://raw.githubusercontent.com/eyal282/chrome-ext-dueling-book-unlock/master/Dont_compile/md_cardpool.txt', function(data)
+		{
 			data = data.replaceAll("\r", "");
-			window.Eyal_MDCardpool = data.split("\n");
+			
+			let eyal_arr = data.split("\n");
+			
+			for(let abc=0;abc < eyal_arr.length;abc++)
+			{
+				if(eyal_arr[abc][0] == ';')
+					continue;
+				
+				window.Eyal_MDCardpool.push(eyal_arr[abc]);
+			}
 		}, 'text');
 
 	}
 	
+	if(typeof window.Eyal_animationCards === "undefined")
+	{
+		window.Eyal_animationCards = [];
+		
+		$.get('https://raw.githubusercontent.com/eyal282/chrome-ext-dueling-book-unlock/master/Dont_compile/masterduel_cards_with_animations.txt', function(data)
+		{
+			data = data.replaceAll("\r", "");
+			
+			let eyal_arr = data.split("\n");
+			
+			for(let abc=0;abc < eyal_arr.length;abc++)
+			{
+				if(eyal_arr[abc][0] == ';')
+					continue;
+				
+				window.Eyal_animationCards.push(eyal_arr[abc]);
+			}
+			
+		}, 'text');
+	}
+	
+	if(typeof window.Eyal_femaleCards === "undefined")
+	{
+		window.Eyal_femaleCards = [];
+		
+		$.get('https://raw.githubusercontent.com/eyal282/chrome-ext-dueling-book-unlock/master/Dont_compile/censored_card_names.txt', function(data)
+		{
+			data = data.replaceAll("\r", "");
+			
+			let eyal_arr = data.split("\n");
+			
+			for(let abc=0;abc < eyal_arr.length;abc++)
+			{
+				if(eyal_arr[abc][0] == ';')
+					continue;
+				
+				window.Eyal_femaleCards.push(eyal_arr[abc]);
+			}
+			
+		}, 'text');
+	}
 	if(duelist)
 	{
 		Eyal_GenerateTrueAllCardsArray();
