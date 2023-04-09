@@ -447,6 +447,8 @@ Firewall Dragon Darkfluid
 G Golem Dignified Trilithon
 Ancient Warriors Oath - Double Dragon Lords
 
+; Field Spells
+Mystic Mine
 
 ;Win_Condition_Cards
 ;Exodia, the Legendary Defender
