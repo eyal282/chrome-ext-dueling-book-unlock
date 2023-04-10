@@ -1,0 +1,2 @@
+; Card name```EffectLine1///nEffectLine2
+Sangan```When this card is sent from the field to the Graveyard:///nAdd 1 monster with 1500 or less ATK from your Deck to your hand.
