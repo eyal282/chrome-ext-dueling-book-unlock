@@ -2600,13 +2600,10 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				{
 					if (cards[i]) 
 					{
-							console.log("a");
 						if (!cards[i].data("face_down")) 
 						{
-							console.log("b");
 							if (inBounds(cards[i].find('.content:first'))) 
 							{
-								console.log("c");
 								cards[i].data("negations", ~~cards[i].data("negations") + 1);
 								updateNegates();
 								removedNegateCardId = 0;
@@ -4369,7 +4366,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 	{
 		if(data.action == "Duel" && data.play.indexOf("Stop viewing") >= 0)
 		{
-			if(data.viewing.indexOf("Secret ") >= 0)
+			if(data.viewing.indexOf("Secret ") >= 0 || data.viewing == "Xyz materials")
 				return;
 		}
 		else if(data.action == "Duel" && data.play == "Duel message")
@@ -4840,8 +4837,6 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 
 		let originalCard = card;
 
-		console.log("abc");
-
 		if (card.data("fake_card") && viewing == "Xyz materials")
 		{
 			if (typeof Eyal_lastXyzCard === "undefined")
@@ -4858,8 +4853,6 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				return;	
 			}
 		}
-
-		console.log(card);
 		
 		var menu = [];
 		if (card.data("controller") != player1) {
@@ -8970,8 +8963,6 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				return;
 			}
 			
-			console.log("Remove:" + card.data("cardfront").data("name"));
-			
 			// We can go, clear the interval and move.
 			clearInterval(deckInterval);
 		
@@ -8981,9 +8972,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			{
 				if(Eyal_TrueDeckArr[abc].data("cardfront").data("name") == card.data("cardfront").data("name"))
 				{	
-					console.log(Eyal_TrueDeckArr.length + "Splice:" + abc)
 					Eyal_TrueDeckArr.splice(abc, 1);
-					console.log(Eyal_TrueDeckArr.length + "Splice:" + abc)
 					break;
 				}
 			}
