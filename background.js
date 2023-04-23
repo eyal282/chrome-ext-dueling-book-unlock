@@ -64,7 +64,7 @@ if(edisonCards.length == 0)
 		
 		for(let abc=0;abc < eyal_arr.length;abc++)
 		{
-			if(eyal_arr[abc][0] == ';')
+			if(eyal_arr[abc][0] == ';' || eyal_arr[abc].length == 0)
 				continue;
 			
 			edisonCards.push(eyal_arr[abc]);
@@ -746,6 +746,8 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				{
 					$("#view .exit_btn").click();
 				}
+
+				hideSelectZones();
 			}
 		}
 	}
@@ -2531,7 +2533,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			negate_btn.draggable("destroy")
 			addNegateDragging(negate_btn);
 			
-			if(typeof window.removedNegateCardId === undefined)
+			if(typeof window.removedNegateCardId === "undefined")
 				window.removedNegateCardId = 0;
 		}
 	}	
@@ -3342,8 +3344,6 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 	
 	window.Eyal_MorphingJarNumberTwoYes = function()
 	{	
-
-		
 		if(window.Eyal_excavatedArr.length > 0)
 			return;
 			
@@ -3367,7 +3367,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				cardMenuClicked(card, "To T Deck");
 				
 				// Traps don't count...
-				if(card.data("cardfront").data("card_type") == "Monster")
+				if(card.data("cardfront").data("card_type") == "Monster" && card.data("owner") == player1)
 				{
 					amountSent++;
 				}
@@ -4837,6 +4837,29 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			cardMenuE2(card);
 			return;
 		}
+
+		let originalCard = card;
+
+		console.log("abc");
+
+		if (card.data("fake_card") && viewing == "Xyz materials")
+		{
+			if (typeof Eyal_lastXyzCard === "undefined")
+				return;
+
+			let substitute = Eyal_findSubstitute(card, Eyal_lastXyzCard.data("xyz_arr"));
+
+			if (substitute != null) {
+				originalCard = card;
+				card = substitute;
+			}
+			else
+			{
+				return;	
+			}
+		}
+
+		console.log(card);
 		
 		var menu = [];
 		if (card.data("controller") != player1) {
@@ -5597,9 +5620,14 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 					menu.push({ label: "Attach", data: "Eyal Attach" });
                 }
 			}
+
+			if (card.data("xyz_arr").length >= 3)
+			{
+				menu.push({ label: "View materials", data: "Eyal View Materials" });
+			}
 		}
 		
-		showMenu(card, menu);
+		showMenu(card, menu, originalCard);
 	}
 	
 	
@@ -5922,6 +5950,10 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				}
 			}, onComplete:function(){ 
 				shiftDeck(player);
+
+				if (viewing)
+					updateViewing();
+				
 				endAction();
 			}});
 		}});
@@ -5997,6 +6029,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				
 				if(viewing)
 					updateViewing();
+				
 				endAction();
 			}});
 		}});
@@ -6237,6 +6270,20 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		{
 			Eyal_addColoredLine("FF0000", "Error: Cannot interact with cards in Secret Deck");
 			return;
+		}
+		else if (card.data("fake_card") && viewing == "Xyz materials")
+		{
+			if (typeof Eyal_lastXyzCard === "undefined")
+				return;
+			
+			let substitute = Eyal_findSubstitute(card, Eyal_lastXyzCard.data("xyz_arr"));
+
+			if (substitute != null)
+			{
+				cardMenuClicked(substitute, data, e);
+			}
+
+			return;	
 		}
 		console.log('cardMenuClicked. data = ' + data);
 		if (!$('#cig1_txt').is(":visible")) {
@@ -6484,7 +6531,6 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		{
 			getConfirmation("Mill until you find a Spell / Trap?", "This will make a lot of actions at once.", Eyal_MagicalMerchantYes);
 		}
-		
 		else if (data == "Eyal Attach") {
 			olPlay = "Eyal Attach";
 			overlaying_card = card;
@@ -6513,6 +6559,14 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			}
 			return;
 		}
+		else if (data == "Eyal View Materials")
+		{
+			Eyal_lastXyzCard = card;
+
+			viewingE("Xyz materials");	
+		}
+
+
 		if (data == "Choose card") {
 			player1.temp_arr.push(card.data("id"));
 			if (player1.temp_arr.length == 3 && viewing == "Deck (Picking 3 Cards)" || player1.temp_arr.length == 2 && viewing == "Deck (Picking 2 Cards)" || player1.temp_arr.length == 1 && viewing == "Deck (Picking Card)") {
@@ -7504,12 +7558,17 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		if(
 	}*/
 
-	window.showMenu = function(card, dp) {
+	window.showMenu = function(card, dp, originalCard) {
 		if (!dp) {
 			menu_reason = "Menu has no data";
 			return;
 		}
 		
+		if (typeof originalCard === "undefined")
+		{
+			originalCard = card;	
+		}
+
 		let isED = false;
 		let wasAdded = false;
 		
@@ -7538,11 +7597,11 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		}
 		
 		dp.reverse();
-		if (TweenMax.isTweening(card)) {
+		if (TweenMax.isTweening(originalCard)) {
 			menu_reason = "Card is currently tweening";
 			return;
 		}
-		if (menu_card && menu_card[0] == card[0]) {
+		if (menu_card && menu_card[0] == originalCard[0]) {
 			menu_reason = "Card is menu_card 2";
 			return;
 		}
@@ -7561,11 +7620,11 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			}
 			removeCardMenu();
 		}
-		if (isInYourHand(player1, card)) {
-			card.css("top", card.data("controller").handY - 30);
+		if (isInYourHand(player1, originalCard)) {
+			card.css("top", originalCard.data("controller").handY - 30);
 			$('#blue_target').hide();
 		}
-		if (getScale(card[0]) < 0.2) {
+		if (getScale(originalCard[0]) < 0.2) {
 			for (var i = 0; i < dp.length; i++) {
 				switch (dp[i].label) {
 					case "S. Summon ATK":
@@ -7586,15 +7645,15 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				}
 			}
 		}
-		menu_card = card;
+		menu_card = originalCard;
 		menu.find('#card_menu_content').html("");
-		var scale = getScale(card[0]);
+		var scale = getScale(originalCard[0]);
 		if (scale < 0) {
 			scale = -scale;
 		}
 		var width = 400;
 		var height = 580;
-		var rotation = getRotation(card[0]);
+		var rotation = getRotation(originalCard[0]);
 		if (rotation == 180) {
 			rotation = 0;
 		}
@@ -7693,6 +7752,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				case "Unbanish Everything":
 				case "Summon 4 Gates":
 				case "Resolve GY Effect":
+				case "View materials":
 				
 					option.find('img').attr("src", IMAGES_START + "svg/card_menu_btn_up2.svg");
 					break;
@@ -7719,15 +7779,15 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		
 		
 		menu.css("height", h);
-		var left = parseInt(card.css("left")) - scale * width / 2;
-		var top = parseInt(card.css("top")) - height * scale / 2 - h;
+		var left = parseInt(originalCard.css("left")) - scale * width / 2;
+		var top = parseInt(originalCard.css("top")) - height * scale / 2 - h;
 		if (menu_card.parent()[0] == $('#view > .content')[0]) {
 			top += 15 + parseInt($("#view").css("top")) + 32 - $('#view > .content').scrollTop();
 			left += parseInt($("#view").css("left")) + 5;
 		}
 		var startY = top + menu[0].scrollHeight;
-		if (menu[0].scrollHeight > parseInt(card.css("height")) * scale) {
-			startY = top + parseInt(card.css("height")) * scale;
+		if (menu[0].scrollHeight > parseInt(originalCard.css("height")) * scale) {
+			startY = top + parseInt(originalCard.css("height")) * scale;
 		}
 		//menu.css("top", top);
 		menu.css("top", top + 1); // helps prevent unwanted menuOutE events
@@ -8122,6 +8182,10 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		}
 		$('#field').append(card);
 		TweenMax.to(card, easeSeconds, {left:points[0], top:points[1], scale:0.1485, rotation:rot, rotationY:ABOUT_ZERO, ease:Linear.easeNone, onComplete:function(){
+			
+			if(viewing)
+				updateViewing();
+			
 			$('#ss_glow').show();
 			$('#ss_spiral').show();
 			TweenMax.to($('#ss_glow'), 0, {left:points[0], top:points[1]});
@@ -8449,7 +8513,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 	
 	window.shiftGrave = function(player)
 	{
-		if (viewing.indexOf("Graveyard") >= 0 || viewing.indexOf("Secret ") >= 0) {
+		if (viewing.indexOf("Graveyard") >= 0 || viewing.indexOf("Secret ") >= 0 || viewing == "Xyz materials") {
 			viewingE(viewing);
 			return;
 		}
@@ -8473,7 +8537,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 
 	window.shiftBanished = function(player)
 	{
-		if (viewing == "Banished" || viewing == "Opponent's Banished" || viewing.indexOf("Secret ") >= 0) {
+		if (viewing == "Banished" || viewing == "Opponent's Banished" || viewing.indexOf("Secret ") >= 0 || viewing == "Xyz materials") {
 			viewingE(viewing);
 			return;
 		}
@@ -8531,7 +8595,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			if (i == 16) {
 				$('#view > .content').removeClass("unscrollable");
 			}
-			if (data && data.deck && data.deck[i] && viewing != "Secret Deck") {
+			if (data && data.deck && data.deck[i] && viewing != "Secret Deck" && viewing != "Xyz materials") {
 				arr[i].data("cardfront").reinitialize(data.deck[i]);
 			}
 			/*
@@ -8644,6 +8708,13 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				break;
 			case "Opponent's Hand":
 				viewCards(Player1().opponent.hand_arr);
+				break;
+			
+			case "Xyz materials":
+				if (typeof Eyal_lastXyzCard == undefined)
+					return;
+				
+				viewCards(Eyal_GenerateViewXyzMaterials());
 				break;
 		}
 	}
@@ -8780,6 +8851,14 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 					arr.push(Player1().opponent.main_arr[i]);
 				}
 				break;
+			
+			case "Xyz materials":
+				if (typeof Eyal_lastXyzCard == undefined)
+					return;
+
+				arr = Eyal_GenerateViewXyzMaterials();
+
+				break;
 		}
 		
 		if(!viewing)
@@ -8814,7 +8893,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		}
 		viewing = str;
 		
-		if(viewing.indexOf("Secret ") < 0)
+		if(viewing.indexOf("Secret ") < 0 && viewing != "Xyz materials")
 		{
 			$('#view .title_txt').text("Viewing " + str);
 			
@@ -8942,6 +9021,42 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			Eyal_TrueDeckArr.push(newCard);
 		}, 50);
 	}
+	window.Eyal_GenerateViewXyzMaterials = function ()
+	{
+		let cards = [];
+
+		for (let abc = 0; abc < Eyal_lastXyzCard.data("xyz_arr").length; abc++)
+		{
+			let newCard = newDuelCard();
+
+			newCard.data("cardfront").copyCard(Eyal_lastXyzCard.data("xyz_arr")[abc].data("cardfront"));
+
+			newCard.data("controller", player1);
+			newCard.data("owner", player1);
+			newCard.data("fake_card", true);
+
+			cards.push(newCard);
+		}
+
+		console.log(cards);
+		return cards;
+
+	}
+	window.Eyal_findSubstitute = function (card, arr)
+	{
+		
+		for (let abc = 0; abc < arr.length; abc++)
+		{
+			let target_card = arr[abc];
+
+			if (target_card.data("cardfront").data("name") == card.data("cardfront").data("name") && !target_card.data("fake_card"))
+			{
+				return target_card;
+			}
+		}
+		
+		return null;
+	}
 	window.Eyal_GenerateSecretDeck = function()
 	{	
 		if(Eyal_TrueDeckArr.length != player1.main_arr.length)
@@ -9040,7 +9155,6 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		Eyal_TrueAllCardsArr = [].concat(dummy_arr);
 		*/
 	}
-	
 	window.Eyal_SecretDeckYes = function()
 	{	
 		if(viewing)
@@ -9852,8 +9966,6 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 					else
 						cardMenuClicked(player1.all_cards_arr[abc], "To T Deck");
 				}
-				
-				$('#choose_zones_cb').checked(Eyal_checked);
 			}
 			
 			for(let abc = 0;abc < player2.all_cards_arr.length;abc++)
@@ -10579,7 +10691,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			
 			for(let abc=0;abc < eyal_arr.length;abc++)
 			{
-				if(eyal_arr[abc][0] == ';')
+				if(eyal_arr[abc][0] == ';' || eyal_arr[abc].length == 0)
 					continue;
 				
 				
@@ -10588,6 +10700,9 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				
 				let splitted = eyal_arr[abc].split("```");
 				
+				
+				if(!splitted[1])
+					console.log(eyal_arr[abc]);
 				
 				obj.name = splitted[0];
 				obj.effect = splitted[1].replaceAll("///n", "<br>");
@@ -10627,7 +10742,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			
 			for(let abc=0;abc < eyal_arr.length;abc++)
 			{
-				if(eyal_arr[abc][0] == ';')
+				if(eyal_arr[abc][0] == ';' || eyal_arr[abc].length == 0)
 					continue;
 				
 				// passcode is splitting string by space, grabbing the first result.
@@ -10671,7 +10786,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			
 			for(let abc=0;abc < eyal_arr.length;abc++)
 			{
-				if(eyal_arr[abc][0] == ';')
+				if(eyal_arr[abc][0] == ';' || eyal_arr[abc].length == 0)
 					continue;
 				
 				window.Eyal_animationCards.push(eyal_arr[abc]);
@@ -10692,7 +10807,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			
 			for(let abc=0;abc < eyal_arr.length;abc++)
 			{
-				if(eyal_arr[abc][0] == ';')
+				if(eyal_arr[abc][0] == ';' || eyal_arr[abc].length == 0)
 					continue;
 				
 				window.Eyal_femaleCards.push(eyal_arr[abc]);
@@ -10951,5 +11066,32 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				preview_txt.html(Eyal_MakePSCTColorOnEffect(nullName, escapeHTML(cardfront.data("effect"))));
 			}
 		}
+	}
+
+	// For creating fake cards as fake cards cannot be caught with swapCardMenu.
+	window.newDuelCard = function() {
+		var card = getRecycledCard();
+		if (!card) {
+			card = new Card();
+		}
+		if (automatic) {
+			card.contextmenu(duelCardDownE);
+		}
+		//card.on("mouseover click", previewE);
+		card.on("mouseenter click", previewE);
+		if (duelist) {
+			card.find('.content:first').mouseover(Eyal_cardMenuE);
+			//card.find('.content:first').mouseleave(menuOutE);
+		}
+		card.find('.content:first').mouseleave(menuOutE);
+		card.find('.cardfront').hide();
+		if (admin || adjudicator) {
+			if (!automatic) {
+				card.css("cursor", "pointer");
+				card.click(targetCard);
+			}
+		}
+		TweenMax.to(card, 0, { rotationY: 180 + ABOUT_ZERO, scale: 0.1485 });
+		return card;
 	}
 }
