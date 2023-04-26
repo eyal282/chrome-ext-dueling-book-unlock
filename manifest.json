@@ -1,7 +1,7 @@
 {
 	"name": "Dueling Book Unlock",
 	"manifest_version": 3,
-	"version": "6.4",
+	"version": "6.6",
 	"description": "Unlocks all card mechanics in Dueling Book",
 	"permissions": [
 		"tabs",
