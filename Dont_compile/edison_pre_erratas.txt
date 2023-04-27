@@ -7,7 +7,7 @@ Machina Gearframe```When this card is Normal Summoned: You can add 1 "Machina" m
 Necrovalley```Negate the effects of Spells, Traps, and Effect Monsters that target a card(s) in either player's GY. Cards in either player's GY cannot be banished. All "Gravekeeper's" monsters gain 500 ATK and DEF.
 Red-Eyes Darkness Metal Dragon```You can Special Summon this card (from your hand) by banishing 1 face-up Dragon-Type monster you control. Once per turn, during your Main Phase: You can Special Summon 1 Dragon-Type monster from your hand or GY, except "Red-Eyes Darkness Metal Dragon".
 Rescue Cat```You can send this face-up card to the GY; Special Summon 2 Level 3 or lower Beast-Type monsters from your Deck, but destroy them during the End Phase
-Ryko, Lightsworn Hunter```FLIP: You can target 1 card on the field; destroy that target, regardless, send the top 3 cards of your Deck to the GY.
+Ryko, Lightsworn Hunter```FLIP: You can target 1 card on the field; destroy that target, regardless, send the top 3 cards of your Deck to the GY (this is not optional).
 Goyo Guardian```1 Tuner + 1 or more non-Tuner monsters///nWhen this card destroys an opponent's monster by battle and sends it to the GY: You can Special Summon that monster to your side of the field in face-up Defense Position.
 Treeborn Frog```During your Standby Phase, if this card is in your GY and you do not control "Treeborn Frog":///nYou can Special Summon this card. You must control no Spell/Trap Cards to activate and to resolve this effect.
 Darkness Approaches```Discard 2 cards, then target 1 face-up monster; set it (but don’t change its Battle Position).
