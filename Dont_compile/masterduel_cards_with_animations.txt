@@ -407,6 +407,7 @@ Thousand-Eyes Restrict
 
 ; Synchro Monsters
 Goyo Guardian
+Brionac, Dragon of the Ice Barrier
 Colossal Fighter
 Naturia Beast
 Crystal Wing Synchro Dragon
