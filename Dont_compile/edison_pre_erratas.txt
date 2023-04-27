@@ -11,3 +11,4 @@ Ryko, Lightsworn Hunter```You can destroy 1 card on the field. Send the top 3 ca
 Goyo Guardian```1 Tuner + 1 or more non-Tuner monsters///nWhen this card destroys an opponent's monster by battle and sends it to the Graveyard, you can Special Summon that monster to your side of the field in face-up Defense Position.
 Treeborn Frog```During your Standby Phase, if this card is in your GY and you do not control "Treeborn Frog":///nYou can Special Summon this card. You must control no Spell/Trap Cards to activate and to resolve this effect.
 Darkness Approaches```Discard 2 cards, then target 1 face-up monster; set it (but don’t change its Battle Position).
+Elemental HERO Prisma```Once per turn: You can reveal 1 Fusion Monster from your Extra Deck and send 1 Fusion Material listed on that card from your Deck to the GY, and if you do, this card's name is treated as the sent monster's name until the End Phase.
