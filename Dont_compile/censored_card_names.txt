@@ -58,6 +58,7 @@ Amazon of the Seas
 Amazoness Archer
 Amazoness Archers
 Amazoness Arena
+Amazoness Augusta
 Amazoness Blowpiper
 Amazoness Call
 Amazoness Chain Master
@@ -109,6 +110,7 @@ Aquamirror Cycle
 Aquamirror Illusion
 Aquamirror Meditation
 Aquarian Alessa
+Arahime the Manifested Mikanko
 Arcana Force III - The Empress
 Arcana Force VI - The Lovers
 Arcana Force XIV - Temperance
@@ -672,7 +674,6 @@ Freezing Dance
 Freya, Spirit of Victory
 Fricka's Mediation
 Full Armored Crystalzero Lancer
-Furi the Orb Mikanko
 Fusion Conscription
 Future Samurai
 G.B. Hunter
@@ -852,6 +853,7 @@ Honeybot
 Hope for the Future
 Horn Wan Yue the Crescent Music Maiden
 House Dragonmaid
+Hu-Li the Jewel Mikanko
 Humhumming the Key Djinn
 Hunter Channel
 Hydro Genex
@@ -1710,12 +1712,17 @@ The Transmigration Prophecy
 Trap Strap
 Trap Trick
 Traptrix Allomerus
+Traptrix Arachnocampa
 Traptrix Atrax
+Traptrix Atypus
 Traptrix Dionaea
 Traptrix Genlisea
+Traptrix Holeutea
 Traptrix Mantis
 Traptrix Myrmeleo
 Traptrix Nepenthes
+Traptrix Pinguicula
+Traptrix Pudica
 Traptrix Rafflesia
 Traptrix Sera
 Traptrix Trap Hole Nightmare
