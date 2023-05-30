@@ -4742,6 +4742,7 @@ $whitelist
 74591968 3 -- Mystic Swordsman LV4
 60482781 3 -- Mystic Swordsman LV6
 83011278 3 -- Mystic Tomato
+83011277 3 -- Mystic Tomato, eyal282.
 48356796 3 -- Mystical Cards of Light
 15025844 3 -- Mystical Elf
 98745000 3 -- Mystical Knight of Jackal
