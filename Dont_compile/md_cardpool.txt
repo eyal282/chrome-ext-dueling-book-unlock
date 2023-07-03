@@ -3816,7 +3816,7 @@
 29802344 3 N Not_HT Not_Floodgate
 32274490 3 N Not_HT Not_Floodgate
 32355828 3 N Not_HT Not_Floodgate
-32619583 3 R Not_HT Not_Floodgate
+32619583 0 R Not_HT Not_Floodgate
 3280747 0 No_Rarity Not_HT Not_Floodgate
 33883834 3 N Not_HT Not_Floodgate
 35952884 3 UR Not_HT Not_Floodgate
@@ -11948,7 +11948,7 @@
 93777634 3 No_Rarity Not_HT Not_Floodgate
 94445733 2 SR Not_HT Not_Floodgate
 97946536 3 SR Not_HT Not_Floodgate
-1041278 3 N Not_HT Not_Floodgate
+1041278 0 N Not_HT Not_Floodgate
 12527118 3 R Not_HT Not_Floodgate
 1295442 3 SR Not_HT Not_Floodgate
 132308 3 R Not_HT Not_Floodgate
@@ -12226,6 +12226,7 @@
 7236721 3 No_Rarity Not_HT Not_Floodgate
 72386290 3 No_Rarity Not_HT Not_Floodgate
 72554664 3 R Not_HT Not_Floodgate
+72656408 3 SR Not_HT Not_Floodgate
 72776252 3 SR Not_HT Not_Floodgate
 73898890 3 No_Rarity Not_HT Not_Floodgate
 78077209 3 No_Rarity Not_HT Not_Floodgate
