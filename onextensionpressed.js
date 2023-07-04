@@ -26,6 +26,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function () {
 
+	let checkbox = document.querySelector('input[id="lowAnimations"]');
+	
+	if(checkbox.id == 'lowAnimations')
+	{
+		chrome.storage.sync.get(['lowAnimations'], function(result) {
+			if(result && result.lowAnimations == true)
+				checkbox.checked = true;
+			
+			else
+				checkbox.checked = false;
+
+		});
+		
+		checkbox.addEventListener('change', function () {
+			chrome.storage.sync.set({lowAnimations: checkbox.checked}, function() {});
+		});
+	}
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+
 	let checkbox = document.querySelector('input[id="silentCommands"]');
 	
 	if(checkbox.id == 'silentCommands')
@@ -41,6 +62,28 @@ document.addEventListener('DOMContentLoaded', function () {
 		
 		checkbox.addEventListener('change', function () {
 			chrome.storage.sync.set({silentCommands: checkbox.checked}, function() {});
+		});
+	}
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+
+	let checkbox = document.querySelector('input[id="birdUI"]');
+	
+	if(checkbox.id == 'birdUI')
+	{
+		chrome.storage.sync.get(['birdUI'], function(result) {
+			// Default to true..
+			if(result && result.birdUI == false)
+				checkbox.checked = false;
+			
+			else
+				checkbox.checked = true;
+
+		});
+		
+		checkbox.addEventListener('change', function () {
+			chrome.storage.sync.set({birdUI: checkbox.checked}, function() {});
 		});
 	}
 });

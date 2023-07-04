@@ -215,17 +215,27 @@ function performInjection()
 		{
 			if(typeof tabs[0].id !== 'undefined')
 			{
-				chrome.storage.sync.get(['unlockCardMechanics', 'silentCommands', 'potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'musicSliderMD', 'limitedCardsSound', 'cardLogging'], function(result)
+				chrome.storage.sync.get(['unlockCardMechanics', 'lowAnimations', 'silentCommands', 'birdUI', 'potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'musicSliderMD', 'limitedCardsSound', 'cardLogging'], function(result)
 				{
 					let unlockCardMechanics = true;
 					
 					if(result && result.unlockCardMechanics == false)
 						unlockCardMechanics = false;
-					
+
+					let lowAnimations = false;
+
+					if (result && result.lowAnimations == true)
+						lowAnimations = true;
+
 					let silentCommands = false;
 					
 					if(result && result.silentCommands == true)
 						silentCommands = true;
+					
+					let birdUI = true;
+					
+					if(result && result.birdUI == false)
+						birdUI = false;
 					
 					let potOfSwitch = false;
 					
@@ -270,7 +280,7 @@ function performInjection()
 					
 					chrome.scripting.executeScript(
 					{
-						args: [unlockCardMechanics, silentCommands, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, limitedCardsSound, cardLogging, edisonCards, negate_icon_blob],
+						args: [unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, limitedCardsSound, cardLogging, edisonCards, negate_icon_blob],
 						target: {tabId: tabs[0].id},
 						world: "MAIN", // Main world is mandatory to edit other website functions
 						func: injectFunction,
@@ -404,32 +414,22 @@ function blitzInjectFunction()
 
 function fastInjectFunction(potOfSwitch, femOfSwitch, musicSliderDL, limitedCardsSound, cardLogging, randomRPS, bSecond)
 {
-	if(duelist && typeof Eyal_swapCardMenuForPlayer == "function")
+	if(typeof duelist !== "undefined" && duelist)
 	{
 		if(actionsQueue.indexOf(simultaneousDraw) >= 0)
 		{
 			window.GYwarning = [];
 		}
-		/*
-		Eyal_swapCardMenuForPlayer(player1);
-		Eyal_swapCardMenuForPlayer(player2);
 		
-		if(tag_duel)
+		if(bSecond && randomRPS && duelist && player1.username == username)
 		{
-			Eyal_swapCardMenuForPlayer(player3)
-			Eyal_swapCardMenuForPlayer(player4)
+			if(currentLabel == "rps_start" && !pickedRPS && typeof rock1 !== 'undefined' && typeof paper1 !== 'undefined' && typeof scissors1 !== 'undefined')
+			{
+				let arr = [rock1[0], paper1[0], scissors1[0]];
+				arr[Eyal_getRandomInt(0, arr.length-1)].click();
+			}
 		}
-		*/
 	}	
-	
-	if(bSecond && randomRPS && duelist && player1.username == username)
-	{
-		if(currentLabel == "rps_start" && !pickedRPS && typeof rock1 !== 'undefined' && typeof paper1 !== 'undefined' && typeof scissors1 !== 'undefined')
-		{
-			let arr = [rock1[0], paper1[0], scissors1[0]];
-			arr[Eyal_getRandomInt(0, arr.length-1)].click();
-		}
-	}
 }
 
 function censorInjectFunction(potOfSwitch, femOfSwitch)
@@ -536,6 +536,9 @@ function censorInjectFunction(potOfSwitch, femOfSwitch)
 	
 	window.Eyal_checkCensors = function()
 	{
+		if(typeof deck_arr === "undefined")
+			return;
+		
 		if(typeof window.Eyal_TextImages === "undefined")
 		{
 			window.Eyal_TextImages = [];
@@ -673,6 +676,8 @@ function censorInjectFunction(potOfSwitch, femOfSwitch)
 					obj.pic = imageURL;
 					
 					Eyal_TextImages.push(obj);
+					
+					console.log("If this is spammed more than 100 times we have a serious issue.");
 				}
 			}
 		}
@@ -684,6 +689,10 @@ function censorInjectFunction(potOfSwitch, femOfSwitch)
 			if(Eyal_cards[abc].data("cardfront"))
 				Eyal_cards[abc] = Eyal_cards[abc].data("cardfront");
 			
+			if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/(This card is a Switch Monster)/i) != -1)
+			{
+				Eyal_cards[abc].find('.card_color').attr('src', "https://i.ibb.co/8BxWXc1/image.png");
+			}
 			if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/(This card is an Evolve Monster)/i) != -1)
 			{
 				Eyal_cards[abc].find('.card_color').attr('src', "https://i.ibb.co/XzGbZ6p/Evolution-cardtype.png");
@@ -711,22 +720,30 @@ function censorInjectFunction(potOfSwitch, femOfSwitch)
 	Eyal_checkCensors();
 }
 
-function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, limitedCardsSound, cardLogging, edisonCards, negate_icon_blob)
+function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, limitedCardsSound, cardLogging, edisonCards, negate_icon_blob)
 {
 //	let Eyal_blob = new Blob([negate_icon_blob[0].text], {type: negate_icon_blob[0].type});
 	
 	//window.Eyal_blob2 = Eyal_blob;
-	// Expression eval. What is this black magic? How does it even work?
-	// https://www.npmjs.com/package/math-expression-evaluator/v/2.0.2?activeTab=code
+	
+	// Don't inject until jQuery is added.
+	if(typeof window.jQuery === "undefined")
+		return;
 	
 	if(typeof Mexp === "undefined" && document.readyState == "complete")
 	{
 		
+		// I suspect this causes bugs.
+		/*
 		let script = document.createElement('script');
 		script.type = 'text/javascript';
 		script.src = 'https://unpkg.com/default-passive-events';
 		document.body.appendChild(script);
+		*/
 	
+		// Expression eval. What is this black magic? How does it even work?
+		// https://www.npmjs.com/package/math-expression-evaluator/v/2.0.2?activeTab=code
+		
 		!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Mexp=t()}(this,(function(){"use strict";function e(){return e=Object.assign?Object.assign.bind():function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var a in n)Object.prototype.hasOwnProperty.call(n,a)&&(e[a]=n[a])}return e},e.apply(this,arguments)}var t,n={0:11,1:0,2:3,3:0,4:0,5:0,6:0,7:11,8:11,9:1,10:10,11:0,12:11,13:0,14:-1};function a(e,t){for(var n=0;n<e.length;n++)e[n]+=t;return e}!function(e){e[e.FUNCTION_WITH_ONE_ARG=0]="FUNCTION_WITH_ONE_ARG",e[e.NUMBER=1]="NUMBER",e[e.BINARY_OPERATOR_HIGH_PRECENDENCE=2]="BINARY_OPERATOR_HIGH_PRECENDENCE",e[e.CONSTANT=3]="CONSTANT",e[e.OPENING_PARENTHESIS=4]="OPENING_PARENTHESIS",e[e.CLOSING_PARENTHESIS=5]="CLOSING_PARENTHESIS",e[e.DECIMAL=6]="DECIMAL",e[e.POSTFIX_FUNCTION_WITH_ONE_ARG=7]="POSTFIX_FUNCTION_WITH_ONE_ARG",e[e.FUNCTION_WITH_N_ARGS=8]="FUNCTION_WITH_N_ARGS",e[e.BINARY_OPERATOR_LOW_PRECENDENCE=9]="BINARY_OPERATOR_LOW_PRECENDENCE",e[e.BINARY_OPERATOR_PERMUTATION=10]="BINARY_OPERATOR_PERMUTATION",e[e.COMMA=11]="COMMA",e[e.EVALUATED_FUNCTION=12]="EVALUATED_FUNCTION",e[e.EVALUATED_FUNCTION_PARAMETER=13]="EVALUATED_FUNCTION_PARAMETER",e[e.SPACE=14]="SPACE"}(t||(t={}));var o={0:!0,1:!0,3:!0,4:!0,6:!0,8:!0,9:!0,12:!0,13:!0,14:!0},h={0:!0,1:!0,2:!0,3:!0,4:!0,5:!0,6:!0,7:!0,8:!0,9:!0,10:!0,11:!0,12:!0,13:!0},r={0:!0,3:!0,4:!0,8:!0,12:!0,13:!0},u={},s={0:!0,1:!0,3:!0,4:!0,6:!0,8:!0,12:!0,13:!0},p={1:!0},i=[[],["1","2","3","7","8","9","4","5","6","+","-","*","/","(",")","^","!","P","C","e","0",".",",","n"," ","&"],["pi","ln","Pi"],["sin","cos","tan","Del","int","Mod","log","pow"],["asin","acos","atan","cosh","root","tanh","sinh"],["acosh","atanh","asinh","Sigma"]];function l(e,t,n,a){for(var o=0;o<a;o++)if(e[n+o]!==t[o])return!1;return!0}function v(e){for(var a=0;a<e.length;a++){var o=e[a].token.length,h=-1;e[a].type===t.FUNCTION_WITH_N_ARGS&&void 0===e[a].numberOfArguments&&(e[a].numberOfArguments=2),i[o]=i[o]||[];for(var r=0;r<i[o].length;r++)if(e[a].token===i[o][r]){h=f(i[o][r],this.tokens);break}-1===h?(this.tokens.push(e[a]),e[a].precedence=n[e[a].type],i.length<=e[a].token.length&&(i[e[a].token.length]=[]),i[e[a].token.length].push(e[a].token)):(this.tokens[h]=e[a],e[a].precedence=n[e[a].type])}}function f(e,t){for(var n=0;n<t.length;n++)if(t[n].token===e)return n;return-1}var y=function(e,t){var n,v={value:this.math.changeSign,type:0,precedence:1,show:"-"},y={value:")",show:")",type:5,precedence:0},c={value:"(",type:4,precedence:0,show:"("},w=[c],m=[],E=e,g=o,N=0,d=u,A="";void 0!==t&&this.addToken(t);var k=function(e,t){for(var n,a,o,h=[],r=t.length,u=0;u<r;u++)if(!(u<r-1&&" "===t[u]&&" "===t[u+1])){for(n="",a=t.length-u>i.length-2?i.length-1:t.length-u;a>0;a--)if(void 0!==i[a])for(o=0;o<i[a].length;o++)l(t,i[a][o],u,a)&&(n=i[a][o],o=i[a].length,a=0);if(u+=n.length-1,""===n)throw new Error("Can't understand after "+t.slice(u));h.push(e.tokens[f(n,e.tokens)])}return h}(this,E);for(n=0;n<k.length;n++){var M=k[n];if(14!==M.type){var O,T=M.token,_=M.type,I=M.value,P=M.precedence,R=M.show,C=w[w.length-1];for(O=m.length;O--&&0===m[O];)if(-1!==[0,2,3,4,5,9,10,11,12,13].indexOf(_)){if(!0!==g[_])throw new Error(T+" is not allowed after "+A);w.push(y),g=h,d=s,m.pop()}if(!0!==g[_])throw new Error(T+" is not allowed after "+A);!0===d[_]&&(_=2,I=this.math.mul,R="&times;",P=3,n-=1);var S={value:I,type:_,precedence:P,show:R,numberOfArguments:M.numberOfArguments};if(0===_)g=o,d=u,a(m,2),w.push(S),4!==k[n+1].type&&(w.push(c),m.push(2));else if(1===_)1===C.type?(C.value+=I,a(m,1)):w.push(S),g=h,d=r;else if(2===_)g=o,d=u,a(m,2),w.push(S);else if(3===_)w.push(S),g=h,d=s;else if(4===_)a(m,1),N++,g=o,d=u,w.push(S);else if(5===_){if(!N)throw new Error("Closing parenthesis are more than opening one, wait What!!!");N--,g=h,d=s,w.push(S),a(m,1)}else if(6===_){if(C.hasDec)throw new Error("Two decimals are not allowed in one number");1!==C.type&&(C={show:"0",value:0,type:1,precedence:0},w.push(C)),g=p,a(m,1),d=u,C.value+=I,C.hasDec=!0}else 7===_&&(g=h,d=s,a(m,1),w.push(S));8===_?(g=o,d=u,a(m,M.numberOfArguments+2),w.push(S),4!==k[n+1].type&&(w.push(c),m.push(M.numberOfArguments+2))):9===_?(9===C.type?C.value===this.math.add?(C.value=I,C.show=R,a(m,1)):C.value===this.math.sub&&"-"===R&&(C.value=this.math.add,C.show="+",a(m,1)):5!==C.type&&7!==C.type&&1!==C.type&&3!==C.type&&13!==C.type?"-"===T&&(g=o,d=u,a(m,2).push(2),w.push(v),w.push(c)):(w.push(S),a(m,2)),g=o,d=u):10===_?(g=o,d=u,a(m,2),w.push(S)):11===_?(g=o,d=u,w.push(S)):12===_?(g=o,d=u,a(m,6),w.push(S),4!==k[n+1].type&&(w.push(c),m.push(6))):13===_&&(g=h,d=s,w.push(S)),a(m,-1),A=T}else if(n>0&&n<k.length-1&&1===k[n+1].type&&(1===k[n-1].type||6===k[n-1].type))throw new Error("Unexpected Space")}for(O=m.length;O--;)w.push(y);if(!0!==g[5])throw new Error("complete the expression");for(;N--;)w.push(y);return w.push(y),w};function c(e){for(var t,n,a,o=[],h=-1,r=-1,u=[{value:"(",type:4,precedence:0,show:"("}],s=1;s<e.length;s++)if(1===e[s].type||3===e[s].type||13===e[s].type)1===e[s].type&&(e[s].value=Number(e[s].value)),o.push(e[s]);else if(4===e[s].type)u.push(e[s]);else if(5===e[s].type)for(;4!==(null==(p=n=u.pop())?void 0:p.type);){var p;n&&o.push(n)}else if(11===e[s].type){for(;4!==(null==(i=n=u.pop())?void 0:i.type);){var i;n&&o.push(n)}u.push(n)}else{r=(t=e[s]).precedence,h=(a=u[u.length-1]).precedence;var l="Math.pow"==a.value&&"Math.pow"==t.value;if(r>h)u.push(t);else{for(;h>=r&&!l||l&&r<h;)n=u.pop(),a=u[u.length-1],n&&o.push(n),h=a.precedence,l="Math.pow"==t.value&&"Math.pow"==a.value;u.push(t)}}return o}function w(e,t){(t=t||{}).PI=Math.PI,t.E=Math.E;for(var n,a,o,h=[],r=void 0!==t.n,u=0;u<e.length;u++)if(1===e[u].type)h.push({value:e[u].value,type:1});else if(3===e[u].type)h.push({value:t[e[u].value],type:1});else if(0===e[u].type){var s=h[h.length-1];Array.isArray(s)?s.push(e[u]):s.value=e[u].value(s.value)}else if(7===e[u].type){var p=h[h.length-1];Array.isArray(p)?p.push(e[u]):p.value=e[u].value(p.value)}else if(8===e[u].type){for(var i=[],l=0;l<e[u].numberOfArguments;l++){var v=h.pop();v&&i.push(v.value)}h.push({type:1,value:e[u].value.apply(e[u],i.reverse())})}else if(10===e[u].type)n=h.pop(),a=h.pop(),Array.isArray(a)?((a=a.concat(n)).push(e[u]),h.push(a)):Array.isArray(n)?(n.unshift(a),n.push(e[u]),h.push(n)):h.push({type:1,value:e[u].value(a.value,n.value)});else if(2===e[u].type||9===e[u].type)n=h.pop(),a=h.pop(),Array.isArray(a)?((a=a.concat(n)).push(e[u]),h.push(a)):Array.isArray(n)?(n.unshift(a),n.push(e[u]),h.push(n)):h.push({type:1,value:e[u].value(a.value,n.value)});else if(12===e[u].type){n=h.pop();var f=void 0;f=!Array.isArray(n)&&n?[n]:n||[],a=h.pop(),o=h.pop(),h.push({type:1,value:e[u].value(o.value,a.value,f)})}else 13===e[u].type&&(r?h.push({value:t[e[u].value],type:3}):h.push([e[u]]));if(h.length>1)throw new Error("Uncaught Syntax error");return parseFloat(h[0].value.toFixed(15))}var m=function(){function t(){var t;this.toPostfix=c,this.addToken=v,this.lex=y,this.postfixEval=w,this.math=(t=this,{isDegree:!0,acos:function(e){return t.math.isDegree?180/Math.PI*Math.acos(e):Math.acos(e)},add:function(e,t){return e+t},asin:function(e){return t.math.isDegree?180/Math.PI*Math.asin(e):Math.asin(e)},atan:function(e){return t.math.isDegree?180/Math.PI*Math.atan(e):Math.atan(e)},acosh:function(e){return Math.log(e+Math.sqrt(e*e-1))},asinh:function(e){return Math.log(e+Math.sqrt(e*e+1))},atanh:function(e){return Math.log((1+e)/(1-e))},C:function(e,n){var a=1,o=e-n,h=n;h<o&&(h=o,o=n);for(var r=h+1;r<=e;r++)a*=r;var u=t.math.fact(o);return"NaN"===u?"NaN":a/u},changeSign:function(e){return-e},cos:function(e){return t.math.isDegree&&(e=t.math.toRadian(e)),Math.cos(e)},cosh:function(e){return(Math.pow(Math.E,e)+Math.pow(Math.E,-1*e))/2},div:function(e,t){return e/t},fact:function(e){if(e%1!=0)return"NaN";for(var t=1,n=2;n<=e;n++)t*=n;return t},inverse:function(e){return 1/e},log:function(e){return Math.log(e)/Math.log(10)},mod:function(e,t){return e%t},mul:function(e,t){return e*t},P:function(e,t){for(var n=1,a=Math.floor(e)-Math.floor(t)+1;a<=Math.floor(e);a++)n*=a;return n},Pi:function(e,n,a){for(var o=1,h=e;h<=n;h++)o*=Number(t.postfixEval(a,{n:h}));return o},pow10x:function(e){for(var t=1;e--;)t*=10;return t},sigma:function(e,n,a){for(var o=0,h=e;h<=n;h++)o+=Number(t.postfixEval(a,{n:h}));return o},sin:function(e){return t.math.isDegree&&(e=t.math.toRadian(e)),Math.sin(e)},sinh:function(e){return(Math.pow(Math.E,e)-Math.pow(Math.E,-1*e))/2},sub:function(e,t){return e-t},tan:function(e){return t.math.isDegree&&(e=t.math.toRadian(e)),Math.tan(e)},tanh:function(e){return t.math.sinh(e)/t.math.cosh(e)},toRadian:function(e){return e*Math.PI/180},and:function(e,t){return e&t}}),this.tokens=function(t){return[{token:"sin",show:"sin",type:0,value:t.math.sin},{token:"cos",show:"cos",type:0,value:t.math.cos},{token:"tan",show:"tan",type:0,value:t.math.tan},{token:"pi",show:"&pi;",type:3,value:"PI"},{token:"(",show:"(",type:4,value:"("},{token:")",show:")",type:5,value:")"},{token:"P",show:"P",type:10,value:t.math.P},{token:"C",show:"C",type:10,value:t.math.C},{token:" ",show:" ",type:14,value:" ".anchor},{token:"asin",show:"asin",type:0,value:t.math.asin},{token:"acos",show:"acos",type:0,value:t.math.acos},{token:"atan",show:"atan",type:0,value:t.math.atan},{token:"7",show:"7",type:1,value:"7"},{token:"8",show:"8",type:1,value:"8"},{token:"9",show:"9",type:1,value:"9"},{token:"int",show:"Int",type:0,value:Math.floor},{token:"cosh",show:"cosh",type:0,value:t.math.cosh},{token:"acosh",show:"acosh",type:0,value:t.math.acosh},{token:"ln",show:" ln",type:0,value:Math.log},{token:"^",show:"^",type:10,value:Math.pow},{token:"root",show:"root",type:0,value:Math.sqrt},{token:"4",show:"4",type:1,value:"4"},{token:"5",show:"5",type:1,value:"5"},{token:"6",show:"6",type:1,value:"6"},{token:"/",show:"&divide;",type:2,value:t.math.div},{token:"!",show:"!",type:7,value:t.math.fact},{token:"tanh",show:"tanh",type:0,value:t.math.tanh},{token:"atanh",show:"atanh",type:0,value:t.math.atanh},{token:"Mod",show:" Mod ",type:2,value:t.math.mod},{token:"1",show:"1",type:1,value:"1"},{token:"2",show:"2",type:1,value:"2"},{token:"3",show:"3",type:1,value:"3"},{token:"*",show:"&times;",type:2,value:t.math.mul},{token:"sinh",show:"sinh",type:0,value:t.math.sinh},{token:"asinh",show:"asinh",type:0,value:t.math.asinh},{token:"e",show:"e",type:3,value:"E"},{token:"log",show:" log",type:0,value:t.math.log},{token:"0",show:"0",type:1,value:"0"},{token:".",show:".",type:6,value:"."},{token:"+",show:"+",type:9,value:t.math.add},{token:"-",show:"-",type:9,value:t.math.sub},{token:",",show:",",type:11,value:","},{token:"Sigma",show:"&Sigma;",type:12,value:t.math.sigma},{token:"n",show:"n",type:13,value:"n"},{token:"Pi",show:"&Pi;",type:12,value:t.math.Pi},{token:"pow",show:"pow",type:8,value:Math.pow,numberOfArguments:2},{token:"&",show:"&",type:9,value:t.math.and}].map((function(t){return e({},t,{precedence:n[t.type]})}))}(this)}return t.prototype.eval=function(e,t,n){return this.postfixEval(this.toPostfix(this.lex(e,t)),n)},t}();return m.TOKEN_TYPES=t,m.tokenTypes=t,m}));
 	}
 	
@@ -771,7 +788,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			});
 		});
 	}
-	
+	// End of events related to enabling passive events without preventDefault error.
 	window.Eyal_OnKeyPressed = function(evt)
 	{
 		if(Eyal_unlockCardMechanics && duelist)
@@ -1355,21 +1372,32 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 	
 	window.toGY = function(player, data)
 	{
+		console.time("Eyal_Test");
 		var card = removeCard(player, data);
 		if (!card) {
 			card = removeFromBanished(player.opponent, data);
 		}
+		
+		console.timeEnd("Eyal_Test");
+		console.time("Eyal_Test2");
 		updateController(card.data("owner"), card);
 		card.data("cardfront").reinitialize(data.card);
 		card.data("face_down", false);
 		$('#field').append(card);
 		TweenMax.set(card, {"z":card.getGraveZ()})
 		card.data("owner").grave_arr.unshift(card);
+		console.timeEnd("Eyal_Test2");
+		console.time("Eyal_Test3");
 		TweenMax.to(card, easeSeconds, {left:card.data("owner").graveX, top:card.data("owner").graveY, scale:0.1485, rotation:card.data("owner").rot, rotationY:ABOUT_ZERO, ease:Linear.easeNone, onComplete:function(){
+			
+			console.timeEnd("Eyal_Test3");
+			console.time("Eyal_Test4");
 			shiftGrave(card.data("owner"));
 			endAction();
+			
+			console.timeEnd("Eyal_Test4");
 		}});
-		playSound(Move);
+		//playSound(Move);
 		
 		if(card.data("owner") == player1 && card && card.data("cardfront").data("effect").search(/During the End Phase, if this card is in the GY because it was sent there this turn:/i) != -1)
 		{
@@ -1916,9 +1944,23 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				Eyal_playLimitedSound();
 			}
 		}
-
-		// Eyal282 here..
 		
+	}
+	
+	window.exitDueling = function()
+	{
+		$('#field').hide();
+		$('#duel .card').detach();
+		$('.all_good').hide();
+		recycleCards();
+		removeFieldSpellPic();
+		
+		// Eyal282 here.
+		
+		if(typeof window.Eyal_lastTimescale !== "undefined")
+		{
+			TweenMax.globalTimeScale(window.Eyal_lastTimescale);
+		}
 	}
 	window.startDuel = function(data)
 	{	
@@ -2218,6 +2260,25 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		
 		switch(card.data("cardfront").data("name"))
 		{
+			case "Number 100: Numeron Dragon":
+				if(originalStat == "atk")
+				{
+					Eyal_CheckPlayerZones(true);
+					
+					let totalRanks = null;
+					
+					for(let abc=0;abc < Eyal_MonsterZones.length;abc++)
+					{
+						if(Eyal_MonsterZones[abc].card.data("cardfront").data("monster_color") != "Xyz")
+							continue;
+						
+						totalRanks += Eyal_MonsterZones[abc].card.data("cardfront").data("level");
+					}
+				
+					defaultStat = `1000 * ${totalRanks}`;
+				}
+			break;
+			
 			case "Borreload Savage Dragon":
 			
 				if(originalStat == "atk")
@@ -2776,6 +2837,9 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		// Edit stats on replays.
 		if(typeof getInput === "function" && typeof addButton === "function" && typeof hideDisplayBoxes === "function" && $("#input").length == 0)
 		{
+			
+			console.log("Test");
+			
 			$(document.body).append($(`<div id="input">
 				<span class="title_txt">Choose new ATK:</span>
 				<div class="body_txt selectable">x = old ATK, y = current ATK</div>
@@ -2906,8 +2970,9 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				{
 					let rotY = Eyal_getCardRotY(player.all_cards_arr[abc])
 
-					if(rotY != null)
+					if(rotY != null && rotY != getRotationY(player.all_cards_arr[abc][0]))
 					{
+						console.log("Houston we have a problem (if this message is spammed)");
 						TweenMax.set(player.all_cards_arr[abc], {rotationY:rotY, ease:Linear.easeNone});
 					}
 				}
@@ -2925,7 +2990,12 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			
 			// .off("click") ruins targetting.
 			player.all_cards_arr[abc].find('.content:first').off("mousedown");
-			player.all_cards_arr[abc].find('.content:first').mousedown(Eyal_clickE);
+			
+			if(birdUI)
+			{
+				player.all_cards_arr[abc].find('.content:first').mousedown(Eyal_clickE);
+			}
+				
 			
 			player.all_cards_arr[abc].find('.content:first').off("mouseleave");
 			player.all_cards_arr[abc].find('.content:first').mouseleave(menuOutE);
@@ -2961,9 +3031,6 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			{
 				rotY = 0;
 			}
-		
-			
-			TweenMax.set(card, {rotationY:rotY, ease:Linear.easeNone});
 		}
 		// "To opponent's hand" :D
 		else if(isIn(card, card.data("controller").opponent.hand_arr) >= 0)
@@ -3196,7 +3263,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		
 		let originalCard = card;
 
-		if (card.data("fake_card") && viewing == "Xyz materials")
+		if (card.data("fake_card") && viewing == "Eyal Xyz Materials")
 		{
 			if (typeof Eyal_lastXyzCard === "undefined")
 				return;
@@ -3867,10 +3934,17 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
             getConfirmation("Log Opponent's Hand?", "", Eyal_LogHandYes);
         }
         
-        if (duelist && viewing) {
-            Send({"action":"Duel", "play":b ? "Stop viewing 2" : "Stop viewing", "viewing":viewing});
-            player1.temp_arr = [];
-        }
+		if (e && duelist && viewing == "Deck (Picking 4 Cards)" && player1.temp_arr.length > 0) {
+			Send({"action":"Duel", "play":next_callback, "cards":player1.temp_arr});
+			
+		}
+		if (duelist && viewing) {
+			Send({"action":"Duel", "play":b ? "Stop viewing 2" : "Stop viewing", "viewing":viewing});
+			player1.temp_arr = [];
+		}
+		if (viewing == "Xyz Materials") {
+			updateAllXyzMaterials(player1);
+		}
         removeCardMenu();
         viewing = "";
         $('#view .title_txt').text("");
@@ -3903,8 +3977,85 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
         addLine("==============================")
     }
 	
-	window.previewFront = function(cardfront)
+	/*window.Eyal_previewE = function(e)
 	{
+		let boundFunc = previewE.bind(this);
+		boundFunc(e);
+		//updateMouse(e);
+		//addMouseMove();
+		
+		// Go to another function to fix intervals inside events of objects being throttled.
+		
+		previewE()
+		//Eyal_previewE2($(this), e.type);
+	}
+	
+	window.Eyal_previewE2 = function(card, eventType)
+	{
+		
+		let lastMouseX = mouseX
+		let lastMouseY = mouseY
+		
+		if(typeof window.Eyal_previewInterval !== "undefined")
+		{
+			clearInterval(window.Eyal_previewInterval);
+		}
+		
+		window.Eyal_boundsCount = 10;
+		
+		console.log("a");
+		window.Eyal_previewInterval = setInterval(function ()
+		{
+			console.log("A");
+			return;
+			let savedLastMouseX = lastMouseX;
+			let savedLastMouseY = lastMouseY;
+			
+			lastMouseX = mouseX
+			lastMouseY = mouseY;
+			
+			if(!inBounds(card) && eventType != "mousedown" && eventType != "click")
+			{
+				Eyal_boundsCount--;
+				
+				if(Eyal_boundsCount)
+				{
+					clearInterval(window.Eyal_previewInterval);
+					window.Eyal_previewInterval = undefined;
+				}
+				return;
+			}
+			
+			let speed = Math.sqrt(Math.pow(savedLastMouseY - mouseY, 2) + Math.pow(savedLastMouseX - mouseX, 2));
+			
+			if(speed > 20)
+			{
+				console.log(speed);
+				return;
+			}
+			
+			console.log("Go")
+			if (card.attr("class").indexOf("cardfront") < 0)
+			{
+				removeMouseMove()
+				previewCard(card);
+				clearInterval(window.Eyal_previewInterval);
+				window.Eyal_previewInterval = undefined;
+				return;
+			}
+			else 
+			{
+				removeMouseMove()
+				previewFront(card);
+				clearInterval(window.Eyal_previewInterval);
+				window.Eyal_previewInterval = undefined;
+				return;
+			}
+		}, 20);
+	}*/
+	
+	window.previewFront = function(cardfront)
+	{	
 		if (preview.data("id") == 0) {
 			preview.data("id", -1);
 		}
@@ -3989,7 +4140,14 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				obj.pic = imageURL;
 				
 				Eyal_TextImages.push(obj);
+				
+				console.profileEnd();
 			}
+		}
+		if(cardfront.data("effect").search(/(This card is a Switch Monster)/i) != -1)
+		{
+			preview.find('.card_color').attr('src', "");
+			preview.find('.card_color').attr('src', 'https://i.ibb.co/8BxWXc1/image.png')
 		}
 		if(cardfront.data("effect").search(/(This card is an Evolve Monster)/i) != -1)
 		{
@@ -4736,7 +4894,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 	{
 		if(data.action == "Duel" && data.play.indexOf("Stop viewing") >= 0)
 		{
-			if(data.viewing.indexOf("Secret ") >= 0 || data.viewing == "Xyz materials")
+			if(data.viewing.indexOf("Secret ") >= 0 || data.viewing == "Eyal Xyz Materials")
 				return;
 		}
 		else if(data.action == "Duel" && data.play == "Duel message")
@@ -4853,6 +5011,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				addLine("/card Skill ==> Find's a card named Skill, or abbreviated Skill");
 				addLine("/calc (10 + 10) * 20 ==> Silently calculates, prints result.");
 				addLine("/calc2 (10 + 10) * 20 ==> calculates, forces you to say formula = result.");
+				addLine("/rngdiscard ==> Tells opponent how it'll work, then shuffles your hand and banishes FD closest card to your Deck.");
 				addLine("/unext ==> Depracated. Right click banish pile to unexcavate.");
 				addLine("/unexb ==> Depracated. Right click banish pile to unexcavate.");
 				addLine("/unexg ==> Depracated. Right click banish pile to unexcavate.");
@@ -5217,7 +5376,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 
 		let originalCard = card;
 
-		if (card.data("fake_card") && viewing == "Xyz materials")
+		if (card.data("fake_card") && viewing == "Eyal Xyz Materials")
 		{
 			if (typeof Eyal_lastXyzCard === "undefined")
 				return;
@@ -5762,6 +5921,11 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 									menu.push({label:"Resolve Effect",data:"Rubber Band effect"});
 								}
 								break;
+							case "Rescue-ACE Turbulence":
+								if (player1.main_arr.length >= 1) {
+									menu.push({label:"Resolve Effect",data:"Turbulence effect"});
+								}
+								break;
 							case "Crowley, the First Propheseer":
 							case "Power Tool Dragon":
 							case "Machina Metalcruncher":
@@ -5848,6 +6012,9 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 						}
 						if (card.data("cardfront").data("name") == "Toon Page-Flip" && player1.main_arr.length >= 3) {
 							menu.push({label:"Resolve Effect",data:"Page-Flip effect"});
+						}
+						if (card.data("cardfront").data("name") == "Gold Pride - Start Your Engines!" && player1.main_arr.length >= 3) {
+						menu.push({label:"Resolve Effect",data:"Page-Flip effect"});
 						}
 						if (card.data("cardfront").data("name") == "Ancient Telescope" && player2.main_arr.length >= 1) {
 							menu.push({label:"Look at cards",data:"Telescope event"});
@@ -5958,7 +6125,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 					menu.push({ label: "SS DEF", data: "SS DEF" });
 					menu.push({label:"To Front",data:"Eyal Xyz Material To Front"});
 				}
-				if ((viewing == "Deck (Picking 3 Cards)" || viewing == "Deck (Picking 2 Cards)" || viewing == "Deck (Picking Card)") && (isIn(card, player1.main_arr) >= 0 || isIn(card, player1.opponent.main_arr) >= 0)) {
+				if ((viewing == "Deck (Picking 4 Cards)" || viewing == "Deck (Picking 3 Cards)" || viewing == "Deck (Picking 2 Cards)" || viewing == "Deck (Picking Card)") && (isIn(card, player1.main_arr) >= 0 || isIn(card, player1.opponent.main_arr) >= 0)) {
 					menu = [];
 					if (player1.temp_arr.indexOf(card.data("id")) < 0) {
 						menu.push({label:"Choose",data:"Choose card"});
@@ -6645,7 +6812,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		{
 			var rotY = Eyal_getCardRotY(summoning_card);
 			
-			if(rotY != null)
+			if(rotY != null && rotY != getRotationY(summoning_card[0]))
 			{
 				TweenMax.set(summoning_card, {rotationY:rotY, ease:Linear.easeNone});
 			}
@@ -6704,7 +6871,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			Eyal_addColoredLine("FF0000", "Error: Cannot interact with cards in Secret Deck");
 			return;
 		}
-		else if (card.data("fake_card") && viewing == "Xyz materials")
+		else if (card.data("fake_card") && viewing == "Eyal Xyz Materials")
 		{
 			if (typeof Eyal_lastXyzCard === "undefined")
 				return;
@@ -6996,13 +7163,13 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		{
 			Eyal_lastXyzCard = card;
 
-			viewingE("Xyz materials");	
+			viewingE("Eyal Xyz Materials");	
 		}
 
 
 		if (data == "Choose card") {
 			player1.temp_arr.push(card.data("id"));
-			if (player1.temp_arr.length == 3 && viewing == "Deck (Picking 3 Cards)" || player1.temp_arr.length == 2 && viewing == "Deck (Picking 2 Cards)" || player1.temp_arr.length == 1 && viewing == "Deck (Picking Card)") {
+			if (player1.temp_arr.length == 4 && viewing == "Deck (Picking 4 Cards)" || player1.temp_arr.length == 3 && viewing == "Deck (Picking 3 Cards)" || player1.temp_arr.length == 2 && viewing == "Deck (Picking 2 Cards)" || player1.temp_arr.length == 1 && viewing == "Deck (Picking Card)") {
 				Send({"action":"Duel", "play":next_callback, "cards":player1.temp_arr});
 				Eyal_exitViewing();
 			}
@@ -7417,8 +7584,9 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			
 			var rotY = Eyal_getCardRotY(summoning_card);
 			
-			if(rotY != null)
+			if(rotY != null && rotY != getRotationY(summoning_card[0]))
 			{
+				console.log("Houston we have a problem (if this message is spammed)");
 				TweenMax.set(summoning_card, {rotationY:rotY, ease:Linear.easeNone});
 			}
 		}
@@ -7456,6 +7624,8 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		else
 		{
 			// hideSelectZones will wipe our rotation and dreams.
+			
+			console.time("Test123");
 			
 			hideSelectZones();
 			
@@ -8886,7 +9056,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		menu.css("left", left);
 		TweenMax.set(menu, {"scaleY":1});
 		//TweenMax.set(menu, {"scaleY":isMonster(player1, menu_card) ? 2 : 2.5});
-		TweenMax.fromTo(menu.find('#card_menu_content'), 0.03 * dp.length, {"top":h}, {"top":0, ease:Linear.easeNone, onComplete:function(){
+		TweenMax.fromTo(menu.find('#card_menu_content'), lowAnimations ? 0 : (0.03 * dp.length), {"top":h}, {"top":0, ease:Linear.easeNone, onComplete:function(){
 			var scaleY = 1;
 			if (menu[0].getBoundingClientRect().y < -marginTop) {
 				scaleY = (menu[0].scrollHeight + menu[0].getBoundingClientRect().y) / menu[0].scrollHeight;
@@ -8919,6 +9089,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			return temp;
 		};
 		
+		console.log("If this appears more than once, insane issues");
 		window.Eyal_originalDuelResponse = window.duelResponse.clone();
 	}
 	
@@ -8939,12 +9110,36 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		{
 			playSound(ShuffleHand);
 		}
-}
+	}
 	
 	window.duelResponse = function(data)
 	{
 		if(!data.fake)
+		{
+			if(typeof window.Eyal_lastTimescale !== "undefined")
+			{
+				TweenMax.globalTimeScale(window.Eyal_lastTimescale);
+			}
+			window.Eyal_lastTimescale = TweenMax.globalTimeScale();
+
+			if(lowAnimations && data.play.search(/deck/i) == -1)
+			{
+				if(duelist && data.username == username)
+				{
+					TweenMax.globalTimeScale(3.0);
+				}
+				else
+				{
+					TweenMax.globalTimeScale(1.5);
+				}
+            }
+			
+			console.time("DuelResponse");
+			
 			Eyal_originalDuelResponse(data);
+			
+			console.timeEnd("DuelResponse");
+		}
 		
 		switch(data.play)
 		{
@@ -9751,7 +9946,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 	
 	window.shiftGrave = function(player)
 	{
-		if (viewing.indexOf("Graveyard") >= 0 || viewing.indexOf("Secret ") >= 0 || viewing == "Xyz materials") {
+		if (viewing.indexOf("Graveyard") >= 0 || viewing.indexOf("Secret ") >= 0 || viewing == "Eyal Xyz Materials") {
 			viewingE(viewing);
 			return;
 		}
@@ -9775,7 +9970,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 
 	window.shiftBanished = function(player)
 	{
-		if (viewing == "Banished" || viewing == "Opponent's Banished" || viewing.indexOf("Secret ") >= 0 || viewing == "Xyz materials") {
+		if (viewing == "Banished" || viewing == "Opponent's Banished" || viewing.indexOf("Secret ") >= 0 || viewing == "Eyal Xyz Materials") {
 			viewingE(viewing);
 			return;
 		}
@@ -9802,12 +9997,14 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		console.time("viewCards");
 		
 		let content = $('#view > .content')[0];
-	
-		// Eyal282 here, remove old data from the menu.
-		while (content.firstChild)
+		
+		// Eyal282 here, remove all cards from the previous menu.
+		for(let abc=0;abc < $('#view > .content').find(".card").length;abc++)
 		{
-			content.removeChild(content.lastChild);
+			// Eyal282 here, not easy to explain why [0] instead of [abc], probably because it changes the order immediately when removed.
+			$('#view > .content').find(".card")[0].remove()
 		}
+		
 		var permission = false;
 		if (data) {
 			if (data.permission) {
@@ -9830,10 +10027,14 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			$('#view > .content').addClass("unscrollable");
 		}
 		for (var i = 0; i < arr.length; i++) {
+			if (arr[i].data("isXyzMaterial")) {
+				// updateXyzMaterials is called frequently, causing Xyz Materials to line up. That tween keeps going long after this function executes. So, by killing those tweens, this function is what happens to those cards last.
+				TweenMax.killTweensOf(arr[i]);
+			}
 			if (i == 16) {
 				$('#view > .content').removeClass("unscrollable");
 			}
-			if (data && data.deck && data.deck[i] && viewing != "Secret Deck" && viewing != "Xyz materials") {
+			if (data && data.deck && data.deck[i] && viewing != "Secret Deck" && viewing != "Eyal Xyz Materials") {
 				arr[i].data("cardfront").reinitialize(data.deck[i]);
 			}
 			/*
@@ -9896,6 +10097,23 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		//$('#view > .content').scrollTop(0); // why was this here? it makes it jump back to the top every time you click a card menu button
 		console.timeEnd("viewCards");
 	}
+	
+	window.Eyal_clearPreviousCardsFromContent = function(content)
+	{
+		// Eyal282 here, remove old data from the menu.
+		for(let abc=0;abc < content.children.length;abc++)
+		{
+			if(content.children[abc].className == "card")
+			{
+				content.removeChild(content.children[abc]);
+				continue;
+			}
+			if(content.children[abc].children.length > 0)
+			{
+				Eyal_clearPreviousCardsFromContent(content.children[abc]);
+			}
+		}
+	}
 	window.updateViewing = function()
 	{
 		switch (viewing) {
@@ -9907,6 +10125,8 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				break;
 				
 			case "Secret Deck":
+				Eyal_GenerateTrueAllCardsArray();
+				
 				viewCards(Eyal_GenerateSecretDeck());
 				break;
 			break;
@@ -9948,7 +10168,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				viewCards(Player1().opponent.hand_arr);
 				break;
 			
-			case "Xyz materials":
+			case "Eyal Xyz Materials":
 				if (typeof Eyal_lastXyzCard == undefined)
 					return;
 				
@@ -10062,6 +10282,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			case "Deck (Picking Card)":
 			case "Deck (Picking 2 Cards)":
 			case "Deck (Picking 3 Cards)":
+			case "Deck (Picking 4 Cards)":
 				arr = Player1().main_arr;
 				break;
 			case "Secret Deck":
@@ -10119,7 +10340,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				}
 				break;
 			
-			case "Xyz materials":
+			case "Eyal Xyz Materials":
 				if (typeof Eyal_lastXyzCard == undefined)
 					return;
 
@@ -10134,7 +10355,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		}
 		viewing = str;
 		
-		if(viewing.indexOf("Secret ") < 0 && viewing != "Xyz materials")
+		if(viewing.indexOf("Secret ") < 0 && viewing != "Eyal Xyz Materials")
 		{
 			$('#view .title_txt').text("Viewing " + str);
 			
@@ -10348,7 +10569,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 	}
 	window.Eyal_GenerateTrueAllCardsArray = function()
 	{
-		if(viewing == "Deck")
+		if(viewing == "Deck" || viewing == "Secret Deck")
 		{
 			
 			Eyal_TrueDeckArr = [];
@@ -10362,7 +10583,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				Eyal_TrueDeckArr.push(newCard);
 			}
 		}
-		if(viewing == "Extra Deck")
+		if(viewing == "Extra Deck" || viewing == "Secret Extra Deck")
 		{
 			Eyal_TrueExtraDeckArr = [].concat(player1.extra_arr);
 		}
@@ -10452,7 +10673,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		
 		viewingE("Opponent's Secret GY");
 	}
-	
+	/*
 	if($("#deck_hidden").length > 0)
 	{
 		$("#deck_hidden").off("contextmenu");
@@ -10466,6 +10687,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 			getConfirmation("Secretly check your Deck?", "This will not shuffle it, and order is random.<br>It won't work unless you viewed Deck once this duel.", Eyal_SecretDeckYes, undefined, true);
 		});
 	}
+	*/
 	
 	if($("#extra_hidden").length > 0)
 	{
@@ -10532,15 +10754,39 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		});
 	}
 	
-	if(duelist && typeof Eyal_swapCardMenuForPlayer == "function")
-	{			
-		Eyal_swapCardMenuForPlayer(player1);
-		Eyal_swapCardMenuForPlayer(player2);
-		
-		if(tag_duel)
+	if(typeof Eyal_swapCardMenuForPlayer == "function")
+	{		
+		for(let abc=0;abc < deck_arr.length;abc++)
 		{
-			Eyal_swapCardMenuForPlayer(player3)
-			Eyal_swapCardMenuForPlayer(player4)
+			deck_arr[abc].off("mouseenter");
+			deck_arr[abc].off("mouseover");
+			deck_arr[abc].mouseover(previewE);
+		}
+		
+		for(let abc=0;abc < side_arr.length;abc++)
+		{
+			side_arr[abc].off("mouseenter");
+			side_arr[abc].off("mouseover");
+			side_arr[abc].mouseover(previewE);
+		}
+		
+		for(let abc=0;abc < extra_arr.length;abc++)
+		{
+			extra_arr[abc].off("mouseenter");
+			extra_arr[abc].off("mouseover");
+			extra_arr[abc].mouseover(previewE);
+		}
+		
+		if(duelist)
+		{
+			Eyal_swapCardMenuForPlayer(player1);
+			Eyal_swapCardMenuForPlayer(player2);
+			
+			if(tag_duel)
+			{
+				Eyal_swapCardMenuForPlayer(player3)
+				Eyal_swapCardMenuForPlayer(player4)
+			}
 		}
 	}	
 
@@ -11210,7 +11456,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				else if(isIn(player1.all_cards_arr[abc], player1.main_arr) >= 0)
 					continue;
 				
-				else if(player1.all_cards_arr[abc] == Eyal_fiberCard)
+				else if(player1.all_cards_arr[abc].data("id") == Eyal_fiberCard.data("id"))
 					continue;
 					
 					
@@ -11247,7 +11493,7 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 				else if(isIn(player2.all_cards_arr[abc], player1.main_arr) >= 0)
 					continue;
 				
-				else if(player2.all_cards_arr[abc] == Eyal_fiberCard)
+				else if(player2.all_cards_arr[abc].data("id") == Eyal_fiberCard.data("id"))
 					continue;
 					
 				if(isIn(player2.all_cards_arr[abc], player2.grave_arr) >= 0 || treatAsGY == player2.all_cards_arr[abc])
@@ -12743,7 +12989,11 @@ function injectFunction(unlockCardMechanics, silentCommands, potOfSwitch, femOfS
 		if (duelist) {
 			card.find('.content:first').mouseover(Eyal_cardMenuE);
 			card.find('.content:first').contextmenu(Eyal_contextMenuE);
-			card.find('.content:first').mousedown(Eyal_clickE);
+			
+			if(birdUI)
+			{
+				card.find('.content:first').mousedown(Eyal_clickE);
+			}
 			card.find('.content:first').mouseleave(Eyal_mouseLeaveE);
 			//card.find('.content:first').mouseleave(menuOutE);
 		}
