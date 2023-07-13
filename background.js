@@ -689,11 +689,15 @@ function censorInjectFunction(potOfSwitch, femOfSwitch)
 			if(Eyal_cards[abc].data("cardfront"))
 				Eyal_cards[abc] = Eyal_cards[abc].data("cardfront");
 			
-			if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/(This card is a Switch Monster)/i) != -1)
+			if(Eyal_cards[abc].data("ability") == "Gemini")
+			{
+				Eyal_cards[abc].find('.card_color').attr('src', 'https://i.ibb.co/m9RBw8Z/Gemini-Cardtype.png');
+			}
+			else if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/(This card is a Switch Monster)/i) != -1)
 			{
 				Eyal_cards[abc].find('.card_color').attr('src', "https://i.ibb.co/8BxWXc1/image.png");
 			}
-			if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/(This card is an Evolve Monster)/i) != -1)
+			else if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/(This card is an Evolve Monster)/i) != -1)
 			{
 				Eyal_cards[abc].find('.card_color').attr('src', "https://i.ibb.co/XzGbZ6p/Evolution-cardtype.png");
 				
@@ -713,6 +717,12 @@ function censorInjectFunction(potOfSwitch, femOfSwitch)
 			if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/this card is DREAM-Attribute/i) != -1)
 			{
 				Eyal_cards[abc].find('.attribute').attr('src', "https://i.ibb.co/X2VSTR0/dream2-en.png")
+			}
+			
+			
+			if(typeof Eyal_OnGetCardVisualsPost !== "undefined")
+			{
+				Eyal_OnGetCardVisualsPost(Eyal_cards[abc], Eyal_cards[abc]);
 			}
 		}
 	}
@@ -1327,6 +1337,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		window.GYwarning = [];
 	}
+	
 	window.Eyal_endTurnE = function()
 	{
 		
@@ -1710,17 +1721,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		$('#profile_viewer .stats .registered_txt').text(data.registered);
 		showAdvancedStats(data);
 		$('#profile_viewer .views_txt').text(data.views);
-		/*if (data.html) {
-			var ifr = $('<iframe scrolling="no" width="100%" height="100%" frameborder="0" marginwidth="0" marginheight="0" sandbox="allow-same-origin allow-popups"></iframe>');
-			$('#profile_viewer .profile_txt').html(ifr);
-			ifr.attr("height", 0);
-			ifr.get(0).contentWindow.document.write('<html><style>::selection { color: white; background: black; } ::-moz-selection { color: white; background: black; } div { display: inline; }</style><body style="font-family: Arial; font-size: 12px;">' + addLinks(addBreaks(flashToHTML(data.profile_txt))) + '</body></html>');
-			//ifr.get(0).contentWindow.document.body.outerHTML = '<html><style>::selection { color: white; background: black; } ::-moz-selection { color: white; background: black; } div { display: inline; }</style><body style="font-family: Arial; font-size: 12px;">' + addLinks(addBreaks(data.profile_txt.replace(/  /g, ' &nbsp;'))) + '</body></html>';
-			ifr.attr("height", ifr.get(0).contentWindow.document.body.scrollHeight);
-		}
-		else {
-			$('#profile_viewer .profile_txt').html(escapeHTMLWithLinks(data.profile_txt));
-		}*/
 		
 		log('validHTMLText(data.profile_txt) = ' + validHTMLText(data.profile_txt))
 		
@@ -2240,7 +2240,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	{	
 		Eyal_tryStartMusicAsync(bForceContinue);
 	}
-	
+	/*
 	window.Eyal_EditCardStatsMenu = function()
 	{
 		let objId = $(this).attr("id");
@@ -2321,27 +2321,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				}
 			break;
 			
-			// A bit dangerous, as a player may have the highest link already in GY.
-			/*
-			case "Accesscode Talker":
-				let highestLink = 0;
-				
-				for(let abc=0;abc < player1.grave_arr.length;abc++)
-				{
-					// let card is occupied.
-					let targetCard = player1.grave_arr[abc];
-					
-					if(targetCard.data("cardfront").data("monster_color") != "Link")
-						continue;
-					
-					if(targetCard.data("cardfront").data("level") > highestLink)
-						highestLink = targetCard.data("cardfront").data("level");
-				}
-				
-				defaultStat = `x + (1000 * ${highestLink})`;
-			break;
-			*/
-			
 			case "Eater of Millions":
 				let count = 0;
 				let Eyal_arr = [].concat(player1.banished_arr, player2.banished_arr);
@@ -2375,7 +2354,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		}
 		
 		getInput(`Choose new ${originalStat.toUpperCase()}:`, `x = old ${originalStat.toUpperCase()}, y = current ${originalStat.toUpperCase()}`, defaultStat, 999, Eyal_editStatsYes);
-	}
+	}*/
 
 	window.Negate = function(str) 
 	{
@@ -2905,7 +2884,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				font-family: "Arial Rounded MT Bold";
 				background-image: url('https://images.duelingbook.com/svg/msg_background.svg');
 				background-size: contain;
-				/* background-size: cover; */
 				z-index: 45;
 			}</style>`));
 		
@@ -2922,9 +2900,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				font-weight: normal;
 				line-height: 20px;
 				pointer-events: none;
-				/* overflow: hidden; */
 				color: black;
-				/* white-space: nowrap; */
 			}</style>`));
 			
 			$('#input .input_txt').on('input', function(){
@@ -3354,7 +3330,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		updateStats();
 	}
-	
+	/*
 	window.updateStats = function()
 	{
 		var zones = [player1.m1, player1.m2, player1.m3, player1.m4, player1.m5, player2.m1, player2.m2, player2.m3, player2.m4, player2.m5];
@@ -3466,6 +3442,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		return card.data("cardfront").data("def");
 	}
+	*/
 	window.Eyal_UnexcavateYes = function()
 	{
 		for(let abc=0;abc < window.Eyal_excavatedArr.length;abc++)
@@ -3847,7 +3824,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 
 			else if(!card.data("face_down"))
 				continue;
-			
+				
 			cardMenuClicked(card, "Flip");
 		}		
 	}
@@ -3904,7 +3881,22 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
             return;
         }
         saveDuelVSP();
-        $('#duel .cout_txt').append('<b><font color="' + color + '">' + escapeHTML(str) + '</b></font><br>');
+		let messageToSend = `<b><eyal style="color: #${color};">${escapeHTML(str)}</b></eyal><br>`;
+		$('#duel .cout_txt').append(messageToSend);
+        restoreDuelVSP();
+    }
+	
+	// With outline.
+	window.Eyal_addColoredLine2 = function(color, str)
+    {
+        if (conceal)
+        {
+            return;
+        }
+        saveDuelVSP();
+		
+		let messageToSend = `<b><eyal style="color: #${color}; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">${escapeHTML(str)}</b></eyal><br>`;
+		$('#duel .cout_txt').append(messageToSend);
         restoreDuelVSP();
     }
     
@@ -3977,89 +3969,14 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
         addLine("==============================")
     }
 	
-	/*window.Eyal_previewE = function(e)
-	{
-		let boundFunc = previewE.bind(this);
-		boundFunc(e);
-		//updateMouse(e);
-		//addMouseMove();
-		
-		// Go to another function to fix intervals inside events of objects being throttled.
-		
-		previewE()
-		//Eyal_previewE2($(this), e.type);
-	}
-	
-	window.Eyal_previewE2 = function(card, eventType)
-	{
-		
-		let lastMouseX = mouseX
-		let lastMouseY = mouseY
-		
-		if(typeof window.Eyal_previewInterval !== "undefined")
-		{
-			clearInterval(window.Eyal_previewInterval);
-		}
-		
-		window.Eyal_boundsCount = 10;
-		
-		console.log("a");
-		window.Eyal_previewInterval = setInterval(function ()
-		{
-			console.log("A");
-			return;
-			let savedLastMouseX = lastMouseX;
-			let savedLastMouseY = lastMouseY;
-			
-			lastMouseX = mouseX
-			lastMouseY = mouseY;
-			
-			if(!inBounds(card) && eventType != "mousedown" && eventType != "click")
-			{
-				Eyal_boundsCount--;
-				
-				if(Eyal_boundsCount)
-				{
-					clearInterval(window.Eyal_previewInterval);
-					window.Eyal_previewInterval = undefined;
-				}
-				return;
-			}
-			
-			let speed = Math.sqrt(Math.pow(savedLastMouseY - mouseY, 2) + Math.pow(savedLastMouseX - mouseX, 2));
-			
-			if(speed > 20)
-			{
-				console.log(speed);
-				return;
-			}
-			
-			console.log("Go")
-			if (card.attr("class").indexOf("cardfront") < 0)
-			{
-				removeMouseMove()
-				previewCard(card);
-				clearInterval(window.Eyal_previewInterval);
-				window.Eyal_previewInterval = undefined;
-				return;
-			}
-			else 
-			{
-				removeMouseMove()
-				previewFront(card);
-				clearInterval(window.Eyal_previewInterval);
-				window.Eyal_previewInterval = undefined;
-				return;
-			}
-		}, 20);
-	}*/
-	
 	window.previewFront = function(cardfront)
 	{	
 		if (preview.data("id") == 0) {
 			preview.data("id", -1);
 		}
-		if (preview.data("id") == cardfront.data("id") && preview.is(":visible")) {
+		//if (preview.data("id") == cardfront.data("id") && preview.is(":visible")) {
+		if (preview.data("id") == cardfront.data("id") && preview.is(":visible") && preview.find('.pic').attr("scr") != cardfront.find('.pic').attr("scr"))
+		{
 			return;
 		}
 		
@@ -4144,15 +4061,20 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				console.profileEnd();
 			}
 		}
-		if(cardfront.data("effect").search(/(This card is a Switch Monster)/i) != -1)
+		if(cardfront.data("ability") == "Gemini")
 		{
 			preview.find('.card_color').attr('src', "");
-			preview.find('.card_color').attr('src', 'https://i.ibb.co/8BxWXc1/image.png')
+			preview.find('.card_color').attr('src', 'https://i.ibb.co/m9RBw8Z/Gemini-Cardtype.png');
 		}
-		if(cardfront.data("effect").search(/(This card is an Evolve Monster)/i) != -1)
+		else if(cardfront.data("effect").search(/(This card is a Switch Monster)/i) != -1)
 		{
 			preview.find('.card_color').attr('src', "");
-			preview.find('.card_color').attr('src', 'https://i.ibb.co/XzGbZ6p/Evolution-cardtype.png')
+			preview.find('.card_color').attr('src', 'https://i.ibb.co/8BxWXc1/image.png');
+		}
+		else if(cardfront.data("effect").search(/(This card is an Evolve Monster)/i) != -1)
+		{
+			preview.find('.card_color').attr('src', "");
+			preview.find('.card_color').attr('src', 'https://i.ibb.co/XzGbZ6p/Evolution-cardtype.png');
 			preview.find('.name_txt').css("color", "white");
 		}
 		else if(cardfront.data("effect").search(/(This card is a Token)/i) != -1)
@@ -4171,51 +4093,161 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			preview.find('.attribute').attr('src', "https://i.ibb.co/X2VSTR0/dream2-en.png")
 		}
 		
+		Eyal_newEffect = undefined;
+		Eyal_newLevelName = undefined;
+		Eyal_newLevel = undefined;
+		Eyal_newPendulumScaleEffectName = undefined;
+		Eyal_newPendulumMonsterEffectName = undefined;
+		
+		if(typeof Eyal_OnGetCardVisualsPost !== "undefined")
+		{
+			Eyal_OnGetCardVisualsPost(cardfront, preview);
+		}
+		
 		// Eyal282 here, adding URL to the card.
 		removeButton(preview, Eyal_openPreviewURL);
 		addButton(preview, Eyal_openPreviewURL);
 		
 		//if (~~cardfront.data("pendulum") > 0) {
 			
-		let levelStr = "LEVEL: ";
+		let levelStr = "<b>LEVEL: </b>";
 		
 		if(cardfront.data("monster_color") == "Xyz")
-			levelStr = "RANK: ";
+			levelStr = "<b>RANK: </b>";
+		
+		if(typeof Eyal_newLevelName !== "undefined")
+		{
+			levelStr = Eyal_newLevelName;
+		}
+		
+		let levelStrLinebreak = "<br>";
+		
+		if(levelStr.length <= 0)
+			levelStrLinebreak = "";
+		
+		let cardLevel = cardfront.data("level");
+		
+		if(typeof Eyal_newLevel !== "undefined")
+		{
+			if(typeof Eyal_newLevel !== "string")
+				Eyal_newLevel = Eyal_newLevel.toString();
+			
+			cardLevel = Eyal_newLevel;
+		}
+		
+		let previewHTML = "";
 		
 		if (cardfront.data("pendulum"))
 		{
-			preview_txt.html("<b>" + levelStr + cardfront.data("level") + "<br>" + "Pendulum Effect:</b><br>" + Eyal_MakePSCTColorOnEffect(cardfront, cardfront.data("name"), escapeHTML(cardfront.data("pendulum_effect"))) + '<br><br>' + "<b>Monster Effect:</b><br>");
+			let scaleEffectName = "<b>Pendulum Effect:</b>"
+			let monsterEffectName = "<b>Monster Effect:</b>"
+			
+			if(typeof Eyal_newPendulumScaleEffectName !== "undefined")
+			{
+				scaleEffectName = Eyal_newPendulumScaleEffectName;
+			}
+			
+			if(typeof Eyal_newPendulumMonsterEffectName !== "undefined")
+			{
+				monsterEffectName = Eyal_newPendulumMonsterEffectName;
+			}
+			previewHTML = previewHTML.concat(levelStr + "<b>" + cardLevel + "</b>" + levelStrLinebreak + scaleEffectName + "<br>" + Eyal_MakePSCTColorOnEffect(cardfront, cardfront.data("name"), escapeHTML(cardfront.data("pendulum_effect"))) + '<br><br>' + monsterEffectName + "<br>");
+			
 			if (cardfront.data("monster_color") == "Normal")
 			{
-				preview_txt.append("<i>" + escapeHTML(cardfront.data("effect")) + "</i>");
+				
+				if(typeof Eyal_newEffect !== "undefined")
+				{
+					previewHTML = previewHTML.concat("<i>" + escapeHTML(Eyal_newEffect) + "</i>");
+				}
+				else
+				{
+					previewHTML = previewHTML.concat("<i>" + escapeHTML(cardfront.data("effect")) + "</i>");
+				}
 			} else
 			{
-				preview_txt.append(Eyal_MakePSCTColorOnEffect(cardfront, cardfront.data("name"), escapeHTML(cardfront.data("effect"))));
+				if(typeof Eyal_newEffect !== "undefined")
+				{
+					previewHTML = previewHTML.concat(Eyal_MakePSCTColorOnEffect(cardfront, cardfront.data("name"), escapeHTML(Eyal_newEffect)));
+				}
+				else
+				{
+					previewHTML = previewHTML.concat(Eyal_MakePSCTColorOnEffect(cardfront, cardfront.data("name"), escapeHTML(cardfront.data("effect"))));
+				}
 			}
 		}
 		else if (cardfront.data("rush") && cardfront.data("monster_color") != "Normal")
 		{
-			preview_txt.html(escapeHTML(cardfront.data("effect")).replace('[Requirement]', '<b>[Requirement]</b>').replace('<br>[Effect]', '<br><b>[Effect]</b>').replace('<br>[Continuous Effect]', '<br><b>[Continuous Effect]</b>').replace('<br>[Multi-Choice Effect]', '<br><b>[Multi-Choice Effect]</b>').replace('[REQUIREMENT]', '<b>[REQUIREMENT]</b>').replace('<br>[EFFECT]', '<br><b>[EFFECT]</b>').replace('<br>[CONTINUOUS EFFECT]', '<br><b>[CONTINUOUS EFFECT]</b>').replace('<br>[MULTI-CHOICE EFFECT]', '<br><b>[MULTI-CHOICE EFFECT]</b>'));
+			if(typeof Eyal_newEffect !== "undefined")
+			{
+				previewHTML = previewHTML.concat(escapeHTML(Eyal_newEffect).replace('[Requirement]', '<b>[Requirement]</b>').replace('<br>[Effect]', '<br><b>[Effect]</b>').replace('<br>[Continuous Effect]', '<br><b>[Continuous Effect]</b>').replace('<br>[Multi-Choice Effect]', '<br><b>[Multi-Choice Effect]</b>').replace('[REQUIREMENT]', '<b>[REQUIREMENT]</b>').replace('<br>[EFFECT]', '<br><b>[EFFECT]</b>').replace('<br>[CONTINUOUS EFFECT]', '<br><b>[CONTINUOUS EFFECT]</b>').replace('<br>[MULTI-CHOICE EFFECT]', '<br><b>[MULTI-CHOICE EFFECT]</b>'));
+			}
+			else
+			{
+				previewHTML = previewHTML.concat(escapeHTML(cardfront.data("effect")).replace('[Requirement]', '<b>[Requirement]</b>').replace('<br>[Effect]', '<br><b>[Effect]</b>').replace('<br>[Continuous Effect]', '<br><b>[Continuous Effect]</b>').replace('<br>[Multi-Choice Effect]', '<br><b>[Multi-Choice Effect]</b>').replace('[REQUIREMENT]', '<b>[REQUIREMENT]</b>').replace('<br>[EFFECT]', '<br><b>[EFFECT]</b>').replace('<br>[CONTINUOUS EFFECT]', '<br><b>[CONTINUOUS EFFECT]</b>').replace('<br>[MULTI-CHOICE EFFECT]', '<br><b>[MULTI-CHOICE EFFECT]</b>'));
+			}
 		}
 		else
 		{
 			if (cardfront.data("monster_color") == "Normal")
 			{
-				preview_txt.html("<b>" + levelStr + cardfront.data("level") + "</b><br>" + "<i>" + escapeHTML(cardfront.data("effect")) + "</i>");
+				if(typeof Eyal_newEffect !== "undefined")
+				{
+					previewHTML = previewHTML.concat(levelStr + "<b>" + cardLevel + "</b>" + levelStrLinebreak + "<i>" + escapeHTML(Eyal_newEffect) + "</i>");
+				}
+				else
+				{
+					previewHTML = previewHTML.concat(levelStr + "<b>" + cardLevel + "</b>" + levelStrLinebreak + "<i>" + escapeHTML(cardfront.data("effect")) + "</i>");
+				}
 			}
 			else if (cardfront.data("level") > 0 && cardfront.data("monster_color") != "Link")
 			{
-				preview_txt.html("<b>" + levelStr + cardfront.data("level") + "</b><br>" + Eyal_MakePSCTColorOnEffect(cardfront, cardfront.data("name"), escapeHTML(cardfront.data("effect"))));
+				if(typeof Eyal_newEffect !== "undefined")
+				{
+					previewHTML = previewHTML.concat(levelStr + "<b>" + cardLevel + "</b>" + levelStrLinebreak + Eyal_MakePSCTColorOnEffect(cardfront, cardfront.data("name"), escapeHTML(Eyal_newEffect)));
+				}
+				else
+				{
+					previewHTML = previewHTML.concat(levelStr + "<b>" + cardLevel + "</b>" + levelStrLinebreak + Eyal_MakePSCTColorOnEffect(cardfront, cardfront.data("name"), escapeHTML(cardfront.data("effect"))));
+				}
 			}
 			else if (cardfront.data("card_type") == "Skill")
 			{
-				preview_txt.html(escapeHTML(cardfront.data("pendulum_effect")) + "<br><br>" + escapeHTML(cardfront.data("effect")));
+				if(typeof Eyal_newEffect !== "undefined")
+				{
+					previewHTML = previewHTML.concat(escapeHTML(cardfront.data("pendulum_effect")) + "<br><br>" + escapeHTML(Eyal_newEffect));
+				}
+				else
+				{
+					previewHTML = previewHTML.concat(escapeHTML(cardfront.data("pendulum_effect")) + "<br><br>" + escapeHTML(cardfront.data("effect")));
+				}
 			}
 			else
 			{
-				preview_txt.html(Eyal_MakePSCTColorOnEffect(cardfront, cardfront.data("name"), escapeHTML(cardfront.data("effect"))));
+				if(typeof Eyal_newEffect !== "undefined")
+				{
+					previewHTML = previewHTML.concat(Eyal_MakePSCTColorOnEffect(cardfront, cardfront.data("name"), escapeHTML(Eyal_newEffect)));
+				}
+				else
+				{
+					previewHTML = previewHTML.concat(Eyal_MakePSCTColorOnEffect(cardfront, cardfront.data("name"), escapeHTML(cardfront.data("effect"))));
+				}
 			}
 		}
+		
+		preview_txt.html(previewHTML);
+		
+		if(typeof Eyal_newEffect !== "undefined")
+		{
+			preview.find(".effect_txt").html(escapeHTML(Eyal_newEffect));
+		}
+		
+		
+		Eyal_newEffect = undefined;
+		Eyal_newLevelName = undefined;
+		Eyal_newLevel = undefined;
+		Eyal_newPendulumScaleEffectName = undefined;
+		Eyal_newPendulumMonsterEffectName = undefined;
 	}
 	
 	window.Eyal_MakePSCTColorOnEffect = function(cardfront, name, text)
@@ -4323,11 +4355,18 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		effects.push("you cannot Special Summon monsters");
 		effects.push("you cannot Pendulum Summon monsters");
 		effects.push("You cannot activate monster effects");
+		effects.push("you cannot use monsters as Fusion Material");
+		effects.push("you cannot use monsters as Synchro Material");
+		effects.push("you cannot use monsters as Xyz Material");
+		effects.push("you cannot use monsters as Link Material");
 		effects.push("You cannot Special Summon monsters from the Extra Deck, except Fusion Monsters");
 		effects.push("You cannot Special Summon monsters from the Extra Deck, except Synchro Monsters");
 		effects.push("You cannot Special Summon monsters from the Extra Deck, except Xyz Monsters");
 		effects.push("You cannot Special Summon monsters from the Extra Deck, except Link Monsters");
 		effects.push("you cannot Special Summon monsters");
+		
+		// Dumbass Rampant Rampager...
+		effects.push("you cannot Special Summon");
 		effects.push("you cannot Special Summon monsters from the Extra Deck");
 		effects.push("you cannot Normal or Special Summon monsters");
 		effects.push("you cannot Normal Summon/Set or Special Summon monsters");
@@ -4789,10 +4828,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		}
 		for (var j = 0; j < cards.length; j++) {
 			if (cards[j]) {
-				/*
-				if (cards[j].data("face_down")) { // Question
-					continue;
-				}*/
+
 				//if (cards[j].data("cardfront").data("treated_as") == arr[i] && !cards[j].data("face_down")) {
 				if (cards[j].data("id") == cardId)
 				{
@@ -5012,6 +5048,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				addLine("/calc (10 + 10) * 20 ==> Silently calculates, prints result.");
 				addLine("/calc2 (10 + 10) * 20 ==> calculates, forces you to say formula = result.");
 				addLine("/rngdiscard ==> Tells opponent how it'll work, then shuffles your hand and banishes FD closest card to your Deck.");
+				addLine("/note Nibiru is live ==> Silently writes 'Nibiru is live' in the chat.");
 				addLine("/unext ==> Depracated. Right click banish pile to unexcavate.");
 				addLine("/unexb ==> Depracated. Right click banish pile to unexcavate.");
 				addLine("/unexg ==> Depracated. Right click banish pile to unexcavate.");
@@ -5281,6 +5318,20 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				let messageToSend = `${formula} = ${result}`;
 				
 				Eyal_addColoredLine("037F51", messageToSend);
+				
+				return;
+			}
+			else if(Eyal_messageStartsWith(Eyal_message, "/note"))
+			{
+								
+				Eyal_message = Eyal_message.replace(/\/note/i, "")
+				
+				if(Eyal_message.indexOf(" ") == 0)
+					Eyal_message = Eyal_message.replace(" ", "")
+				
+				let messageToSend = `Note: ${Eyal_message}`;
+				
+				Eyal_addColoredLine2("CCFF00", messageToSend);
 				
 				return;
 			}
@@ -5605,30 +5656,11 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				menu.push({ label: "S. Summon ATK", data: "SS ATK" });
 				menu.push({ label: "S. Summon DEF", data: "SS DEF" });
             }
-			if (isIn(card, player1.grave_arr) >= 0/* && hasAvailableMonsterZones(player1)*/) {
+			if (isIn(card, player1.grave_arr) >= 0) {
 				if (card.data("cardfront").data("name") == "Invocation")
 				{
 					menu.push({ label: "Resolve GY Effect", data: "Eyal Invocation GY" });
 				}
-				/*
-				switch (card.data("cardfront").data("name")) {
-					case "First-Aid Squad":
-					case "Paleozoic Olenoides":
-					case "Paleozoic Hallucigenia":
-					case "Paleozoic Canadia":
-					case "Paleozoic Pikaia":
-					case "Paleozoic Eldonia":
-					case "Paleozoic Dinomischus":
-					case "Paleozoic Marrella":
-					case "Paleozoic Leanchoilia":
-					case "The Phantom Knights of Dark Gauntlets":
-					case "The Phantom Knights of Shadow Veil":
-					case "The Prime Monarch":
-						menu.push({label:"SS ATK",data:"SS ATK"});
-						menu.push({label:"SS DEF",data:"SS DEF"});
-						break;
-				}
-				*/
 			}
 			if (card.data("cardfront").data("monster_color") == "Token") {
 				menu.push({label:"Remove",data:"Remove Token"});
@@ -5715,12 +5747,12 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 					menu.push({label:"Set",data:"Set Field Spell"});
 				}
 				// Eyal282 commented these 3 lines out:
-				/*
-				if (isIn(card, player1.hand_arr) < 0 && isIn(card, player1.main_arr) < 0 && !isExtraDeckCard(card) && card.data("cardfront").data("monster_color") != "Token" && !card.data("isXyzMaterial")) {
-					menu.push({label:"To Hand",data:"To hand"});
+				
+				//if (isIn(card, player1.hand_arr) < 0 && isIn(card, player1.main_arr) < 0 && !isExtraDeckCard(card) && card.data("cardfront").data("monster_color") != "Token" && !card.data("isXyzMaterial")) {
+					//menu.push({label:"To Hand",data:"To hand"});
 					
-				}
-				*/
+				//}
+				
 				//if (card.data("isXyzMaterial")) {
 				//	menu.push({label:"Detach",data:"Detach"});
 				//}
@@ -5771,10 +5803,10 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 						menu.push({label:"To Extra Deck FU",data:"To ED FU"});
 					}
 					// Eyal282 here, DB broke pendulum sneaking.
-					/*else if(isPendulumSneaker(card))
-					{
-						menu.push({label:"To Extra Deck FU",data:"Eyal To ED FU"});
-					}*/
+					//else if(isPendulumSneaker(card))
+					//{
+						//menu.push({label:"To Extra Deck FU",data:"Eyal To ED FU"});
+					//}
 				}
 				if (!isExtraDeckCard(card) && isIn(card, player1.main_arr) < 0 && !card.data("isXyzMaterial")) {
 					
@@ -5790,24 +5822,10 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				}
 				
 				// Eyal282 here, nobody will ever use this...
-				/*if (isIn(card, player1.main_arr) >= 0 && findCard(["Upside Down"])) {
-					menu.push({label:"To Bottom of Deck",data:"Upside Down effect 2"});
-				}*/
-				
-				
-				/*if (card.data("cardfront").data("pendulum") && !card.data("face_down") && (isMonster(player1, card) || isST(player1, card))) {
-					if (!links) {
-						if (!player1.pendulumRight) {
-							menu.push({label:"To P. Right",data:"Activate Pendulum Right"});
-						}
-						if (!player1.pendulumLeft) {
-							menu.push({label:"To P. Left",data:"Activate Pendulum Left"});
-						}
-					}
-					else if (!player1.s1 || !player1.s5) {
-						menu.push({label:"Activate Pendulum",data:player1.s1 && !player1.s5 ? "Activate Pendulum Right" : (!player1.s1 && player1.s5 ? "Activate Pendulum Left" : "Activate Pendulum")});
-					}
-				}*/
+				//if (isIn(card, player1.main_arr) >= 0 && findCard(["Upside Down"])) {
+					//menu.push({label:"To Bottom of Deck",data:"Upside Down effect 2"});
+				//}
+
 				
 				
 				
@@ -5874,7 +5892,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 								
 								break;
 								
-							
 							case "SPYRAL GEAR - Drone":
 								if (player1.opponent.main_arr.length >= 3) {
 									menu.push({label:"Look at cards",data:"Spyral event"});
@@ -5978,6 +5995,9 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 							
 							if(countFaceDownExtraDeckCards(player1) >= 6)
 								menu.push({label:"Banish first 6 ED",data:"Banish first 6 ED FD Prosperity"});
+						}
+						if(card.data("cardfront").data("name") == "Jack-In-The-Hand") {
+							menu.push({label:"Resolve Effect",data:"Eyal Jack-In-The-Hand"});
 						}
 						
 						//if (card.data("cardfront").data("name") == "Pot of Duality" && player1.main_arr.length >= 3) {
@@ -6338,7 +6358,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			else {
 				card.data("owner").main_arr.push(card);
 				
-				if(player == player1)
+				if(!replay && player == player1)
 				{
 					Eyal_AddCardToTrueDeck(card);
 				}
@@ -6348,7 +6368,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		else if (data.play == "To B Deck 2") {
 			player.opponent.main_arr.push(card);
 			
-			if(player.opponent == player1)
+			if(!replay && player.opponent == player1)
 			{
 				Eyal_RemoveCardFromTrueDeck(card);
 			}
@@ -6358,7 +6378,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		else if (data.play.indexOf("To T Deck 2") == 0) {
 			player.opponent.main_arr.unshift(card);
 			
-			if(player.opponent == player1)
+			if(!replay && player.opponent == player1)
 			{
 				Eyal_AddCardToTrueDeck(card);
 			}
@@ -6373,7 +6393,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			else {
 				card.data("owner").main_arr.unshift(card);
 				
-				if(player == player1)
+				if(!replay && player == player1)
 				{
 					Eyal_AddCardToTrueDeck(card);
 				}
@@ -6443,7 +6463,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				console.log('found');
 				var card = player.main_arr.splice(i, 1)[0];
 				
-				if(player == player1)
+				if(!replay && player == player1)
 				{
 					Eyal_RemoveCardFromTrueDeck(card);
 				}
@@ -6464,7 +6484,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	{
 		var card = player.main_arr.splice(0, 1)[0];
 		
-		if(player == player1)
+		if(!replay && player == player1)
 		{
 			Eyal_RemoveCardFromTrueDeck(card);
 		}
@@ -6486,7 +6506,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			TweenMax.to(card, easeSeconds, {left:player.deckX, top:player.deckY, scale:0.1485, rotation:player.rot, rotationY:180 + ABOUT_ZERO, delay:0.5, onStart:function(){
 				player.main_arr.unshift(card);
 				
-				if(player == player1)
+				if(!replay && player == player1)
 				{
 					Eyal_AddCardToTrueDeck(card);
 				}
@@ -6554,7 +6574,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			TweenMax.to(card, easeSeconds, {left:player.deckX, top:player.deckY, scale:0.1485, rotation:player.rot, rotationY:180 + ABOUT_ZERO, delay:0.5, onStart:function(){
 				player.main_arr.push(card);
 				
-				if(player == player1)
+				if(!replay && player == player1)
 				{
 					Eyal_AddCardToTrueDeck(card);
 				}
@@ -6730,18 +6750,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				}
 				revealAndToHand(player, card, data);
 				return;
-				
-				/*if (card) {
-					revealAndToHand(player, card, data);
-					return;
-				}
-				if (!card) {
-					card = removeFromBanished(player, data); // Gift Exchange
-					if (card) {
-						revealAndToHand(player, card, data);
-						return;	
-					}
-				}*/
 			}
 		}
 		if (card) {
@@ -6792,6 +6800,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			return;
 		}
 		
+		console.log(data);
 		
 		if(window.Eyal_debug && typeof data === "Object")
 		{
@@ -6803,6 +6812,12 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			else
 				console.log(data);
 		}
+		
+		if(typeof Eyal_handleData3 !== "undefined")
+		{
+			Eyal_handleData3(e);
+		}
+		
 		// Send the data to the original function, it is a garbage idea to edit the original function...
 		handleData(e);
 	}
@@ -7131,6 +7146,11 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		{
 			getConfirmation("Mill until you find a Spell / Trap?", "This will make a lot of actions at once.", Eyal_MagicalMerchantYes);
 		}
+		else if(data == "Eyal Jack-In-The-Hand")
+		{
+			
+			getComboBox("Small World", "Select a card in your Deck:", ["Alpha, Zeta, Gamma", "Robina, Eglen, Toccan", "Robina, Eglen, Stri"], 0, Eyal_JackInTheHandYes);
+		}
 		else if (data == "Eyal Attach") {
 			olPlay = "Eyal Attach";
 			overlaying_card = card;
@@ -7143,14 +7163,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				Send({ "action": "Duel", "play": "Attach", "start_card": overlaying_card.data("id"), "end_card": getOnlyOverlayId(player1) });
 				overlaying_card = null;
 			}
-			/*else if (data != "Overlay" && countOverlayOptions(player1) == 1) { // impossible condition?
-				Send({"action":"Duel", "play":olPlay, "start_card":overlaying_card.data("id"), "end_card":getOnlyOverlayId(player1)});
-				overlaying_card = null;
-			}
-			else if (data == "Overlay" && countOverlayOptions(player1) == 1) { // impossible condition?
-				Send({"action":"Duel", "play":olPlay, "start_card":overlaying_card.data("id"), "end_card":getOnlyOverlayId(player1)});
-				overlaying_card = null;
-			}*/
 			else {
 				startOverlay(e);
 				if (linkCardChosen(player1)) {
@@ -7190,14 +7202,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				Send({"action":"Duel", "play":olPlay, "start_card":overlaying_card.data("id"), "end_card":getOnlyOverlayId(player1)});
 				overlaying_card = null;
 			}
-			/*else if (data != "Overlay" && countOverlayOptions(player1) == 1) { // impossible condition?
-				Send({"action":"Duel", "play":olPlay, "start_card":overlaying_card.data("id"), "end_card":getOnlyOverlayId(player1)});
-				overlaying_card = null;
-			}
-			else if (data == "Overlay" && countOverlayOptions(player1) == 1) { // impossible condition?
-				Send({"action":"Duel", "play":olPlay, "start_card":overlaying_card.data("id"), "end_card":getOnlyOverlayId(player1)});
-				overlaying_card = null;
-			}*/
 			else {
 				startOverlay(e);
 				if (linkCardChosen(player1)) {
@@ -7275,25 +7279,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			});
 			return;
 		}
-		/*if (data == "Resolve Small World") {
-			var arr = [];
-			player1.hand_arr.forEach(function(e,i){
-				if (e.data("cardfront").data("card_type") == "Monster") {
-					addIfNotExists(arr, e.data("cardfront").data("name"));
-				}
-			});
-			addAutoComplete($('#input .input_txt'), "card");
-			getInput("Small World", "Enter a card name from the hand:", "", 100, function(){
-				//removeAutoComplete($('#input .input_txt'));
-				Send({"action":"Duel", "play":"Check Small World 1", "name":$('#input .input_txt').val()});
-			}, null, null, function(){
-				//removeAutoComplete($('#input .input_txt'));
-			});
-			autoCompleteReponse({"names":arr, "selector":"#input .input_txt"});
-			removeAutoComplete($('#input .input_txt'));
-			showDim();
-			return;
-		}*/
 		if (data == "Resolve Small World") {
 			var arr = [];
 			player1.hand_arr.forEach(function(e,i){
@@ -7308,15 +7293,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			showDim();
 			return;
 		}
-		
-		
-		
-		/*if (data == "Swap") {
-			getInput("Swap Card", "Enter the ID of the new card:", "", 0, function(){
-				Send({"action":"Duel", "play":"Swap", "prev_id":card.data("id"), "new_id":~~$('#input .input_txt').val()});
-			}, /[^0-9]/g);
-			return;
-		}*/
+	
 		if ($('#choose_zones_cb').is(":checked")) {
 			if (data.indexOf("SS ATK") >= 0 || data.indexOf("SS DEF") >= 0 || data == "Normal Summon" || data == "Summon token" || (data == "Set monster" && isIn(card, player1.hand_arr) >= 0)) {
 				if (links || countMonsters(player1) != 4) {
@@ -7947,6 +7924,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		return null;
 	}
+	
 	window.Eyal_getZone = function(myself)
 	{
 		switch(myself)
@@ -8423,6 +8401,71 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			}
 		}, 50);
 	}
+	
+	window.Eyal_JackInTheHandYes = function() {	
+		let monsterCount = countMonsters(player1);
+		let stCount = countSpells(player1);
+		
+		if(monsterCount > 2 && stCount > 2)
+		{
+			Eyal_addColoredLine("FF0000", "Error: Not enough space on field.");
+			return;
+		}		
+	
+		
+		let cardNamesToSummon = [];
+		
+		switch($('#combo .combo_cb').val())
+		{
+			case "Alpha, Zeta, Gamma":
+			
+				cardNamesToSummon.push("Drytron Alpha Thuban");
+				cardNamesToSummon.push("Drytron Zeta Aldhibah");
+				cardNamesToSummon.push("Drytron Gamma Eltanin");
+				
+				break;
+				
+			case "Robina, Eglen, Toccan":
+			
+				cardNamesToSummon.push("Floowandereeze & Robina");
+				cardNamesToSummon.push("Floowandereeze & Eglen");
+				cardNamesToSummon.push("Floowandereeze & Toccan");
+				
+				break;
+				
+			case "Robina, Eglen, Stri":
+			
+				cardNamesToSummon.push("Floowandereeze & Robina");
+				cardNamesToSummon.push("Floowandereeze & Eglen");
+				cardNamesToSummon.push("Floowandereeze & Stri");
+				
+				break;
+		}
+		
+		cardNamesToSummon.sort(function(a, b){return 0.5 - Math.random()});
+	
+		let commandName = "/////atk";
+		
+		if(monsterCount > 2)
+			commandName = "/////st";
+		
+		let Eyal_checked = $('#choose_zones_cb').prop("checked")
+
+		$('#choose_zones_cb').checked(false)
+
+		for(let abc=0;abc < cardNamesToSummon.length;abc++)
+		{
+			let data = {};
+			data.fake = true;
+			data.username = username;
+			data.play = "Duel message";
+			data.message = `${commandName} ${cardNamesToSummon[abc]}`; 
+			
+			duelResponse(data);
+		}
+		
+		$('#choose_zones_cb').checked(Eyal_checked);
+	}
 	window.startChooseMonsterZones = function() {
 		console.log('startChooseMonsterZones');
 		if (player1.m1 == null) {
@@ -8447,29 +8490,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				m5_select.play();
 			}
 		}
-		/*
-		if(summoning_play == "SS ATK" || summoning_play == "SS DEF")
-		{
-			let effect = summoning_card.data("cardfront").data("effect")
-			let effectV2 = effect
-			
-			effect = effect.replaceAll("(", "");
-			effect = effect.replaceAll(")", "");
-			effect = effect.replaceAll("opponent's side of the field", "opponent's field");
-			effect = effect.replaceAll("to your opponent's field", "to the opponent's field");
-			
-			effectV2 = effectV2.replaceAll("(", "");
-			effectV2 = effectV2.replaceAll(")", "");
-			effectV2 = effectV2.replaceAll("opponent's side of the field", "opponent's field");
-			effectV2 = effectV2.replaceAll("to your opponent's field", "to the opponent's field");
-
-			console.log(effect);
-			if (effect.indexOf("You can Special Summon this card from your hand to the opponent's field") >= 0 || effectV2.indexOf("Special Summoned from your hand to the opponent's field") >= 0)
-			{
-				startChooseMonsterZones2()
-			}
-		}
-		*/
 	}
 	
 	window.startChooseGYZone = function(card)
@@ -8814,10 +8834,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		Send({"action":"Duel", "play":"Life points", "amount":amount});
 	}
-	/*$("#life_txt").on("input")
-	{
-		if(
-	}*/
 
 	window.showMenu = function(card, dp, originalCard) {
 		if (!dp) {
@@ -9064,14 +9080,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				TweenMax.set(menu, {"scaleY":scaleY});
 			}
 		}});
-		
-		/*if (mobile) {
-			var sel = $('<select></select>');
-			for (var i = 0; i < dp.length ;i++) {
-				sel.append('<option>' + dp[i].label + '</option>');
-			}
-			sel.insertAfter(menu);
-		}*/
 	}
 
 
@@ -9112,343 +9120,409 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		}
 	}
 	
-	window.duelResponse = function(data)
+	if(!replay)
 	{
-		if(!data.fake)
+		window.duelResponse = function(data)
 		{
-			if(typeof window.Eyal_lastTimescale !== "undefined")
+			if(!data.fake)
 			{
-				TweenMax.globalTimeScale(window.Eyal_lastTimescale);
-			}
-			window.Eyal_lastTimescale = TweenMax.globalTimeScale();
+				if(typeof window.Eyal_lastTimescale !== "undefined")
+				{
+					TweenMax.globalTimeScale(window.Eyal_lastTimescale);
+				}
+				window.Eyal_lastTimescale = TweenMax.globalTimeScale();
 
-			if(lowAnimations && data.play.search(/deck/i) == -1)
-			{
-				if(duelist && data.username == username)
+				if(lowAnimations && data.play.search(/deck/i) == -1)
 				{
-					TweenMax.globalTimeScale(3.0);
-				}
-				else
-				{
-					TweenMax.globalTimeScale(1.5);
-				}
-            }
-			
-			console.time("DuelResponse");
-			
-			Eyal_originalDuelResponse(data);
-			
-			console.timeEnd("DuelResponse");
-		}
-		
-		switch(data.play)
-		{
-			case "Start turn":
-			{
-				let players = [];
-				players.push(player1);
-				players.push(player2);
-				
-				if(tag_duel)
-				{
-					players.push(player3);
-					players.push(player4);
-				}
-				
-				for(let i=0;i < players.length;i++)
-				{
-					for(let abc=0;abc < players[i].all_cards_arr.length;abc++)
+					if(duelist && data.username == username)
 					{
-						let card = players[i].all_cards_arr[abc];
-						
-						if(card && !isNaN(card.data("negations")) && card.data("negations") > 0)
-						{
-							card.data("negations", ~~card.data("negations") - 1);
-						}
+						TweenMax.globalTimeScale(3.0);
+					}
+					else
+					{
+						TweenMax.globalTimeScale(1.5);
 					}
 				}
 				
-				updateNegates();
+				console.time("DuelResponse");
+				
+				Eyal_originalDuelResponse(data);
+				
+				console.timeEnd("DuelResponse");
 			}
-			case "Duel message":
-				// Maybe add data.fake?
-				if (duelist && data.username == username)
+			
+			switch(data.play)
+			{
+				case "Start turn":
 				{
+					let players = [];
+					players.push(player1);
+					players.push(player2);
 					
-					// Eyal282, check if this condition we're in prevents an opponent from being able to search for us.
-					
-					// if the index of a string is 0, that string starts the message.
-					
-					let Eyal_message = data.message;
-					
-					if(Eyal_messageStartsWith(Eyal_message, "/randomdiscard") || Eyal_messageStartsWith(Eyal_message, "/rngdiscard"))
+					if(tag_duel)
 					{
-						window.Eyal_waitingForAction = true;
-						
-						let messageToSend = `I will shuffle my hand and banish the closest card to the deck as a random discard`;
-						Send({"action":"Duel", "play":"Duel message", "message":messageToSend, "html":~~0});
-						
-						messageToSend = `Approve this and it will be sent to GY as the discard`;
-						Send({"action":"Duel", "play":"Duel message", "message":messageToSend, "html":~~0});
-						
-						messageToSend = `Otherwise I'll add it to my hand and you will manually select.`;
-						Send({"action":"Duel", "play":"Duel message", "message":messageToSend, "html":~~0});
-
-						
-						cardMenuClicked(new Card(), "Shuffle hand");
-						
-						let randomDiscardInterval = setInterval(function ()
+						players.push(player3);
+						players.push(player4);
+					}
+					
+					for(let i=0;i < players.length;i++)
+					{
+						for(let abc=0;abc < players[i].all_cards_arr.length;abc++)
 						{
-							if(!window.Eyal_waitingForAction)
+							let card = players[i].all_cards_arr[abc];
+							
+							if(card && !isNaN(card.data("negations")) && card.data("negations") > 0)
 							{
-								clearInterval(randomDiscardInterval)
-							
-								if(typeof window.Eyal_newHand !== "undefined")
-								{
-									Send({ "action": "Duel", "play": "Banish FD", "card": Eyal_newHand[Eyal_newHand.length-1] });
-								}
-								else
-								{
-									messageToSend = `The extension rarely has failed to find the closest card to my deck`;
-									Send({"action":"Duel", "play":"Duel message", "message":messageToSend, "html":~~0});
-									
-									messageToSend = `May I discard the closest card to my Deck?`;
-									Send({"action":"Duel", "play":"Duel message", "message":messageToSend, "html":~~0});
-								}
-								return;
+								card.data("negations", ~~card.data("negations") - 1);
 							}
-						}, 50);
-					}
-					if(Eyal_messageStartsWith(Eyal_message, "/snipe"))
-					{
-						let opponentArr = [];
-						let opponentHand = player1.opponent.hand_arr.slice();
-						let opponentST = [];
-						let opponentMonsters = [];
-						
-						for(let abc=1;abc <= 5;abc++)
-						{
-							if(player1.opponent["m" + abc] != null && player1.opponent["m" + abc].data("face_down"))
-								opponentMonsters.push(player1.opponent["m" + abc])
 						}
-						for(let abc=1;abc <= 5;abc++)
-						{
-							if(player1.opponent["s" + abc] != null && player1.opponent["s" + abc].data("face_down"))
-								opponentST.push(player1.opponent["s" + abc])
-						}
-						
-						opponentArr.push(opponentHand)
-						opponentArr.push(opponentST)
-						opponentArr.push(opponentMonsters)
-						
-						Eyal_snipeByArray(opponentArr);
-						
-						return true;
-						
 					}
-					else if(!Eyal_messageStartsWith(Eyal_message, "/banish") && (Eyal_messageStartsWith(Eyal_message, "/search") || Eyal_messageStartsWith(Eyal_message, "/send") || Eyal_messageStartsWith(Eyal_message, "/ban") || Eyal_messageStartsWith(Eyal_message, "/atk") || Eyal_messageStartsWith(Eyal_message, "/def") || Eyal_messageStartsWith(Eyal_message, "/st") || Eyal_messageStartsWith(Eyal_message, "/pend")))
-					{
-						let msg = data.message;
-						
-						let cardClickAction = "To hand";
-						let commandName = "/search";
 					
-						if(Eyal_messageStartsWith(Eyal_message, "/search"))
-						{
-							msg = msg.substring(7);
-							
-							if(msg.indexOf(' ') == 0)
-								msg = msg.replace(" ", "");
-						}
+					updateNegates();
+				}
+				case "Duel message":
+					// Maybe add data.fake?
+					if (duelist && data.username == username)
+					{
 						
+						// Eyal282, check if this condition we're in prevents an opponent from being able to search for us.
 						
-						else if(Eyal_messageStartsWith(Eyal_message, "/send"))
-						{
-							msg = msg.substring(5);
-							
-							if(msg.indexOf(' ') == 0)
-								msg = msg.replace(" ", "");
-							
-							cardClickAction = "To GY";
-							commandName = "/send";
-						}
+						// if the index of a string is 0, that string starts the message.
 						
-						else if(Eyal_messageStartsWith(Eyal_message, "/ban"))
-						{
-							msg = msg.substring(4);
-							
-							if(msg.indexOf(' ') == 0)
-								msg = msg.replace(" ", "");
-							
-							cardClickAction = "Banish";
-							commandName = "/ban";
-						}
+						let Eyal_message = data.message;
 						
-						else if(Eyal_messageStartsWith(Eyal_message, "/atk"))
+						if(Eyal_messageStartsWith(Eyal_message, "/randomdiscard") || Eyal_messageStartsWith(Eyal_message, "/rngdiscard"))
 						{
-							msg = msg.substring(4);
+							window.Eyal_waitingForAction = true;
 							
-							if(msg.indexOf(' ') == 0)
-								msg = msg.replace(" ", "");
+							let messageToSend = `I will shuffle my hand and banish the closest card to the deck as a random discard`;
+							Send({"action":"Duel", "play":"Duel message", "message":messageToSend, "html":~~0});
 							
-							cardClickAction = "SS ATK";
-							commandName = "/atk";
-						}
-						
-						else if(Eyal_messageStartsWith(Eyal_message, "/def"))
-						{
-							msg = msg.substring(4);
+							messageToSend = `Approve this and it will be sent to GY as the discard`;
+							Send({"action":"Duel", "play":"Duel message", "message":messageToSend, "html":~~0});
 							
-							if(msg.indexOf(' ') == 0)
-								msg = msg.replace(" ", "");
-							
-							cardClickAction = "SS DEF";
-							commandName = "/def";
-						}
-						
-						else if(Eyal_messageStartsWith(Eyal_message, "/st"))
-						{
-							msg = msg.substring(3);
-							
-							if(msg.indexOf(' ') == 0)
-								msg = msg.replace(" ", "");
-							
-							cardClickAction = "To ST";
-							commandName = "/st";
-						}
-						
-						else if(Eyal_messageStartsWith(Eyal_message, "/pend"))
-						{
-							msg = msg.substring(5);
-							
-							if(msg.indexOf(' ') == 0)
-								msg = msg.replace(" ", "");
-							
-							cardClickAction = "Activate Pendulum";
-							commandName = "/pend";
-						}
+							messageToSend = `Otherwise I'll add it to my hand and you will manually select.`;
+							Send({"action":"Duel", "play":"Duel message", "message":messageToSend, "html":~~0});
 
-						if(msg.length == 0)
-						{
-							addLine("Usage: " + commandName + " <card name>")
-						}
-						else if(msg.length <= 3)
-						{
-							addLine("Error: Use 4+ characters of the name")
-						}
-						else
-						{
-							cardMenuClicked(new Card(), "View deck");
 							
+							cardMenuClicked(new Card(), "Shuffle hand");
 							
-							let searchInterval = setInterval(function () {
-								if(viewing == "Deck")
+							let randomDiscardInterval = setInterval(function ()
+							{
+								if(!window.Eyal_waitingForAction)
 								{
-									clearInterval(searchInterval)
-									
-									let foundNames = [];
-									let foundIndex = -1;
-									
-									for(let abc=0;abc < player1.main_arr.length;abc++)
+									clearInterval(randomDiscardInterval)
+								
+									if(typeof window.Eyal_newHand !== "undefined")
 									{
-										// If card click action is Activate Pendulum, only include pendulum monsters.
-										if(player1.main_arr[abc].data("cardfront").data("name").toLowerCase().search(msg.toLowerCase()) != -1 && (cardClickAction != "Activate Pendulum" || player1.main_arr[abc].data("cardfront").data("pendulum")))
-										{
-											if(foundNames.indexOf(player1.main_arr[abc].data("cardfront").data("name")) == -1)
-											{
-												foundIndex = abc
-												foundNames.push(player1.main_arr[abc].data("cardfront").data("name"))
-											}
-										}
-									}
-									
-									if(foundIndex == -1)
-									{
-										addLine("Card was not found");
-									}
-									else if(foundNames.length >= 2 && foundNames.length <= 4)
-									{
-										addLine("Found multiple name matches:");
-										for(let abc=0;abc < foundNames.length;abc++)
-										{
-											addLine(foundNames[abc].toLowerCase().replace(msg.toLowerCase(), msg.toUpperCase()));
-										}
-									}
-									else if(foundNames.length >= 5)
-									{
-										addLine("Found 5+ cards with the same name as the search");
+										Send({ "action": "Duel", "play": "Banish FD", "card": Eyal_newHand[Eyal_newHand.length-1] });
 									}
 									else
 									{
-										if(cardClickAction == "Activate Pendulum")
+										messageToSend = `The extension rarely has failed to find the closest card to my deck`;
+										Send({"action":"Duel", "play":"Duel message", "message":messageToSend, "html":~~0});
+										
+										messageToSend = `May I discard the closest card to my Deck?`;
+										Send({"action":"Duel", "play":"Duel message", "message":messageToSend, "html":~~0});
+									}
+									return;
+								}
+							}, 50);
+						}
+						if(Eyal_messageStartsWith(Eyal_message, "/snipe"))
+						{
+							let opponentArr = [];
+							let opponentHand = player1.opponent.hand_arr.slice();
+							let opponentST = [];
+							let opponentMonsters = [];
+							
+							for(let abc=1;abc <= 5;abc++)
+							{
+								if(player1.opponent["m" + abc] != null && player1.opponent["m" + abc].data("face_down"))
+									opponentMonsters.push(player1.opponent["m" + abc])
+							}
+							for(let abc=1;abc <= 5;abc++)
+							{
+								if(player1.opponent["s" + abc] != null && player1.opponent["s" + abc].data("face_down"))
+									opponentST.push(player1.opponent["s" + abc])
+							}
+							
+							opponentArr.push(opponentHand)
+							opponentArr.push(opponentST)
+							opponentArr.push(opponentMonsters)
+							
+							Eyal_snipeByArray(opponentArr);
+							
+							return true;
+							
+						}
+						
+						let noChoice = false;
+						
+						if(Eyal_messageStartsWith(Eyal_message, "/////"))
+						{
+							Eyal_message = Eyal_message.replace("/////", "/");
+							noChoice = true;
+						}
+						
+						if(!Eyal_messageStartsWith(Eyal_message, "/banish") && (Eyal_messageStartsWith(Eyal_message, "/search") || Eyal_messageStartsWith(Eyal_message, "/send") || Eyal_messageStartsWith(Eyal_message, "/ban") || Eyal_messageStartsWith(Eyal_message, "/atk") || Eyal_messageStartsWith(Eyal_message, "/def") || Eyal_messageStartsWith(Eyal_message, "/st") || Eyal_messageStartsWith(Eyal_message, "/pend")))
+						{
+							let msg = data.message;
+							
+							if(Eyal_messageStartsWith(msg, "/////"))
+							{
+								msg = msg.replace("/////", "/");
+							}
+							
+							let cardClickAction = "To hand";
+							let commandName = "/search";
+						
+							if(Eyal_messageStartsWith(Eyal_message, "/search"))
+							{
+								msg = msg.substring(7);
+								
+								if(msg.indexOf(' ') == 0)
+									msg = msg.replace(" ", "");
+							}
+							
+							
+							else if(Eyal_messageStartsWith(Eyal_message, "/send"))
+							{
+								msg = msg.substring(5);
+								
+								if(msg.indexOf(' ') == 0)
+									msg = msg.replace(" ", "");
+								
+								cardClickAction = "To GY";
+								commandName = "/send";
+							}
+							
+							else if(Eyal_messageStartsWith(Eyal_message, "/ban"))
+							{
+								msg = msg.substring(4);
+								
+								if(msg.indexOf(' ') == 0)
+									msg = msg.replace(" ", "");
+								
+								cardClickAction = "Banish";
+								commandName = "/ban";
+							}
+							
+							else if(Eyal_messageStartsWith(Eyal_message, "/atk"))
+							{
+								msg = msg.substring(4);
+								
+								if(msg.indexOf(' ') == 0)
+									msg = msg.replace(" ", "");
+								
+								cardClickAction = "SS ATK";
+								commandName = "/atk";
+							}
+							
+							else if(Eyal_messageStartsWith(Eyal_message, "/def"))
+							{
+								msg = msg.substring(4);
+								
+								if(msg.indexOf(' ') == 0)
+									msg = msg.replace(" ", "");
+								
+								cardClickAction = "SS DEF";
+								commandName = "/def";
+							}
+							
+							else if(Eyal_messageStartsWith(Eyal_message, "/st"))
+							{
+								msg = msg.substring(3);
+								
+								if(msg.indexOf(' ') == 0)
+									msg = msg.replace(" ", "");
+								
+								cardClickAction = "To ST";
+								commandName = "/st";
+							}
+							
+							else if(Eyal_messageStartsWith(Eyal_message, "/pend"))
+							{
+								msg = msg.substring(5);
+								
+								if(msg.indexOf(' ') == 0)
+									msg = msg.replace(" ", "");
+								
+								cardClickAction = "Activate Pendulum";
+								commandName = "/pend";
+							}
+							
+							// UnescapeHTML to fix issues with symbols "&" and """
+							msg = Eyal_UnescapeHTML(msg);
+							
+							if(msg.length == 0)
+							{
+								addLine("Usage: " + commandName + " <card name>")
+							}
+							else if(msg.length <= 3)
+							{
+								addLine("Error: Use 4+ characters of the name")
+							}
+							else
+							{
+								cardMenuClicked(new Card(), "View deck");
+								
+								
+								let searchInterval = setInterval(function () {
+									if(viewing == "Deck")
+									{
+										clearInterval(searchInterval)
+										
+										let foundNames = [];
+										let foundIndex = -1;
+										
+										for(let abc=0;abc < player1.main_arr.length;abc++)
 										{
-											summoning_card = player1.main_arr[foundIndex];
-											summoning_play = "Activate ST";
-											
-											$('#s1_select').show();
-											s1_select.play();
-											
-											$('#s5_select').show();
-											s5_select.play();
-											
-											// Note to self: any cardMenuClicked hides this.
-											
-											startChooseExtraDeckZone(summoning_card);
+											// If card click action is Activate Pendulum, only include pendulum monsters.
+											if(player1.main_arr[abc].data("cardfront").data("name").toLowerCase().search(msg.toLowerCase()) != -1 && (cardClickAction != "Activate Pendulum" || player1.main_arr[abc].data("cardfront").data("pendulum")))
+											{
+												if(foundNames.indexOf(player1.main_arr[abc].data("cardfront").data("name")) == -1)
+												{
+													foundIndex = abc
+													foundNames.push(player1.main_arr[abc].data("cardfront").data("name"))
+												}
+											}
 										}
-										else if(cardClickAction != "To ST")
+										
+										if(foundIndex == -1)
 										{
-											cardMenuClicked(player1.main_arr[foundIndex], cardClickAction);
+											addLine(`Card "${msg}" was not found`);
+										}
+										else if(foundNames.length >= 2 && foundNames.length <= 4)
+										{
+											addLine("Found multiple name matches:");
+											for(let abc=0;abc < foundNames.length;abc++)
+											{
+												addLine(foundNames[abc].toLowerCase().replace(msg.toLowerCase(), msg.toUpperCase()));
+											}
+										}
+										else if(foundNames.length >= 5)
+										{
+											addLine("Found 5+ cards with the same name as the search");
 										}
 										else
 										{
-											if(player1.main_arr[foundIndex].data("cardfront").data("card_type") == "Spell" && player1.main_arr[foundIndex].data("cardfront").data("type") == "Field")
+											if(cardClickAction == "Activate Pendulum")
 											{
-												cardMenuClicked(player1.main_arr[foundIndex], "Activate Field Spell");
+												summoning_card = player1.main_arr[foundIndex];
+												summoning_play = "Activate ST";
+												
+												$('#s1_select').show();
+												s1_select.play();
+												
+												$('#s5_select').show();
+												s5_select.play();
+												
+												// Note to self: any cardMenuClicked hides this.
+												
+												startChooseExtraDeckZone(summoning_card);
+											}
+											else if(cardClickAction != "To ST")
+											{
+												let Eyal_checked = $('#choose_zones_cb').prop("checked")
+												
+												if(noChoice)
+												{
+													$('#choose_zones_cb').checked(false)
+												}
+
+												cardMenuClicked(player1.main_arr[foundIndex], cardClickAction);
+												
+												if(noChoice)
+												{
+													$('#choose_zones_cb').checked(Eyal_checked);
+												}
 											}
 											else
 											{
-												cardMenuClicked(player1.main_arr[foundIndex], cardClickAction);
+												let Eyal_checked = $('#choose_zones_cb').prop("checked")
+												
+												if(noChoice)
+												{
+													$('#choose_zones_cb').checked(false)
+												}
+												
+												if(player1.main_arr[foundIndex].data("cardfront").data("card_type") == "Spell" && player1.main_arr[foundIndex].data("cardfront").data("type") == "Field")
+												{
+													cardMenuClicked(player1.main_arr[foundIndex], "Activate Field Spell");
+												}
+												else
+												{
+													cardMenuClicked(player1.main_arr[foundIndex], cardClickAction);
+												}
+												
+												if(noChoice)
+												{
+													$('#choose_zones_cb').checked(Eyal_checked);
+												}
 											}
 										}
 									}
-								}
-							}, 50); 
+								}, 50); 
+							}
+							
+							return true;
 						}
-						
-						return true;
 					}
-				}
-				break;
-				
-			case "Done siding":
-				playSound(Decided)
-				break;
-				
-			case "Pick first":
-				window.Eyal_TrueDeckArr = [];
-				window.Eyal_TrueExtraDeckArr = [];
-				window.Eyal_DigString = undefined;
-				break;
-				
-			case "End turn":
-				
-				let Eyal_list = document.querySelectorAll("div")
+					break;
+					
+				case "Done siding":
+					playSound(Decided)
+					break;
+					
+				case "Pick first":
+					window.Eyal_TrueDeckArr = [];
+					window.Eyal_TrueExtraDeckArr = [];
+					window.Eyal_DigString = undefined;
+					break;
+					
+				case "End turn":
+					
+					let Eyal_list = document.querySelectorAll("div")
 
-				for (let abc = 0; abc < Eyal_list.length; abc++) {
-					if (!Eyal_list[abc].id.startsWith("Imperm_Column_Real"))
-						continue;
+					for (let abc = 0; abc < Eyal_list.length; abc++) {
+						if (!Eyal_list[abc].id.startsWith("Imperm_Column_Real"))
+							continue;
 
-					$(Eyal_list[abc]).remove();
-				}
-				
-				window.Eyal_RealImpermColumns = [false, false, false, false, false];
-				
-				break;
+						$(Eyal_list[abc]).remove();
+					}
+					
+					window.Eyal_RealImpermColumns = [false, false, false, false, false];
+					
+					break;
+			}
+			
+			return false;
 		}
-		
-		return false;
 	}
 	
+	window.Eyal_UnescapeHTML = function(str)
+	{
+		if (!str) {
+			return Str(str);
+		}
+		
+		str = replaceAll(str, "&amp;", "&");
+		str = replaceAll(str, "&lt;", "<");
+		str = replaceAll(str, "&gt;", ">");
+		str = replaceAll(str, "&quot;", '"'); // added 8/7/22 to help Small World parse Maxx "C"
+		str = replaceAll(str, "&#39;", "'"); // added 7/16/23
+
+		str = addBreaks(str)
+		return str;
+	}
+	
+	window.Eyal_removeBreaks = function(str)
+	{
+		str = replaceAll(str, "<br>", "\n");
+		return str;
+	}
+
 	window.activateFieldSpell = function(player, data)
 	{
 		var card = getFieldCard(player, data);
@@ -10037,13 +10111,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			if (data && data.deck && data.deck[i] && viewing != "Secret Deck" && viewing != "Eyal Xyz Materials") {
 				arr[i].data("cardfront").reinitialize(data.deck[i]);
 			}
-			/*
-			// this block is pointless
-			else if (viewing.indexOf("Opponent") < 0 && viewing.indexOf("Banished") < 0) {
-				if (data && data.deck && data.deck[i]) {
-					arr[i].data("cardfront").reinitialize(data.deck[i]);
-				}
-			}*/
 			//if (viewing == "Opponent's Hand") {
 			//	TweenMax.to(arr[i], 0, {rotationY:0});
 			//}
@@ -10241,13 +10308,13 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		$("#view").css("transform", "scale(1.0, 0.9)");
 		// This equals:
-		/*
-		$("#view .background").css("transform", "scale(1.0, 0.9)")
-		$("#view .content.scrollpane").css("transform", "scale(1.0, 0.9)")
-		$("#view .title_txt").css("transform", "scale(1.0, 0.9)")
-		$("#view .exit_btn").css("transform", "scale(1.0, 0.9)")
-		$("#view .expand_btn").css("transform", "scale(1.0, 0.9)")
-		*/
+		
+		//$("#view .background").css("transform", "scale(1.0, 0.9)")
+		//$("#view .content.scrollpane").css("transform", "scale(1.0, 0.9)")
+		//$("#view .title_txt").css("transform", "scale(1.0, 0.9)")
+		//$("#view .exit_btn").css("transform", "scale(1.0, 0.9)")
+		//$("#view .expand_btn").css("transform", "scale(1.0, 0.9)")
+		
 		
 		// Negate the changes
 		$("#view .content.scrollpane").css("transform", "scale(1.0, 1.11111111111)")
@@ -10369,7 +10436,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	
 	window.Eyal_CheckDigDeck = function(arr, data)
 	{
-		if(typeof window.Eyal_DigString === "undefined"/*|| typeof data === "undefined" || typeof data.deck === "undefined" || data.deck.length == 0*/)
+		if(typeof window.Eyal_DigString === "undefined")
 		{
 			return [arr, data];
 		}
@@ -10418,12 +10485,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	}
 	window.Eyal_RemoveCardFromTrueDeck = function(card)
 	{
-		/*
-		for(let abc=0;abc < Eyal_TrueDeckArr.length;abc++)
-		{
-			console.log(Eyal_TrueDeckArr[abc].data("cardfront").data("name"));
-		}
-		*/
 		let deckInterval = setInterval(function ()
 		{
 			// Be patient because DB is a bit broken regarding deck and cards being instantly removed from deck.
@@ -10455,12 +10516,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	
 	window.Eyal_AddCardToTrueDeck = function(card)
 	{
-		/*
-		for(let abc=0;abc < Eyal_TrueDeckArr.length;abc++)
-		{
-			console.log(Eyal_TrueDeckArr[abc].data("cardfront").data("name"));
-		}
-		*/
 		let deckInterval = setInterval(function ()
 		{
 			// Be patient because DB is a bit broken regarding deck and cards being instantly removed from deck.
@@ -10587,31 +10642,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		{
 			Eyal_TrueExtraDeckArr = [].concat(player1.extra_arr);
 		}
-		/*
-		let fieldCards = [];
-		
-		for(let abc=0;abc < Eyal_Player1Field.length;abc++)
-		{
-			fieldCards.push(Eyal_Player1Field[abc].card);
-		}
-		
-		let outsideDeckCards = [].concat(fieldCards, player1.hand_arr, player1.grave_arr, player1.banished_arr, player1.extra_arr);
-		
-		for(let abc=0;abc < player1.all_cards_arr.length;abc++)
-		{
-			if(typeof player1.all_cards_arr[abc].data("cardfront").data("effect") === "undefined")
-				continue;
-		
-			if(isIn(player1.all_cards_arr[abc], outsideDeckCards) >= 0 || viewing == "Deck")
-				Eyal_TrueAllCardsArr.push(player1.all_cards_arr[abc]);
-		}
-		
-		// Remove duplicates. This is only under the assumption we don't push cards that are in deck, unless we're viewing it.
-		// Remember not to use m.cardfront.id, only m.id, as cardfront ID is not unique 
-		let dummy_arr = [];
-		dummy_arr = [...new Map(Eyal_TrueAllCardsArr.map((m) => [m.data("id"), m])).values()];
-		Eyal_TrueAllCardsArr = [].concat(dummy_arr);
-		*/
 	}
 	window.Eyal_SecretDeckYes = function()
 	{	
@@ -10673,21 +10703,21 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		viewingE("Opponent's Secret GY");
 	}
-	/*
-	if($("#deck_hidden").length > 0)
-	{
-		$("#deck_hidden").off("contextmenu");
-		$("#deck_hidden").contextmenu(function()
-		{
-			if(!Eyal_unlockCardMechanics)
-				return;
-			
-			event.preventDefault();
-			
-			getConfirmation("Secretly check your Deck?", "This will not shuffle it, and order is random.<br>It won't work unless you viewed Deck once this duel.", Eyal_SecretDeckYes, undefined, true);
-		});
-	}
-	*/
+	
+	//if($("#deck_hidden").length > 0)
+	//{
+//		$("#deck_hidden").off("contextmenu");
+		//$("#deck_hidden").contextmenu(function()
+		//{
+//			if(!Eyal_unlockCardMechanics)
+				//return;
+//			
+			//event.preventDefault();
+//			
+			//getConfirmation("Secretly check your Deck?", "This will not shuffle it, and order is random.<br>It won't work unless you viewed Deck once this duel.", Eyal_SecretDeckYes, undefined, true);
+		//});
+	//}
+	
 	
 	if($("#extra_hidden").length > 0)
 	{
@@ -11367,13 +11397,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	}
 	window.Eyal_ExchangeSpiritYes = function()
 	{
-		/*if(player1.banished_arr.length > 0)
-		{
-			addLine("Please remove every card from banish zone first.")
-
-			return;
-		}*/
-		
 		if(actionsQueue.length > 10)
 		{
 			errorE("Cannot resolve Exchange of the Spirit while 10+ cards are flying around");
@@ -12400,7 +12423,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	{
 		Eyal_tryStartMusic();
 	} 
-
+	
 	window.Eyal_lastNormalMusic = normalMusicDL;
 	window.Eyal_lastVictoryMusic = victoryMusicDL;
 	// If Eyal_clipboard doesn't exist in select menu of the card pool in a tournament ban list
@@ -12416,41 +12439,44 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	}
 	
 	
-	if(typeof removeButton !== 'undefined')
+	if(!replay)
 	{
-		removeButton($('#view .exit_btn'))
-		addButton($('#view .exit_btn'), Eyal_exitViewing);
-	}
-	
-	if(typeof showAbilities !== 'undefined')
-	{
-		$('.uploader .ability_btn').off("touchend");
-		$('.uploader .ability_btn').on("touchend", showAbilities);
-	}
-	
-	if(typeof cancelDuel !== 'undefined')
-	{
-		$('#hosting .cancel_btn').off("click");
-		$('#hosting .cancel_btn').click(Eyal_cancelDuel);
-		$('#hosting .cancel_btn').click(cancelDuel);
-	}
-	
-	if(typeof rejectUser !== 'undefined')
-	{
-		$('#hosting .reject_btn').off("click");
-		$('#hosting .reject_btn').click(rejectUser);
-	}
-	
-	if(typeof acceptUser !== 'undefined')
-	{
-		$('#hosting .accept_btn').off("click");
-		$('#hosting .accept_btn').click(Eyal_acceptUser);
-	}
-	
-	if(typeof acceptUser !== 'undefined')
-	{
-		$('#hosting .accept_btn').off("dblclick");
-		$('#hosting #joinlist').dblclick(Eyal_acceptUser);
+		if(typeof removeButton !== 'undefined')
+		{
+			removeButton($('#view .exit_btn'))
+			addButton($('#view .exit_btn'), Eyal_exitViewing);
+		}
+		
+		if(typeof showAbilities !== 'undefined')
+		{
+			$('.uploader .ability_btn').off("touchend");
+			$('.uploader .ability_btn').on("touchend", showAbilities);
+		}
+		
+		if(typeof cancelDuel !== 'undefined')
+		{
+			$('#hosting .cancel_btn').off("click");
+			$('#hosting .cancel_btn').click(Eyal_cancelDuel);
+			$('#hosting .cancel_btn').click(cancelDuel);
+		}
+		
+		if(typeof rejectUser !== 'undefined')
+		{
+			$('#hosting .reject_btn').off("click");
+			$('#hosting .reject_btn').click(rejectUser);
+		}
+		
+		if(typeof acceptUser !== 'undefined')
+		{
+			$('#hosting .accept_btn').off("click");
+			$('#hosting .accept_btn').click(Eyal_acceptUser);
+		}
+		
+		if(typeof acceptUser !== 'undefined')
+		{
+			$('#hosting .accept_btn').off("dblclick");
+			$('#hosting #joinlist').dblclick(Eyal_acceptUser);
+		}
 	}
 	
 	if($("#search .custom_cb option[value='Eyal Handtraps']").length == 0)
@@ -12857,6 +12883,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		$("#def_position_select").remove();
 	}
+
 	
 	if($("#duel #select_zones").length > 0 && $("#bottom_deck_select").length <= 0 && duelist)
 	{
@@ -12926,7 +12953,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		$('#view').draggable({distance: "75", cursor: "move", helper: "title_txt", cursorat: {top: "50"}});
 		$("#view .title_txt").css("cursor", "move")
 	}
-
+	
 	// We're currently in https://www.duelingbook.com/card?id=513 
 	if(typeof master !== "undefined" && typeof card_id !== "undefined")
 	{
@@ -12938,6 +12965,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		if(cardfront.data("monster_color") == "Xyz")
 			levelStr = "RANK: ";
+		
 		
 		if (cardfront.data("pendulum"))
 		{
@@ -12974,9 +13002,9 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			}
 		}
 	}
-
+	
 	// For creating fake cards as fake cards cannot be caught with swapCardMenu.
-	window.newDuelCard = function() {
+	window.newDuelCard = function(player) {
 		var card = getRecycledCard();
 		if (!card) {
 			card = new Card();
@@ -12984,9 +13012,10 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		if (automatic) {
 			card.contextmenu(duelCardDownE);
 		}
-		//card.on("mouseover click", previewE);
+		card.off("mouseenter click");
 		card.on("mouseenter click", previewE);
 		if (duelist) {
+		
 			card.find('.content:first').mouseover(Eyal_cardMenuE);
 			card.find('.content:first').contextmenu(Eyal_contextMenuE);
 			
@@ -13005,6 +13034,8 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				card.click(targetCard);
 			}
 		}
+		card.data("controller", player);
+		card.data("owner", player);
 		TweenMax.to(card, 0, { rotationY: 180 + ABOUT_ZERO, scale: 0.1485 });
 		return card;
 	}
