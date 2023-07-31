@@ -328,6 +328,7 @@ Black-Winged Dragon
 
 
 ; Effect Monsters
+Mist Valley Apex Avian
 Doodle Beast - Tyranno
 Arcana Force XXI - The World
 Exodia Necross
