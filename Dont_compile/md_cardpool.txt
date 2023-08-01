@@ -10962,7 +10962,7 @@
 90664857 3 N Not_HT Not_Floodgate
 91397409 3 UR Not_HT Not_Floodgate
 9205573 3 SR Not_HT Not_Floodgate
-92519087 3 UR Not_HT Not_Floodgate
+92519087 3 UR Not_HT Floodgate
 9482987 3 R Not_HT Not_Floodgate
 9505425 3 N Not_HT Not_Floodgate
 96239878 3 R Not_HT Not_Floodgate
