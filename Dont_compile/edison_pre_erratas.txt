@@ -3,6 +3,7 @@ Sinister Serpent```During your Standby Phase, if this card is in your GY: You ca
 Ring of Destruction```Target 1 face-up monster on the field; destroy that target, and if you do, inflict damage to both players equal to that target's ATK.
 Dark Magician of Chaos```When this card is Normal or Special Summoned: You can target 1 Spell Card in your Graveyard; add that target to your hand. Banish any monster destroyed by battle with this card. If this face-up card would leave the field, banish it instead.
 ; While I know sinister serpent, RoD and DMoC are not edisons card, this will help goat players and it doesn't affect edison negatively.
+Catapult Turtle```You can Tribute 1 monster; inflict damage to your opponent equal to half the Tributed monster's ATK on the field.
 Sangan```When this card is sent from the field to the GY: Add 1 monster with 1500 or less ATK from your Deck to your hand.
 Future Fusion```When this card is activated: Reveal 1 Fusion Monster from your Extra Deck, and send its Materials from your Deck to the GY, also, during your 2nd Standby Phase after activation, Fusion Summon 1 Monster from your Extra Deck with the same name as that revealed monster, and target it with this card. If this card leaves the field, destroy that monster. If that monster is destroyed, destroy this card.
 Brionac, Dragon of the Ice Barrier```1 Tuner + 1 or more non-Tuner monsters///nYou can discard any number of cards to the GY to target the same number of cards on the field; return them to the hand.
