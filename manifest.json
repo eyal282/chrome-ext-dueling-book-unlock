@@ -1,7 +1,7 @@
 {
 	"name": "Dueling Book Unlock",
 	"manifest_version": 3,
-	"version": "8.0",
+	"version": "8.8",
 	"description": "Unlocks all card mechanics in Dueling Book",
 	"permissions": [
 		"tabs",
@@ -9,15 +9,14 @@
 		"scripting",
 		"webNavigation"
 	],
-	"action":
+	"action": 
 	{
 		"default_title": "Settings",
 		"default_icon": "icon.png",
 		"default_popup": "onextensionpressed.html"
 	},
-	"host_permissions": ["*://*.duelingbook.com/"],
-	"background":
-	{
+	"host_permissions": [ "*://*.duelingbook.com/" ],
+	"background": {
 		"service_worker": "background.js"
 	}
 }

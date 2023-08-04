@@ -293,6 +293,28 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 });
 
+
+document.addEventListener('DOMContentLoaded', function () {
+
+	let slider = document.querySelector('input[id="zoomSlider"]');
+	
+	if(slider.id == 'zoomSlider')
+	{
+		chrome.storage.sync.get(['zoomSlider'], function(result) {
+			if(result && result.zoomSlider > 0)
+				slider.value = result.zoomSlider;
+			
+			else
+				slider.value = 100;
+
+		});
+		
+		slider.addEventListener('change', function () {
+			chrome.storage.sync.set({zoomSlider: slider.value}, function() {});
+		});
+	}
+});
+
 /*
 function conLog(text)
 {

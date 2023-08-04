@@ -7,7 +7,8 @@ var FIREFOX = typeof InstallTrigger !== 'undefined';
 //var SAFARI = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof SAFARI !== 'undefined' && safari.pushNotification));
 var SAFARI = !!(navigator.userAgent.indexOf("Safari") >= 0);
 var IE = /*@cc_on!@*/false || !!document.documentMode;
-var EDGE = !!(navigator.userAgentData && JSON.stringify(navigator.userAgentData.brands).includes("Microsoft Edge"));
+//var EDGE = !!(navigator.userAgentData && JSON.stringify(navigator.userAgentData.brands).includes("Microsoft Edge"));
+var EDGE = false;
 //var CHROME = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
 var CHROME = !!(navigator.userAgent.indexOf("Chrome") >= 0);
 var BLINK = (CHROME || OPERA) && !!window.CSS;
@@ -609,6 +610,7 @@ function addScrollBars() {
 		//	$(this).find('.os-content').addClass("selectable");
 		//}
 	});
+	//$('*[data-overlayscrollbars-viewport]').removeAttr("tabindex");
 }
 
 (function($){
@@ -1706,6 +1708,10 @@ function CardFront() {
 					card_atk_txt.style.display = "block";
 					card_atk_txt.textContent = atk;
 				}
+					else {
+						card.data("atk", "0");
+						card.data("def", "0");
+					}
 				if (monster_color != "Xyz" && monster_color != "Link") {
 					name_txt.style.color = "black";
 					for (i = 0; i < level; i++) {
@@ -4739,6 +4745,7 @@ function takeScreenshot(event, usr) {
 			//return domtoimage.toPng(c[0], {"bgcolor":"#000000", "width":1024, "height":640, "style":{"transform":"scale(1)", "margin":"0px", "zoom":"1"}, "filter":isTainted});
 			//return domtoimage.toPng(c[0], {"bgcolor":"#000000", "width":1024, "height":640, "style":{"transform":"scale(1)", "margin":"0px", "zoom":"1"}, "imagePlaceholder":"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"});
 			return domtoimage.toPng(c[0], {"bgcolor":"#000000", "width":1024, "height":640, "style":screenshotStyle, "imagePlaceholder":"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}); // added marginLeft and marginTop for chrome, but it's messing up other versions of chrome
+			//return domtoimage.toJpeg(c[0], {"quality":0.5, "bgcolor":"#000000", "width":1024, "height":640, "style":screenshotStyle, "imagePlaceholder":"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"});
 		});
 		filtered.done(function(url) {
 			console.timeEnd("dom-to-image");
@@ -5202,6 +5209,8 @@ function stopSounds() {
 		audio_arr.splice(0, 1);
 	}
 }
+
+audio_arr
 
 function selectText(element) {
 	if (element instanceof HTMLFontElement) {
@@ -6434,12 +6443,73 @@ function addDraggingMobile(element, handle, cancel, start_function, end_function
 }
 
 function appendChat(chat) {
-		var vsp = chat.find('.scrollpane').scrollTop();
+	var selection = window.getSelection();
+	if (selection.toString() != "") {
+		return;
+	}
+	var vsp = chat.find('.scrollpane:visible').scrollTop();
 	var focus = $(':focus');
 	$('#chats').append(chat);
 	focus.focus();
-		chat.find('.scrollpane').scrollTop(vsp);
+	chat.find('.scrollpane:visible').scrollTop(vsp);
 }
+
+/*
+var TextSelectionString
+var TextSelection;
+var TextRange;
+
+function restoreSelection() {
+	if (!TextRange) {
+		return;
+	}
+	console.log(TextRange.toString());
+	TextSelection.removeAllRanges();
+	TextSelection.addRange(TextRange);
+}
+
+function saveSelection() {
+	var selection = window.getSelection();
+	if (!selection.anchorNode) {
+		return;
+	}
+	if (!selection.toString()) {
+		return;
+	}
+	console.log(selection.toString());
+	
+	TextSelection = selection;
+	TextSelectionString = TextSelection.toString();
+	console.log(TextSelection);
+	TextRange = TextSelection.getRangeAt(0); 
+	console.log(TextRange);
+	//$(document).off("mouseup");
+}
+
+function selectText(element, startIndex, endIndex) {
+  var range = document.createRange();
+  //range.setStart(element.firstChild, startIndex); // Replace "firstChild" with the appropriate child node
+  //range.setEnd(element.firstChild, endIndex); // Replace "firstChild" with the appropriate child node
+  range.setStart(element, startIndex); // Replace "firstChild" with the appropriate child node
+  range.setEnd(element, endIndex); // Replace "firstChild" with the appropriate child node
+  
+
+  var selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+// Usage
+//selectText($('#public_chat .cout_txt')[0], 10, 15);
+*/
+
+
+
+
+
+
+
+
 
 function setupInput(cin_txt, focus) {
 	/*// older text showed up once
@@ -7119,33 +7189,9 @@ function ioError(e) {
 }
 
 function getBrowser() {
-	if (OPERA) {
-		return "Opera";
-	}
-	if (FIREFOX) {
-		return "Firefox";
-	}
-	if (CHROME) {
-		return "Chrome";
-	}
-	if (SAFARI) {
-		return "Safari";
-	}
-	if (IE) {
-		return "Internet Explorer";
-	}
-	if (EDGE) {
+	if (!!(navigator.userAgentData && JSON.stringify(navigator.userAgentData.brands).includes("Microsoft Edge"))) {
 		return "Edge";
 	}
-	if (TOR) {
-		return "Tor";
-	}
-	if (BLINK) {
-		return "Blink";
-	}
-	return "Unknown";
-}
-function getBrowser() {
 	if (OPERA) {
 		return "Opera";
 	}
