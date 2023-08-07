@@ -3,6 +3,7 @@ Sinister Serpent```During your Standby Phase, if this card is in your GY: You ca
 Ring of Destruction```Target 1 face-up monster on the field; destroy that target, and if you do, inflict damage to both players equal to that target's ATK.
 Dark Magician of Chaos```When this card is Normal or Special Summoned: You can target 1 Spell Card in your GY; add that target to your hand. Banish any monster destroyed by battle with this card. If this face-up card would leave the field, banish it instead.
 Metamorphosis```Tribute 1 monster; Special Summon 1 Fusion Monster from your Extra Deck with the same Level as the Tributed monster.
+Night Assailant```FLIP: Target 1 monster your opponent controls; destroy that target.///nIf this card is sent from the hand to the GY: Target 1 Flip monster in your GY, except this card; add that target to your hand.
 ; While I know sinister serpent, RoD and DMoC are not edisons card, this will help goat players and it doesn't affect edison negatively.
 Catapult Turtle```You can Tribute 1 monster; inflict damage to your opponent equal to half the Tributed monster's ATK on the field.
 Sangan```When this card is sent from the field to the GY: Add 1 monster with 1500 or less ATK from your Deck to your hand.
