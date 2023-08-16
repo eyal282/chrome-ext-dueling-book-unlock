@@ -196,6 +196,7 @@ Bio-Mage
 Blackwing - Breeze the Zephyr
 Blackwing - Brisote the Tailwind
 Blade Skater
+Blazing Cartesia, the Virtuous
 Blazing Hiita
 Blessed Winds
 Blessings for Gusto
@@ -213,7 +214,6 @@ Botanical Girl
 Bountiful Artemis
 Bounzer Guard
 Box of Friends
-Brave Beauty of Ruby Regard - Bradamante
 Break Away
 Bright Future
 Brotherhood of the Fire Fist - Peacock
@@ -248,6 +248,11 @@ Celestial Bell Tower
 Celestial Mage
 Celestial Sword - Eatos
 Centaur Mina
+Centurion Emet VI
+Centurion Legatia
+Centurion Phalanx
+Centurion Primera
+Centurion Trudea
 Certain Victory! Monster Academy
 Cerulean Sacred Phoenix of Nephthys
 Chamber Dragonmaid
@@ -295,6 +300,7 @@ Converging Wishes
 Cosmic String Noodle-Druidess
 Cosmo Queen
 Counselor Lily
+Courageous Crimson Chevalier Bradamante
 Creeping Darkness
 Crimson Sentry
 Cross Attack
@@ -410,6 +416,7 @@ Deep Sea Aria
 Deep Sea Diva
 Deep Sea Minstrel
 Deep Sea Prima Donna
+Deep Sea Repetiteur
 Defend Hero
 Defender of Nephthys
 Defense Maiden
@@ -562,6 +569,7 @@ Evenly Matched
 Evigishki Gustkraken
 Evigishki Merrowgeist
 Evigishki Mind Augus
+Evigishki Neremanas
 Evigishki Tetrogre
 Evil Blast
 Evil Eye Awakening
@@ -579,6 +587,7 @@ Evil★Twin Lil-la
 Evil★Twin Present
 Evil★Twin's Trouble Sunny
 Evil★Twins Ki-sikil & Lil-la
+Exceed the Pendulum
 Executie Feena
 Exosister Asophiel
 Exosister Gibrine
@@ -612,6 +621,7 @@ Fairy's Gift
 Fairy's Hand Mirror
 Fairyant the Circular Sorcerer
 Fairywitch
+Faith of Centurion
 Fallen Angel in Darkness
 Fallen Angel of Roses
 Familiar-Possessed - Aussa
@@ -690,6 +700,7 @@ Gagagawind
 Galatea, the Orcust Automaton
 Galaxy Queen's Light
 Gamble Angel Bunny
+Garden Rose Flora
 Garden Rose Maiden
 Garibel the Extra Premium Sushi Angel
 Gather Your Mind
@@ -782,6 +793,7 @@ Guardian Kay'est
 Guardian Treasure
 Guardragon Reincarnation
 Guardragon Shield
+Guiding Quem, the Virtuous
 Gullveig of the Nordic Ascendant
 Gust
 Guts Guard
@@ -875,7 +887,9 @@ Ice Water
 The Ice-Bound God
 Icejade Acti
 Icejade Aegirine
+Icejade Creation Aegirocassis
 Icejade Kosmochlor
+Icejade Ran Aegirine
 Icejade Tinola
 Icejade Tremora
 Icy Breeze Refrain
@@ -889,6 +903,7 @@ Impact Flip
 Impenetrable Attack
 Imprisoned Queen Archfiend
 Incarnated Machine Angel
+Incredible Ecclesia, the Virtuous
 Indulged Darklord
 Infernal Flame Vixen
 Infernal Incinerator
@@ -982,6 +997,8 @@ Level Award
 Level Doubler
 Level Soul
 Lib the World Key Blademaster
+Libromancer Magigirl
+Libromancer Mystigirl
 Light Bringer Lucifer
 Lightlow Protection
 Lightsworn Barrier
@@ -1002,7 +1019,6 @@ Live☆Twin Ki-sikil Frost
 Live☆Twin Lil-la
 Live☆Twin Lil-la Treat
 Lorelei, the Symphonic Arsenal
-Love Magus - Ciela
 Lucky Loan
 Lullabind
 Lumenize
@@ -1072,6 +1088,7 @@ Magical Musketeer Starfire
 Magical Something
 Magical Undertaker
 Magician of Faith
+Magician of Faithfulness
 Magician's Restage
 Magician's Valkyria
 Magicians' Defense
@@ -1090,6 +1107,7 @@ Malevolent Nuzzler
 Malice, Lady of Lament
 Mamemaki
 Manipulator Token
+Mannadium Trilosukda
 March of the Dark Brigade
 Mardel, Generaider Boss of Light
 Mariamne, the True Dracophoenix
@@ -1123,6 +1141,9 @@ Mayakashi Return
 Mayakashi Winter
 Medium of the Ice Barrier
 Medusa, Watcher of the Evil Eye
+Megalith Ophiel
+Megalith Phaleg
+Megalith Phul
 Melffy Mommy
 Melffy Playhouse
 Meliae of the Trees
@@ -1208,6 +1229,7 @@ Nephthys, the Sacred Preserver
 Next World
 Next to be Lost
 Ni-Ni the Mirror Mikanko
+Night Assailant
 Night Papilloperative
 Night Wing Sorceress
 Ninaruru, the Magistus Glass Goddess
@@ -1241,6 +1263,7 @@ Orcustrated Core
 Orcustrated Einsatz
 Orcustrated Release
 Orcustrated Return
+Oriori no Kamigami
 Otohime
 PSY-Frame Multi-Threader
 PSY-Framelord Lambda
@@ -1453,6 +1476,7 @@ Ruin, Queen of Oblivion
 Ruin, Supreme Queen of Oblivion
 S-Force Nightchaser
 S-Force Rappa Chiyomaru
+S:P Little Night
 SPYGAL Misty
 SPYRAL MISSION - Recapture
 SPYRAL Master Plan
@@ -1461,9 +1485,10 @@ Saambell the Summoner
 Sacred Phoenix of Nephthys
 Sacred Serpent's Wake
 Saffira, Queen of Dragons
+Sage of Benevolence - Ciela
 Sage of Silence
+Sage of Strength - Akash
 Sagitta, Maverick Fur Hire
-Saincred Magician
 Salamangreat Foxer
 Sapphire Revive
 Sari of the Silverwing Axe
@@ -1499,6 +1524,7 @@ Shining Rebirth
 Shining Stunt
 Shining Valkyrie
 Shinobaroness Peacock
+Shinobaroness Shade Peacock
 Shinobird Crane
 Shinobird Salvation
 Shiraganeginger
@@ -1613,11 +1639,13 @@ St. Joan
 Stairway to a Fabled Realm
 Stand In
 Stand-Off
+Stand-Up Centurion!
 Star Drawing
 Stardust Trail
 Staring Contest
 Starry Knight Rayel
 Statue Dark Magician Girl
+Staysailor Romarin
 Storming Wynn
 Stray Cat Girl
 Strength of Prophecy
@@ -1768,6 +1796,7 @@ The Tripper Mercury
 Trismagistus
 Trumpetonfa, the Assault Music Maiden
 Trust Chain
+Truth Centurion
 Tuner's Reflect
 Tuning
 Tuning Magician
@@ -1818,8 +1847,8 @@ Vampire Sucker
 Vampire Vamp
 Vampire's Domain
 Vanadis of the Nordic Ascendant
-Vanquish Soul - Dr. Madlove
-Vanquish Soul - Panthera
+Vanquish Soul Dr. Mad Love
+Vanquish Soul Pantera
 Vanquishing Light
 Vector Change
 Vendread Anima
@@ -1843,7 +1872,6 @@ Volcanic Queen
 Vortex the Whirlwind
 Waboku
 Wall of Illusion
-War Magus - Aakas
 War Rock Skyler
 Warrior Lady of the Wasteland
 Warrior of Tradition
@@ -1870,6 +1898,7 @@ White Dragon Ninja
 White Magician Pikeru
 White Night Queen
 White Ninja
+White Relic of Dogmatika
 White Veil
 White Wing Magician
 Wightprince
