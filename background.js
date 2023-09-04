@@ -3,6 +3,7 @@ chrome.webNavigation.onCommitted.addListener(function(e) {
 }, {url: [{hostSuffix: 'duelingbook.com'}]});
 
 
+const goatCards = [];
 const edisonCards = [];
 const negate_icon_blob = [];
 
@@ -51,6 +52,29 @@ function Eyal_ReadFile(_path, _cb)
 		reader.readAsText(_blob); 
 	});
 };
+
+
+if(goatCards.length == 0)
+{
+	Eyal_ReadFile("./goat_cardpool.txt", function(_res){
+	
+		let eyal_arr = [];
+		
+		_res = _res.replaceAll("\r", "");
+		
+		eyal_arr = _res.split('\n');
+		
+		for(let abc=0;abc < eyal_arr.length;abc++)
+		{
+			if(eyal_arr[abc][0] == ';' || eyal_arr[abc].length == 0)
+				continue;
+			
+			goatCards.push(eyal_arr[abc]);
+		}
+		
+	});
+}
+
 
 if(edisonCards.length == 0)
 {
@@ -285,7 +309,7 @@ function performInjection()
 					
 					chrome.scripting.executeScript(
 					{
-						args: [unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, zoomSlider, limitedCardsSound, cardLogging, edisonCards, negate_icon_blob],
+						args: [unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, zoomSlider, limitedCardsSound, cardLogging, goatCards, edisonCards, negate_icon_blob],
 						target: {tabId: tabs[0].id},
 						world: "MAIN", // Main world is mandatory to edit other website functions
 						func: injectFunction,
@@ -413,10 +437,35 @@ function blitzInjectFunction()
 	if(typeof actionsQueue === "undefined")
 		return;
 	
+	if(typeof window.Eyal_waitingForAction === "undefined")
+		window.Eyal_waitingForAction = false;
+	
+	if (typeof window.Eyal_waitingForActionOrViewing === "undefined")
+		window.Eyal_waitingForActionOrViewing = false;
+	
+		
 	if (window.Eyal_waitingForAction)
 	{
 		if (actionsQueue.length > 0)
 			window.Eyal_waitingForAction = false;
+    }
+	
+	if (window.Eyal_waitingForActionOrViewing)
+	{
+		if(typeof window.Eyal_waitingForActionOrViewingTimer === "undefined")
+		{
+			window.Eyal_waitingForActionOrViewingTimer = 1000;
+		}
+		
+		window.Eyal_waitingForActionOrViewingTimer -= 100;;
+		
+		if (actionsQueue.length > 0 || viewing || Eyal_waitingForActionOrViewingTimer <= 0)
+		{
+			window.Eyal_waitingForActionOrViewing = false;
+			window.Eyal_waitingForActionOrViewingTimer = undefined;
+		}
+		
+		
     }
 	
 	if(mobile && duelist && window.Eyal_lastActionsQueueLength != 0 && actionsQueue.length == 0)
@@ -661,36 +710,12 @@ function censorInjectFunction(potOfSwitch, femOfSwitch)
 			if(Eyal_cards[abc].data("cardfront"))
 				Eyal_cards[abc] = Eyal_cards[abc].data("cardfront");
 			
-			if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/(This card is a Switch Monster)/i) != -1)
-			{
-				Eyal_cards[abc].find('.card_color').attr('src', "https://i.ibb.co/8BxWXc1/image.png");
-			}
-			else if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/(This card is an Evolve Monster)/i) != -1)
-			{
-				Eyal_cards[abc].find('.card_color').attr('src', "https://i.ibb.co/XzGbZ6p/Evolution-cardtype.png");
-				
-				
-				Eyal_cards[abc].find(".name_txt").css("color", "white")
-			}
-			else if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/(This card is a Token)/i) != -1)
-			{
-				Eyal_cards[abc].find('.card_color').attr('src', IMAGES_START + "card/token_front2.jpg");
-			}
-			else if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/At the start of the Duel, flip this card over/i) != -1)
-			{
-				Eyal_cards[abc].find('.card_color').attr('src', IMAGES_START + "card/skill_front2.jpg");
-				
-				Eyal_cards[abc].find(".name_txt").css("color", "white")
-			}
-			if(Eyal_cards[abc].data("effect") && Eyal_cards[abc].data("effect").search(/this card is DREAM-Attribute/i) != -1)
-			{
-				Eyal_cards[abc].find('.attribute').attr('src', "https://i.ibb.co/X2VSTR0/dream2-en.png")
-			}
-			
-			
 			if(typeof Eyal_OnGetCardVisualsPost !== "undefined")
 			{
-				Eyal_OnGetCardVisualsPost(Eyal_cards[abc], Eyal_cards[abc]);
+				if(Eyal_cards[abc].data("effect") || Eyal_cards[abc].data("card_type"))
+				{
+					Eyal_OnGetCardVisualsPost(Eyal_cards[abc], Eyal_cards[abc]);
+				}
 			}
 		}
 	}
@@ -698,7 +723,7 @@ function censorInjectFunction(potOfSwitch, femOfSwitch)
 	Eyal_checkCensors();
 }
 
-function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, zoomSlider, limitedCardsSound, cardLogging, edisonCards, negate_icon_blob)
+function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, zoomSlider, limitedCardsSound, cardLogging, goatCards, edisonCards, negate_icon_blob)
 {
 //	let Eyal_blob = new Blob([negate_icon_blob[0].text], {type: negate_icon_blob[0].type});
 	
@@ -727,10 +752,15 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Mexp=t()}(this,(function(){"use strict";function e(){return e=Object.assign?Object.assign.bind():function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var a in n)Object.prototype.hasOwnProperty.call(n,a)&&(e[a]=n[a])}return e},e.apply(this,arguments)}var t,n={0:11,1:0,2:3,3:0,4:0,5:0,6:0,7:11,8:11,9:1,10:10,11:0,12:11,13:0,14:-1};function a(e,t){for(var n=0;n<e.length;n++)e[n]+=t;return e}!function(e){e[e.FUNCTION_WITH_ONE_ARG=0]="FUNCTION_WITH_ONE_ARG",e[e.NUMBER=1]="NUMBER",e[e.BINARY_OPERATOR_HIGH_PRECENDENCE=2]="BINARY_OPERATOR_HIGH_PRECENDENCE",e[e.CONSTANT=3]="CONSTANT",e[e.OPENING_PARENTHESIS=4]="OPENING_PARENTHESIS",e[e.CLOSING_PARENTHESIS=5]="CLOSING_PARENTHESIS",e[e.DECIMAL=6]="DECIMAL",e[e.POSTFIX_FUNCTION_WITH_ONE_ARG=7]="POSTFIX_FUNCTION_WITH_ONE_ARG",e[e.FUNCTION_WITH_N_ARGS=8]="FUNCTION_WITH_N_ARGS",e[e.BINARY_OPERATOR_LOW_PRECENDENCE=9]="BINARY_OPERATOR_LOW_PRECENDENCE",e[e.BINARY_OPERATOR_PERMUTATION=10]="BINARY_OPERATOR_PERMUTATION",e[e.COMMA=11]="COMMA",e[e.EVALUATED_FUNCTION=12]="EVALUATED_FUNCTION",e[e.EVALUATED_FUNCTION_PARAMETER=13]="EVALUATED_FUNCTION_PARAMETER",e[e.SPACE=14]="SPACE"}(t||(t={}));var o={0:!0,1:!0,3:!0,4:!0,6:!0,8:!0,9:!0,12:!0,13:!0,14:!0},h={0:!0,1:!0,2:!0,3:!0,4:!0,5:!0,6:!0,7:!0,8:!0,9:!0,10:!0,11:!0,12:!0,13:!0},r={0:!0,3:!0,4:!0,8:!0,12:!0,13:!0},u={},s={0:!0,1:!0,3:!0,4:!0,6:!0,8:!0,12:!0,13:!0},p={1:!0},i=[[],["1","2","3","7","8","9","4","5","6","+","-","*","/","(",")","^","!","P","C","e","0",".",",","n"," ","&"],["pi","ln","Pi"],["sin","cos","tan","Del","int","Mod","log","pow"],["asin","acos","atan","cosh","root","tanh","sinh"],["acosh","atanh","asinh","Sigma"]];function l(e,t,n,a){for(var o=0;o<a;o++)if(e[n+o]!==t[o])return!1;return!0}function v(e){for(var a=0;a<e.length;a++){var o=e[a].token.length,h=-1;e[a].type===t.FUNCTION_WITH_N_ARGS&&void 0===e[a].numberOfArguments&&(e[a].numberOfArguments=2),i[o]=i[o]||[];for(var r=0;r<i[o].length;r++)if(e[a].token===i[o][r]){h=f(i[o][r],this.tokens);break}-1===h?(this.tokens.push(e[a]),e[a].precedence=n[e[a].type],i.length<=e[a].token.length&&(i[e[a].token.length]=[]),i[e[a].token.length].push(e[a].token)):(this.tokens[h]=e[a],e[a].precedence=n[e[a].type])}}function f(e,t){for(var n=0;n<t.length;n++)if(t[n].token===e)return n;return-1}var y=function(e,t){var n,v={value:this.math.changeSign,type:0,precedence:1,show:"-"},y={value:")",show:")",type:5,precedence:0},c={value:"(",type:4,precedence:0,show:"("},w=[c],m=[],E=e,g=o,N=0,d=u,A="";void 0!==t&&this.addToken(t);var k=function(e,t){for(var n,a,o,h=[],r=t.length,u=0;u<r;u++)if(!(u<r-1&&" "===t[u]&&" "===t[u+1])){for(n="",a=t.length-u>i.length-2?i.length-1:t.length-u;a>0;a--)if(void 0!==i[a])for(o=0;o<i[a].length;o++)l(t,i[a][o],u,a)&&(n=i[a][o],o=i[a].length,a=0);if(u+=n.length-1,""===n)throw new Error("Can't understand after "+t.slice(u));h.push(e.tokens[f(n,e.tokens)])}return h}(this,E);for(n=0;n<k.length;n++){var M=k[n];if(14!==M.type){var O,T=M.token,_=M.type,I=M.value,P=M.precedence,R=M.show,C=w[w.length-1];for(O=m.length;O--&&0===m[O];)if(-1!==[0,2,3,4,5,9,10,11,12,13].indexOf(_)){if(!0!==g[_])throw new Error(T+" is not allowed after "+A);w.push(y),g=h,d=s,m.pop()}if(!0!==g[_])throw new Error(T+" is not allowed after "+A);!0===d[_]&&(_=2,I=this.math.mul,R="&times;",P=3,n-=1);var S={value:I,type:_,precedence:P,show:R,numberOfArguments:M.numberOfArguments};if(0===_)g=o,d=u,a(m,2),w.push(S),4!==k[n+1].type&&(w.push(c),m.push(2));else if(1===_)1===C.type?(C.value+=I,a(m,1)):w.push(S),g=h,d=r;else if(2===_)g=o,d=u,a(m,2),w.push(S);else if(3===_)w.push(S),g=h,d=s;else if(4===_)a(m,1),N++,g=o,d=u,w.push(S);else if(5===_){if(!N)throw new Error("Closing parenthesis are more than opening one, wait What!!!");N--,g=h,d=s,w.push(S),a(m,1)}else if(6===_){if(C.hasDec)throw new Error("Two decimals are not allowed in one number");1!==C.type&&(C={show:"0",value:0,type:1,precedence:0},w.push(C)),g=p,a(m,1),d=u,C.value+=I,C.hasDec=!0}else 7===_&&(g=h,d=s,a(m,1),w.push(S));8===_?(g=o,d=u,a(m,M.numberOfArguments+2),w.push(S),4!==k[n+1].type&&(w.push(c),m.push(M.numberOfArguments+2))):9===_?(9===C.type?C.value===this.math.add?(C.value=I,C.show=R,a(m,1)):C.value===this.math.sub&&"-"===R&&(C.value=this.math.add,C.show="+",a(m,1)):5!==C.type&&7!==C.type&&1!==C.type&&3!==C.type&&13!==C.type?"-"===T&&(g=o,d=u,a(m,2).push(2),w.push(v),w.push(c)):(w.push(S),a(m,2)),g=o,d=u):10===_?(g=o,d=u,a(m,2),w.push(S)):11===_?(g=o,d=u,w.push(S)):12===_?(g=o,d=u,a(m,6),w.push(S),4!==k[n+1].type&&(w.push(c),m.push(6))):13===_&&(g=h,d=s,w.push(S)),a(m,-1),A=T}else if(n>0&&n<k.length-1&&1===k[n+1].type&&(1===k[n-1].type||6===k[n-1].type))throw new Error("Unexpected Space")}for(O=m.length;O--;)w.push(y);if(!0!==g[5])throw new Error("complete the expression");for(;N--;)w.push(y);return w.push(y),w};function c(e){for(var t,n,a,o=[],h=-1,r=-1,u=[{value:"(",type:4,precedence:0,show:"("}],s=1;s<e.length;s++)if(1===e[s].type||3===e[s].type||13===e[s].type)1===e[s].type&&(e[s].value=Number(e[s].value)),o.push(e[s]);else if(4===e[s].type)u.push(e[s]);else if(5===e[s].type)for(;4!==(null==(p=n=u.pop())?void 0:p.type);){var p;n&&o.push(n)}else if(11===e[s].type){for(;4!==(null==(i=n=u.pop())?void 0:i.type);){var i;n&&o.push(n)}u.push(n)}else{r=(t=e[s]).precedence,h=(a=u[u.length-1]).precedence;var l="Math.pow"==a.value&&"Math.pow"==t.value;if(r>h)u.push(t);else{for(;h>=r&&!l||l&&r<h;)n=u.pop(),a=u[u.length-1],n&&o.push(n),h=a.precedence,l="Math.pow"==t.value&&"Math.pow"==a.value;u.push(t)}}return o}function w(e,t){(t=t||{}).PI=Math.PI,t.E=Math.E;for(var n,a,o,h=[],r=void 0!==t.n,u=0;u<e.length;u++)if(1===e[u].type)h.push({value:e[u].value,type:1});else if(3===e[u].type)h.push({value:t[e[u].value],type:1});else if(0===e[u].type){var s=h[h.length-1];Array.isArray(s)?s.push(e[u]):s.value=e[u].value(s.value)}else if(7===e[u].type){var p=h[h.length-1];Array.isArray(p)?p.push(e[u]):p.value=e[u].value(p.value)}else if(8===e[u].type){for(var i=[],l=0;l<e[u].numberOfArguments;l++){var v=h.pop();v&&i.push(v.value)}h.push({type:1,value:e[u].value.apply(e[u],i.reverse())})}else if(10===e[u].type)n=h.pop(),a=h.pop(),Array.isArray(a)?((a=a.concat(n)).push(e[u]),h.push(a)):Array.isArray(n)?(n.unshift(a),n.push(e[u]),h.push(n)):h.push({type:1,value:e[u].value(a.value,n.value)});else if(2===e[u].type||9===e[u].type)n=h.pop(),a=h.pop(),Array.isArray(a)?((a=a.concat(n)).push(e[u]),h.push(a)):Array.isArray(n)?(n.unshift(a),n.push(e[u]),h.push(n)):h.push({type:1,value:e[u].value(a.value,n.value)});else if(12===e[u].type){n=h.pop();var f=void 0;f=!Array.isArray(n)&&n?[n]:n||[],a=h.pop(),o=h.pop(),h.push({type:1,value:e[u].value(o.value,a.value,f)})}else 13===e[u].type&&(r?h.push({value:t[e[u].value],type:3}):h.push([e[u]]));if(h.length>1)throw new Error("Uncaught Syntax error");return parseFloat(h[0].value.toFixed(15))}var m=function(){function t(){var t;this.toPostfix=c,this.addToken=v,this.lex=y,this.postfixEval=w,this.math=(t=this,{isDegree:!0,acos:function(e){return t.math.isDegree?180/Math.PI*Math.acos(e):Math.acos(e)},add:function(e,t){return e+t},asin:function(e){return t.math.isDegree?180/Math.PI*Math.asin(e):Math.asin(e)},atan:function(e){return t.math.isDegree?180/Math.PI*Math.atan(e):Math.atan(e)},acosh:function(e){return Math.log(e+Math.sqrt(e*e-1))},asinh:function(e){return Math.log(e+Math.sqrt(e*e+1))},atanh:function(e){return Math.log((1+e)/(1-e))},C:function(e,n){var a=1,o=e-n,h=n;h<o&&(h=o,o=n);for(var r=h+1;r<=e;r++)a*=r;var u=t.math.fact(o);return"NaN"===u?"NaN":a/u},changeSign:function(e){return-e},cos:function(e){return t.math.isDegree&&(e=t.math.toRadian(e)),Math.cos(e)},cosh:function(e){return(Math.pow(Math.E,e)+Math.pow(Math.E,-1*e))/2},div:function(e,t){return e/t},fact:function(e){if(e%1!=0)return"NaN";for(var t=1,n=2;n<=e;n++)t*=n;return t},inverse:function(e){return 1/e},log:function(e){return Math.log(e)/Math.log(10)},mod:function(e,t){return e%t},mul:function(e,t){return e*t},P:function(e,t){for(var n=1,a=Math.floor(e)-Math.floor(t)+1;a<=Math.floor(e);a++)n*=a;return n},Pi:function(e,n,a){for(var o=1,h=e;h<=n;h++)o*=Number(t.postfixEval(a,{n:h}));return o},pow10x:function(e){for(var t=1;e--;)t*=10;return t},sigma:function(e,n,a){for(var o=0,h=e;h<=n;h++)o+=Number(t.postfixEval(a,{n:h}));return o},sin:function(e){return t.math.isDegree&&(e=t.math.toRadian(e)),Math.sin(e)},sinh:function(e){return(Math.pow(Math.E,e)-Math.pow(Math.E,-1*e))/2},sub:function(e,t){return e-t},tan:function(e){return t.math.isDegree&&(e=t.math.toRadian(e)),Math.tan(e)},tanh:function(e){return t.math.sinh(e)/t.math.cosh(e)},toRadian:function(e){return e*Math.PI/180},and:function(e,t){return e&t}}),this.tokens=function(t){return[{token:"sin",show:"sin",type:0,value:t.math.sin},{token:"cos",show:"cos",type:0,value:t.math.cos},{token:"tan",show:"tan",type:0,value:t.math.tan},{token:"pi",show:"&pi;",type:3,value:"PI"},{token:"(",show:"(",type:4,value:"("},{token:")",show:")",type:5,value:")"},{token:"P",show:"P",type:10,value:t.math.P},{token:"C",show:"C",type:10,value:t.math.C},{token:" ",show:" ",type:14,value:" ".anchor},{token:"asin",show:"asin",type:0,value:t.math.asin},{token:"acos",show:"acos",type:0,value:t.math.acos},{token:"atan",show:"atan",type:0,value:t.math.atan},{token:"7",show:"7",type:1,value:"7"},{token:"8",show:"8",type:1,value:"8"},{token:"9",show:"9",type:1,value:"9"},{token:"int",show:"Int",type:0,value:Math.floor},{token:"cosh",show:"cosh",type:0,value:t.math.cosh},{token:"acosh",show:"acosh",type:0,value:t.math.acosh},{token:"ln",show:" ln",type:0,value:Math.log},{token:"^",show:"^",type:10,value:Math.pow},{token:"root",show:"root",type:0,value:Math.sqrt},{token:"4",show:"4",type:1,value:"4"},{token:"5",show:"5",type:1,value:"5"},{token:"6",show:"6",type:1,value:"6"},{token:"/",show:"&divide;",type:2,value:t.math.div},{token:"!",show:"!",type:7,value:t.math.fact},{token:"tanh",show:"tanh",type:0,value:t.math.tanh},{token:"atanh",show:"atanh",type:0,value:t.math.atanh},{token:"Mod",show:" Mod ",type:2,value:t.math.mod},{token:"1",show:"1",type:1,value:"1"},{token:"2",show:"2",type:1,value:"2"},{token:"3",show:"3",type:1,value:"3"},{token:"*",show:"&times;",type:2,value:t.math.mul},{token:"sinh",show:"sinh",type:0,value:t.math.sinh},{token:"asinh",show:"asinh",type:0,value:t.math.asinh},{token:"e",show:"e",type:3,value:"E"},{token:"log",show:" log",type:0,value:t.math.log},{token:"0",show:"0",type:1,value:"0"},{token:".",show:".",type:6,value:"."},{token:"+",show:"+",type:9,value:t.math.add},{token:"-",show:"-",type:9,value:t.math.sub},{token:",",show:",",type:11,value:","},{token:"Sigma",show:"&Sigma;",type:12,value:t.math.sigma},{token:"n",show:"n",type:13,value:"n"},{token:"Pi",show:"&Pi;",type:12,value:t.math.Pi},{token:"pow",show:"pow",type:8,value:Math.pow,numberOfArguments:2},{token:"&",show:"&",type:9,value:t.math.and}].map((function(t){return e({},t,{precedence:n[t.type]})}))}(this)}return t.prototype.eval=function(e,t,n){return this.postfixEval(this.toPostfix(this.lex(e,t)),n)},t}();return m.TOKEN_TYPES=t,m.tokenTypes=t,m}));
 	}
 	
+	if(typeof KeyPressing === "undefined" && document.readyState == "complete")
+	{
+		// Key pressing detector. What is this black magic? How does it even work?
+	}
 	
 	window.Eyal_unlockCardMechanics = unlockCardMechanics;
 	window.Eyal_silentCommands = silentCommands;
 	window.Eyal_EdisonCardpool = edisonCards;
+	window.Eyal_GoatCardpool = goatCards;
 	
 	window.Eyal_FuncDoNothing = function()
 	{
@@ -3824,6 +3854,8 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
     
     window.Eyal_exitViewing = function(e, b)
     {
+		window.Eyal_waitingForActionOrViewing = false;
+		
 		if($("#ed_select").length > 0)
 		{
 			$("#ed_select").hide();
@@ -3890,7 +3922,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
         
         addLine("==============================")
     }
-	
 	
 	window.previewFront = function(cardfront)
 	{	
@@ -3986,40 +4017,11 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				console.profileEnd();
 			}
 		}
+		// It's possible that this line causes bugs.
 		else if(preview.find('.pic').attr("src") == Eyal_blackImage)
 		{
+			console.log("Bog check");
 			preview.find('.pic').attr("src", cardfront.data("pic"));
-		}
-		if(cardfront.data("ability") == "Gemini")
-		{
-			preview.find('.card_color').attr('src', "");
-			preview.find('.card_color').attr('src', 'https://i.ibb.co/m9RBw8Z/Gemini-Cardtype.png');
-		}
-		else if(cardfront.data("effect").search(/(This card is a Switch Monster)/i) != -1)
-		{
-			preview.find('.card_color').attr('src', "");
-			preview.find('.card_color').attr('src', 'https://i.ibb.co/8BxWXc1/image.png');
-		}
-		else if(cardfront.data("effect").search(/(This card is an Evolve Monster)/i) != -1)
-		{
-			preview.find('.card_color').attr('src', "");
-			preview.find('.card_color').attr('src', 'https://i.ibb.co/XzGbZ6p/Evolution-cardtype.png');
-			preview.find('.name_txt').css("color", "white");
-		}
-		else if(cardfront.data("effect").search(/(This card is a Token)/i) != -1)
-		{
-			preview.find('.card_color').attr('src', IMAGES_START + "card/token_front2.jpg");
-		}
-		else if(cardfront.data("effect").search(/At the start of the Duel, flip this card over/i) != -1)
-		{
-			preview.find('.card_color').attr('src', IMAGES_START + "card/skill_front2.jpg");
-			
-			preview.find(".name_txt").css("color", "white")
-		}
-		if(cardfront.data("effect").search(/this card is DREAM-Attribute/i) != -1)
-		{
-			preview.find('.attribute').attr('src', "");
-			preview.find('.attribute').attr('src', "https://i.ibb.co/X2VSTR0/dream2-en.png")
 		}
 		
 		Eyal_newEffect = undefined;
@@ -4410,6 +4412,14 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		return count % 2 == 1
 	}
 	
+	window.Eyal_openPreviewURL = function()
+	{
+		if(!preview || !preview.data("id"))
+			return;
+
+		window.open('https://www.duelingbook.com/card?id=' + preview.data("id"));
+	}
+	
 	window.Eyal_AreSelectMenussEqual = function(select1, select2)
 	{
 		if (select1.length !== select2.length)
@@ -4426,14 +4436,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		}	
 		
 		return true;
-	}
-	
-	window.Eyal_openPreviewURL = function()
-	{
-		if(!preview || !preview.data("id"))
-			return;
-
-		window.open('https://www.duelingbook.com/card?id=' + preview.data("id"));
 	}
 	
 	window.enterM1E = function()
@@ -5624,7 +5626,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 					// Check if the first part of the combo is doable.
 					let Eyal_firstPlay = Eyal_comboPlayStrToArray(import_arr[0]);
 					
-					if(Eyal_firstPlay.cardName.length == 0 || Eyal_firstPlay.play == "Life points" || Eyal_findCardReal([Eyal_firstPlay.cardName], true, true, false, true))
+					if(Eyal_firstPlay.cardName.length == 0 || Eyal_firstPlay.play == "Life points" || Eyal_firstPlay.play.search(/view/i) >= 0 || Eyal_firstPlay.play == "Draw card" || Eyal_firstPlay.play == "Shuffle deck" || Eyal_firstPlay.play == "Mill" || Eyal_firstPlay.play == "Banish random ED card" || Eyal_firstPlay.play == "Banish random ED card FD" || Eyal_findCardReal([Eyal_firstPlay.cardName], true, true, false, true))
 					{
 						keyName = keyName.replace("Eyal_combos_", "");
 						
@@ -5655,7 +5657,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 					
 					return;
 				}
-				else if(actionsQueue.length > 0)
+				else if(Eyal_waitingForActionOrViewing || actionsQueue.length > 0)
 				{
 					setTimeout(function()
 					{ 
@@ -5671,12 +5673,18 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				
 				let Eyal_legalCardsArr = [];
 				
+				if(Eyal_arr.play.indexOf("SS") >= 0 || Eyal_arr.play.indexOf("OL") >= 0 || Eyal_arr.play == "Overlay" || Eyal_arr.play == "To hand")
+				{
+					window.Eyal_waitingForActionOrViewing = true;
+				}
 				if(Eyal_arr.play == "Stop viewing")
 				{
 					Eyal_exitViewing();
 				}
 				else if(Eyal_arr.play == "Summon token")
 				{
+					window.Eyal_waitingForActionOrViewing = true;
+					
 					Send({"action":"Duel", "play":Eyal_arr.play, "card":newDuelCard(), "zone":Eyal_arr.endZone});
 				}
 				else if(Eyal_arr.play == "Life points")
@@ -5685,10 +5693,14 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				}
 				else if(Eyal_arr.play == "Draw card" || Eyal_arr.play == "Shuffle deck" || Eyal_arr.play == "Mill" || Eyal_arr.play == "Banish random ED card" || Eyal_arr.play == "Banish random ED card FD")
 				{
+					window.Eyal_waitingForActionOrViewing = true;
+					
 					cardMenuClicked(new Card(), Eyal_arr.play);
 				}
 				else if(Eyal_arr.play.indexOf("View") >= 0)
 				{
+					window.Eyal_waitingForActionOrViewing = true;
+					
 					switch(Eyal_arr.play)
 					{
 						case "View deck":
@@ -5925,6 +5937,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 					{ 
 						$("#duel .cin_txt").val(Eyal_message);
 					}, 50);
+					
 				}
 				
 				return;
@@ -6664,6 +6677,12 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 					else
 					{
 						menu.push({label:"Banish FD", data:"Eyal Banish FD"});
+					}
+				}
+				if(isMonster(player1, card)) {
+					if(card.data("cardfront").data("effect").startsWith("FLIP:") && Eyal_findCardReal(["Nobleman of Crossout"]))
+					{
+						menu.push({label:"Crossout Card", data:"Eyal Crossout Card"});
 					}
 				}
 				if (!card.data("face_down")) {
@@ -7746,6 +7765,16 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			
 			let amountToGive = -1 * Math.ceil((player1.lifepoints / 2.0));
 			Send({"action":"Duel", "play":"Life points", "amount":amountToGive});
+			return;
+		}
+		if(data == "Eyal Crossout Card")
+		{
+			Eyal_exitViewing();
+			
+			
+			window.Eyal_crossoutCard = card;
+			
+			getConfirmation("Crossout Card?", "This will banish all copies of this card from your Deck.", Eyal_crossoutCardYes);
 			return;
 		}
 		else if(data == "Eyal SS Many Tokens")
@@ -10464,6 +10493,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				case "To Opponent's Deck FU":
 				case "Swap Deck with GY":
 				case "Pay Half LP":
+				case "Crossout Card":
 				case "Replace Hand":
 				case "Banish Everything":
 				case "Unbanish Everything":
@@ -10495,6 +10525,10 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			if (dp[i].data == "Eyal Attach")
 				option.find('img').attr("src", IMAGES_START + "svg/card_menu_btn_up2.svg");
 			
+			// Eyal282 here.
+			if (dp[i].data == "Eyal SS Many Tokens")
+				option.find('img').attr("src", IMAGES_START + "svg/card_menu_btn_up2.svg");
+				
 			menu.find('#card_menu_content').append(option);
 		}
 		$('#viewing').append(menu);
@@ -11391,41 +11425,40 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			
 			currentAnimObject.currentTime = 0;
 			
-			await currentAnimObject.play();
-			
-			if(!duel_active)
-				return;
-			
-			if(currentAnimObject.paused || currentAnimObject.ended)
+			try
 			{
-				currentAnimObject.load();
-				
+				await currentAnimObject.play();
+			}
+			catch(e)
+			{
 				setTimeout(function()
 				{
 					playMDSoundByAttribute(card, attribute);
 				}, 50);
 			}
-			else
+			
+			
+			if(!duel_active)
+				return;
+		
+			if(card != null)
 			{
-				if(card != null)
+				Eyal_setFieldSpellPic(player1, card);
+				
+				let duration = 4000;
+				
+				if(attribute == "CHAOS")
+					duration = 8000;
+				
+				setTimeout(function()
 				{
-					Eyal_setFieldSpellPic(player1, card);
-					
-					let duration = 4000;
-					
-					if(attribute == "CHAOS")
-						duration = 8000;
-					
-					setTimeout(function()
+					if(duel_active)
 					{
-						if(duel_active)
-						{
-							// This function should be named "resetFieldSpellPic"
-							removeFieldSpellPic();
-						}
-						
-					}, duration);
-				}
+						// This function should be named "resetFieldSpellPic"
+						removeFieldSpellPic();
+					}
+					
+				}, duration);
 			}
 		}
 	}
@@ -11501,7 +11534,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			"effect":"This card can be used as any Token",
 			"card_type":"Monster",
 			"monster_color":"Token",
-			"pic":TOKEN_START + tokenNumber + ".jpg",
+			'pic': (TOKEN_IDS['includes'](tokenNumber) ? CARD_TOKENS_START : TOKEN_START) + tokenNumber + '.jpg',
 			// Eyal282 here, setting ATK / DEF in order to enable stat editting by clicking them
 			"atk":'0',
 			"def":'0',
@@ -11587,8 +11620,9 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			points = [parseInt(card.css("left")), parseInt(card.css("top"))];
 			playSound(Flip);
 		}
+
 		
-		if(data.log && !data.log.public_log.startsWith("Set card"))
+		if(data.log && !data.log.public_log.startsWith("Set card") && !data.log.public_log.startsWith("Set a card"))
 		{
 			if(card.data("controller") != player1)
 			{
@@ -11659,7 +11693,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	window.viewCards = function(arr, data) {
 		console.log('viewCards');
 		console.time("viewCards");
-		
+		console.log(arr);
 		let content = $('#view > .content')[0];
 		
 		// Eyal282 here, remove all cards from the previous menu.
@@ -11738,6 +11772,8 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				viewingX = 43;
 				viewingY += 97;
 			}
+			
+			$(arr[i]).css("display", "block");
 			$('#view > .content').append(arr[i]);
 		}
 		
@@ -12840,11 +12876,35 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		effect = effect.replace(/Life Points/gi, "LP");
 		effect = effect.replace(/halve your LP/gi, "pay half your LP");
 		effect = effect.replace(/pay half of your LP/gi, "pay half your LP");
+		effect = effect.replace(/lose half your/gi, "pay half your");
 		
 		if(effect.search(/pay half your LP/i) != -1)
 			return true;
 		
 		return false;
+			
+			
+	}
+	
+	window.Eyal_IsCardAbleToPayLP = function(card)
+	{
+		let effect = card.data("cardfront").data("effect");
+		
+		if(typeof effect === 'undefined')
+			return false;
+		
+		// /word/gi --> /word/Global ( all occurences ) case insensitive
+		effect = effect.replace(/Life Points/gi, "LP");
+		effect = effect.replace(/by paying/gi, "Pay");
+		
+		const Eyal_pattern = /Pay\s(\d+)\sLP/i;
+
+		const Eyal_match = effect.match(Eyal_pattern);
+		if (Eyal_match) {
+			return Eyal_match[1];
+		}
+		
+		return 0;
 			
 			
 	}
@@ -12983,6 +13043,67 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		return new Promise(function(resolve){
 			setTimeout(resolve,n);
 		});
+	}
+	window.Eyal_crossoutCardYes = async function()
+	{
+		if(typeof window.Eyal_crossoutCard === "undefined")
+			return;
+		
+		else if(typeof window.Eyal_crossoutCard.data === "undefined")
+			return;
+		
+		else if(typeof window.Eyal_crossoutCard.data("cardfront") === "undefined")
+			return;
+		
+		
+		cardMenuClicked(Eyal_crossoutCard, "Banish");
+		
+		let commandName = "/////ban";
+		
+		let card;
+		
+		let data = {};
+		data.fake = true;
+		data.username = username;
+		data.play = "Duel message";
+		data.message = `/////failtofind ${Eyal_crossoutCard.data("cardfront").data("name")}`; 
+			
+		await duelResponse(data);
+		
+		while(typeof Eyal_duelResponseCardId !== "undefined")
+		{
+			data.fake = true;
+			data.username = username;
+			data.play = "Duel message";
+			data.message = `${commandName} ${Eyal_crossoutCard.data("cardfront").data("name")}`; 
+			
+			await duelResponse(data);
+			
+			card = Eyal_duelResponseCard;
+			
+			if(typeof card !== "undefined")
+			{
+				data.fake = true;
+				data.username = username;
+				data.play = "Duel message";
+				data.message = `/////failtofind ${Eyal_crossoutCard.data("cardfront").data("name")}`; 
+					
+				await duelResponse(data);
+				
+				if(typeof Eyal_duelResponseCard !== "undefined")
+				{
+					cardMenuClicked(card, "Banish");
+				}
+				else
+				{
+					break;
+				}
+			}	
+			else
+			{
+				break;
+			}
+		}
 	}
 	window.Eyal_ReplaceHandYes = async function()
 	{
@@ -13328,6 +13449,14 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			
 			endAction();
 		}});
+		
+		let lpPay = Eyal_IsCardAbleToPayLP(card);
+		
+		if(lpPay > 0 && player.username == player1.username)
+		{
+			showMinus();
+			$('#life_txt').val(lpPay);
+		}
 
 		if(potOfSwitch && (card.data("cardfront").data("name") == "Pot of Greed" || (card.data("cardfront").data("name") == "Sky Striker Mobilize - Engage!" && Eyal_CountSpellsInGY(player) >= 3)))
 		{	
@@ -13947,6 +14076,53 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			Cards.length = 0;
 			
 			let import_arr = [].concat(Eyal_MDCardpool);
+				
+			let cards = [];
+			
+			let optimizing_arr = [];
+			
+			for(let abc=0;abc < import_arr.length;abc++)
+			{
+				let passcode = parseInt(import_arr[abc].substring(0, import_arr[abc].indexOf(" ")));
+				
+				let limit = parseInt(import_arr[abc].substring(import_arr[abc].indexOf(" "), import_arr[abc].length))
+				
+				// For inventory based cardpools
+				if(limit > 3)
+					limit = 3;
+				
+				// Not dealing with anime variants of cards...
+				else if(limit == -1)
+					continue;
+				
+				optimizing_arr[passcode] = limit;
+			}
+			
+			for(let abc=0;abc < Eyal_old_cards.length;abc++)
+			{
+				let passcode = parseInt(Eyal_old_cards[abc].serial_number);
+					
+				if(typeof Eyal_old_cards[abc].serial_number !== "undefined" && typeof optimizing_arr[passcode] !== "undefined")
+				{
+					let card = jQuery.extend({}, window.Eyal_old_cards[abc]);
+					
+					card.tcg_limit = optimizing_arr[passcode];
+					card.ocg_limit = optimizing_arr[passcode];
+					
+					Cards.push(card);
+				}
+			}
+		}
+		else if($("#search .custom_cb").val() == "Eyal Goat Format")
+		{
+			if(typeof window.Eyal_old_cards === "undefined")
+			{
+				window.Eyal_old_cards = [].concat(Cards);
+			}
+			
+			Cards.length = 0;
+			
+			let import_arr = [].concat(Eyal_GoatCardpool);
 				
 			let cards = [];
 			
@@ -14706,6 +14882,11 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
              value: 'Eyal Edison Format'
 		}));
 	}
+	
+	if($("#search .custom_cb option[value='4']").length != 0)
+	{
+		$("#search .custom_cb option[value='4']").val("Eyal Goat Format")
+	}
 
 	if ($("#search .custom_cb option[value='Eyal From Clipboard']").length == 0) {
 		$("#search .custom_cb").append($('<option>', {
@@ -15201,8 +15382,26 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		});
 	}
 	
+	if(typeof Eyal_addedCTRLFix === "undefined")
+	{
+		Eyal_addedCTRLFix = true;
+		
+		$('html').mousemove(function(e)
+		{
+			if (!e) e = window.event;
+		
+			if (e.ctrlKey)
+			{
+				Eyal_keys[17] = true;
+			}
+			else
+			{
+				Eyal_keys[17] = false;
+			}
+		});
+	}
+	
 	// Code for dragging view deck & pressing keys on the document.
-
 	if($('#view').length > 0)
 	{
 		
