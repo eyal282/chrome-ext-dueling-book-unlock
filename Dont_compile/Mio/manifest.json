@@ -1,0 +1,21 @@
+{
+	"name": "DB Custom Card Frames+",
+	"manifest_version": 3,
+	"version": "2.1.0",
+	"description": "A custom card tool for DB.",
+	"permissions": [
+		"tabs",
+		"scripting",
+		"webNavigation"
+	],
+	"action":
+	{
+		"default_title": "Settings",
+		"default_icon": "icon.png"
+	},
+	"host_permissions": ["*://*.duelingbook.com/"],
+	"background":
+	{
+		"service_worker": "background.js"
+	}
+}

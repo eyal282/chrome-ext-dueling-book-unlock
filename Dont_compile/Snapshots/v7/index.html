@@ -1,0 +1,684 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head style="color: transparent;"><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Card Simulator</title>
+		
+		<meta name="viewport" content="width=1024">
+		<meta name="title" content="Card Simulator">
+		<link rel="stylesheet" type="text/css" href="static/simulator.css?v=7">
+		<script src="static/jquery.min.js"></script>
+		<script src="static/jquery-ui.min.js"></script>
+		<script src="static/jquery.ui.touch-punch.min.js"></script>
+		<script src="static/snap.svg-min.js"></script>
+		<script src="static/SnapSVGAnimator.min.js"></script>
+		<script src="static/TweenMax.min.js"></script>
+		<script src="static/watch.min.js"></script>
+	</head>
+	<body style="overflow-y: hidden;" class="chrome">
+		<div id="black" style="background-color: black; width: 100%; height: 100%; z-index: 99; display: none;"></div>
+		<div id="content" class="unselectable" style="zoom: 1; transform: scale(1.38086); margin-left: 0px; margin-top: 37.125px;">
+			<div id="greenlines">
+				<img src="images/svg/greenlines.svg" alt="Green Lines">
+			</div>
+			<div id="dark"></div>
+			<div id="frames">
+				<div id="front_page" style="">
+					<div class="content">
+						<img id="spiral" src="images/spiral.png" width="1600">
+						<div id="login">
+							<div class="background"></div>
+							<span class="username_lbl">Username</span>
+							<input class="username_txt" type="text" style="opacity: 0; height: 15px; width: 96px;"><div class="textinput proxy" style="left: 120px; top: 17px; width: 94px; height: 19px; opacity: 1;">eyal282</div>
+							<span class="password_lbl">Password</span>
+							<input class="password_txt" type="password" style="opacity: 0; height: 15px; width: 96px;"><div class="textinput proxy" style="left: 120px; top: 43px; width: 94px; height: 19px; opacity: 1;">●●●●●●●●●●</div>
+							<input class="remember_cb" type="checkbox" checked="checked" style="opacity: 0;"><div class="checkbox" style="left: 14px; top: 74px;"><img class="check" src="https://www.duelingbook.com/simulator/images/svg/check.svg"></div>
+							<span class="remember_lbl">Remember me on this computer</span>
+							<input class="login_btn" type="submit" value="Log In" style="opacity: 0;"><div class="button proxy unselectable" style="left: 120px; top: 95px; width: 98px; height: 17px;">Log In</div>
+							<span class="register_btn">register</span>
+						</div>
+						<div id="register">
+							<div class="background"></div>
+							<span class="username_lbl">Username</span>
+							<input class="username_txt" type="text" style="opacity: 0; height: 15px; width: 96px;"><div class="textinput proxy" style="left: 120px; top: 17px; width: 94px; height: 19px;"></div>
+							<span class="password_lbl">Password</span>
+							<input class="password_txt" type="password" style="opacity: 0; height: 15px; width: 96px;"><div class="textinput proxy" style="left: 120px; top: 43px; width: 94px; height: 19px;"></div>
+							<span class="email_lbl">E-mail</span>
+							<input class="email_txt" type="text" style="opacity: 0; height: 15px; width: 96px;"><div class="textinput proxy" style="left: 120px; top: 69px; width: 94px; height: 19px;"></div>
+							<span class="back_btn">back</span>
+							<input class="register_btn" type="submit" value="Register" style="opacity: 0;"><div class="button proxy unselectable" style="left: 120px; top: 122px; width: 98px; height: 17px;">Register</div>
+						</div>
+						<div id="logged_in">
+							<div class="background"></div>
+							<span id="logged_in_as_lbl">Logged in as:</span>
+							<span class="username_txt"></span>
+							<span class="logout_btn">logout</span>
+						</div>
+						<div id="start_btn" class="start_btn" style="cursor: pointer;">
+							<img src="images/svg/start_btn_up.svg" alt="Start">
+						</div>
+					</div>
+				</div>
+				<div id="connecting" style="display: none;">
+					<span class="connection_status">Connecting...</span>
+				</div>
+				<div id="lost_conn" style="display: none;">
+					<span class="connection_status2">Lost connection!<br>Reconnecting...</span>
+				</div>
+				<div id="already_logged_in" style="display: none;">
+					<span class="connection_status2">Already logged into<br>game server elsewhere!</span>
+				</div>
+				<div id="rejected" style="display: none;">
+					<span class="connection_status2">Rejected by server!<br>Try logging in again.</span>
+				</div>
+				<div id="kicked" style="display: none;">
+					<span class="connection_status2">You have been kicked from<br>the server!</span>
+				</div>
+				<div id="timed_out" style="display: none;">
+					<span class="connection_status">Timed out due to inactivity.</span>
+				</div>
+				<div id="main_menu" class="arial_black2" style="display: none;">
+					<div class="title2">Main Menu</div>				
+					<div id="room_btn" class="menu_btn" style="cursor: pointer;">
+						<img src="images/svg/menu_btn_up.svg" alt="Game Room">
+						<span>Game Room</span>
+					</div>
+					<div id="password_btn" class="menu_btn" style="cursor: pointer;">
+						<img src="images/svg/menu_btn_up.svg" alt="Change Password">
+						<span>Change Password</span>
+					</div>
+					<div id="records_btn" class="menu_btn" style="cursor: pointer;">
+						<img src="images/svg/menu_btn_up.svg" alt="Game Records">
+						<span>Game Records</span>
+					</div>
+					<div id="main_exit_btn" class="menu_btn" style="cursor: pointer;">
+						<img src="images/svg/menu_btn_up.svg" alt="Exit">
+						<span>Exit</span>
+					</div>
+					<div id="uploader_btn" class="menu_btn" style="cursor: pointer;">
+						<img src="images/svg/menu_btn_up.svg" alt="Card Uploader">
+						<span>Card Uploader</span>
+					</div>
+					<div id="deck_btn" class="menu_btn" style="cursor: pointer;">
+						<img src="images/svg/menu_btn_up.svg" alt="Deck Constructor">
+						<span>Deck Constructor</span>
+					</div>
+				</div>
+				<div id="game_room" style="display: none;">
+					<div id="games_watching" class="format">
+						<img src="images/svg/games_hosting.svg" alt="Watching">
+						<span class="format_txt arial_black2">Watch a Game</span>
+						<div class="background"></div>
+						<div class="format_inner scrollpane"></div>
+					</div>
+					<div id="games_hosting" class="format">
+						<img src="images/svg/games_hosting.svg" alt="Hosting">
+						<span class="format_txt arial_black2">Join a Game</span>
+						<div class="background"></div>
+						<div class="format_inner scrollpane"></div>
+					</div>
+					<div id="decklist">
+						<img src="images/svg/decklist.svg" alt="Decklist">
+						<span class="arial_black2">Deck</span>
+						<select id="decklist_cb" style="font-size: 16.5703px; opacity: 0;"></select><div class="combobox proxy unselectable" style="left: 17px; top: 16px; width: 193px;"><div class="combobox_line"></div><div class="combobox_arrow"><img src="https://www.duelingbook.com/simulator/images/svg/combobox_arrow.svg"></div></div>
+						<input class="default_btn" type="submit" value="Set as Default" style="opacity: 0;"><div class="button proxy unselectable" style="left: 117px; top: 46px; width: 98px; height: 17px;">Set as Default</div>
+					</div>
+					<div id="host_bg">
+						<img src="images/svg/host.svg" alt="Host">
+						<span id="host_lbl" class="arial_black2">Host a Game</span>
+						<div id="host">
+							<span class="format_lbl">Format:</span>
+							<select class="format_cb" style="font-size: 16.5703px; opacity: 0;">
+								<option value="au" style="font-size: 16.5703px;">Unrated</option>
+								<option value="so" style="font-size: 16.5703px;">Solo Mode</option>
+							</select><div class="combobox proxy unselectable" style="left: 326px; top: 35px; width: 185px;">Unrated<div class="combobox_line"></div><div class="combobox_arrow"><img src="https://www.duelingbook.com/simulator/images/svg/combobox_arrow.svg"></div></div>
+							<input class="host_btn" type="submit" value="Host Game" style="opacity: 0;"><div class="button proxy unselectable" style="left: 418px; top: 65px; width: 98px; height: 17px;">Host Game</div>
+						</div>
+						<div id="hosting">
+							<div id="joinlist" class="list scrollpane"></div>
+							<input class="accept_btn" type="submit" value="Accept User" style="opacity: 0;"><div class="button proxy unselectable" style="left: 420px; top: 0px; width: 98px; height: 17px;">Accept User</div>
+							<input class="reject_btn" type="submit" value="Reject User" style="opacity: 0;"><div class="button proxy unselectable" style="left: 420px; top: 30px; width: 98px; height: 17px;">Reject User</div>
+							<input class="cancel_btn" type="submit" value="Cancel Game" style="opacity: 0;"><div class="button proxy unselectable" style="left: 420px; top: 60px; width: 98px; height: 17px;">Cancel Game</div>
+						</div>
+						<div id="joining">
+							<span class="waiting_txt">Waiting for response from host...</span>
+							<input class="leave_btn" type="submit" value="Leave Game" style="opacity: 0;"><div class="button proxy unselectable" style="left: 437px; top: 136px; width: 98px; height: 17px;">Leave Game</div>
+						</div>
+						<div id="joining_pool">
+							<span class="waiting_txt">Waiting for server to find partner...</span>
+							<span class="status_txt">Partner found! Are you ready?<br>Time remaining: 10 seconds</span>
+							<input class="ready_btn" type="submit" value="Ready" style="opacity: 0;"><div class="button proxy unselectable" style="left: 0px; top: 0px; width: 98px; height: 17px;">Ready</div>
+							<input class="leave_btn" type="submit" value="Leave" style="opacity: 0;"><div class="button proxy unselectable" style="left: 0px; top: 0px; width: 98px; height: 17px;">Leave</div>
+						</div>
+					</div>
+					<input class="room_exit_btn" type="submit" value="Exit" style="opacity: 0;"><div class="button proxy unselectable" style="left: 104px; top: 615px; width: 98px; height: 17px;">Exit</div>
+				</div>
+				<div id="deck_constructor" style="display: none;">
+					<img class="deck_constructor" src="images/svg/deck_constructor.svg" alt="Deck">
+					<div id="deck_mask"></div>
+					<div class="sort_btn menu_btn" style="cursor: pointer;">
+						<img src="images/svg/sort_btn_up.svg" alt="Sort">
+					</div>
+					<div id="preview_txt" class="textarea scrollpane selectable" tabindex="0" style="display: none;"></div>
+					<input id="clear_btn" type="submit" value="Clear Deck" style="opacity: 0;"><div class="button proxy unselectable" style="left: 3px; top: 465px; width: 96px; height: 17px;">Clear Deck</div>
+					<input class="default_btn" type="submit" value="Set as Default" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 465px; width: 96px; height: 17px;">Set as Default</div>
+					<input id="new_btn" type="submit" value="New Deck" style="opacity: 0;"><div class="button proxy unselectable" style="left: 3px; top: 515px; width: 96px; height: 17px;">New Deck</div>
+					<input id="rename_btn" type="submit" value="Rename Deck" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 515px; width: 96px; height: 17px;">Rename Deck</div>
+					<input id="delete_btn" type="submit" value="Delete Deck" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 540px; width: 96px; height: 17px;">Delete Deck</div>
+					<input id="save_btn" type="submit" value="Save Deck" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 565px; width: 96px; height: 17px;">Save Deck</div>
+					<input id="save_as_btn" type="submit" value="Save Deck As" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 590px; width: 96px; height: 17px;">Save Deck As</div>
+					<input class="room_exit_btn" type="submit" value="Exit" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 615px; width: 96px; height: 17px;">Exit</div>
+					<div class="search">
+						<div id="search">
+							<img src="images/svg/search.svg" alt="Search">
+							<div class="title_txt aliased">SEARCH</div>
+							<span class="name_lbl">Name:</span>
+							<input class="name_txt" type="text" style="opacity: 0; height: 15px; width: 156px;"><div class="textinput proxy" style="left: 56.5px; top: 36px; width: 154px; height: 19px;"></div>
+							<input class="search_btn" type="submit" value="Search" style="opacity: 0;"><div class="button proxy unselectable" style="left: 56.5px; top: 204px; width: 106px; height: 17px;">Search</div>
+							<span class="page_txt">0</span>
+							<span class="page2_txt">/</span>
+							<span class="tot_pages_txt">0</span>
+							<div class="search_prev_btn" style="cursor: pointer;">
+								<img src="images/svg/search_prev_btn_up.svg" alt="Prev">
+							</div>
+							<div class="search_next_btn" style="cursor: pointer;">
+								<img src="images/svg/search_next_btn_up.svg" alt="Next">
+							</div>
+							<div id="search_mask"></div>
+						</div>
+					</div>
+					<div class="cards"></div>
+					<img id="deck_hero_bg" src="images/card/circle.svg">
+					<img id="deck_hero" src="images/card/symbol.svg">
+				</div>
+				<div id="change_password" style="display: none;">
+					<div class="change_password">
+						<span class="change_password_lbl admin_lbl">Change Password</span>
+						<span class="current_lbl">Current Password:</span>
+						<input class="current_txt" type="password" style="opacity: 0; height: 15px; width: 196px;"><div class="textinput proxy" style="left: 230px; top: 29px; width: 194px; height: 19px;"></div>
+						<span class="new_lbl">New Password:</span>
+						<input class="new_txt" type="password" style="opacity: 0; height: 15px; width: 196px;"><div class="textinput proxy" style="left: 230px; top: 59px; width: 194px; height: 19px;"></div>
+						<span class="confirm_lbl">Confirm New Password:</span>
+						<input class="confirm_txt" type="password" style="opacity: 0; height: 15px; width: 196px;"><div class="textinput proxy" style="left: 230px; top: 89px; width: 194px; height: 19px;"></div>
+						<input class="change_btn" type="submit" value="Change Password" style="opacity: 0;"><div class="button proxy unselectable" style="left: 152.5px; top: 119px; width: 148px; height: 17px;">Change Password</div>
+					</div>
+					<input class="room_exit_btn" type="submit" value="Exit" style="opacity: 0;"><div class="button proxy unselectable" style="left: 104px; top: 615px; width: 98px; height: 17px;">Exit</div>
+				</div>
+				<div id="game_records" style="display: none;">
+					<div class="title_txt arial_black2 title1">Game Records</div>
+					<span class="username_lbl">Username:</span>
+					<input class="username_txt" type="text" style="opacity: 0; height: 15px; width: 121px;"><div class="textinput proxy" style="left: 173px; top: 31px; width: 119px; height: 19px;"></div>
+					<select class="type_cb" style="font-size: 16.5703px; opacity: 0;">
+						<option value="m" style="font-size: 16.5703px;">Mulitplayer</option>
+						<option value="s" style="font-size: 16.5703px;">Solo Games</option>
+						<option value="a" style="font-size: 16.5703px;">All Games</option>
+					</select><div class="combobox proxy unselectable" style="left: 792px; top: 31px; width: 118px;">Mulitplayer<div class="combobox_line"></div><div class="combobox_arrow"><img src="https://www.duelingbook.com/simulator/images/svg/combobox_arrow.svg"></div></div>
+					<div class="info arial_rounded18">
+						<span class="opponent_lbl">Opponent</span>
+						<span class="result_lbl">Result</span>
+						<span class="date_lbl">Date</span>
+					</div>
+					<div class="content scrollpane"></div>
+					<input class="room_exit_btn" type="submit" value="Exit" style="opacity: 0;"><div class="button proxy unselectable" style="left: 104px; top: 615px; width: 98px; height: 17px;">Exit</div>
+				</div>
+				<div id="custom_cards" style="display: none;">
+					<input id="upload_card_btn" type="submit" value="Upload Card" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 540px; width: 96px; height: 17px;">Upload Card</div>
+					<input id="edit_card_btn" type="submit" value="Edit Card" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 565px; width: 96px; height: 17px;">Edit Card</div>
+					<input id="my_cards_btn" type="submit" value="View Cards" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 590px; width: 96px; height: 17px;">View Cards</div>
+					<input class="room_exit_btn" type="submit" value="Exit" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 615px; width: 96px; height: 17px;">Exit</div>
+					<div id="my_card"><div class="cardfront unselectable" style="transform: scale(0.5253, 0.5301);"><div class="cardfront_content"><img class="card_border" src="https://www.duelingbook.com/simulator/images/card/card_border.jpg"><div class="card_color" style="background: linear-gradient(90deg, rgb(47, 37, 18), rgb(123, 89, 44), rgb(47, 37, 18));"></div><span class="level_txt"></span><img class="pic" src="https://www.duelingbook.com/simulator/images/black.jpg"><img class="power_bg" src="https://www.duelingbook.com/simulator/images/card/power.svg"><span class="power_txt"></span><span class="name_txt" style="white-space: nowrap; transform: scaleX(1);"></span><div class="effect_bg"></div><span class="effect_txt" style="font-size: 29px; line-height: 1;"></span><img class="hero_bg" src="https://www.duelingbook.com/simulator/images/card/circle.svg"><img class="hero_icon" src="https://www.duelingbook.com/simulator/images/card/symbol.svg"><img class="card_type_img" src="https://www.duelingbook.com/simulator/images/card/card_type.svg"><span class="card_type_txt" style="white-space: nowrap; transform: scaleX(1);"></span></div></div></div>
+					<input class="clear_btn" type="submit" value="Clear Card" style="opacity: 0;"><div class="button proxy unselectable" style="left: 458px; top: 615px; width: 106px; height: 17px;">Clear Card</div>
+					<input class="delete_btn" type="submit" value="Delete Card" style="opacity: 0;"><div class="button proxy unselectable" style="left: 458px; top: 615px; width: 106px; height: 17px;">Delete Card</div>
+					<div id="upload_card" class="uploader">
+						<div class="background"></div>
+						<div class="title_txt aliased">UPLOAD</div>
+						<span class="name_lbl">Name:</span>
+						<input class="name_txt" type="text" maxlength="100" style="opacity: 0; height: 15px; width: 156px;"><div class="textinput proxy" style="left: 56.5px; top: 36px; width: 154px; height: 19px;"></div>
+						<span class="desc_lbl">Effect:</span>
+						<textarea class="desc_txt" style="height: 76px; width: 150px;"></textarea>
+						<span class="card_lbl">Card Type:</span>
+						<select class="card_type_cb" style="font-size: 16.5703px; opacity: 0;">
+							<option value="Follower" style="font-size: 16.5703px;">Follower</option>
+							<option value="Drive" style="font-size: 16.5703px;">Drive</option>
+							<option value="Counter" style="font-size: 16.5703px;">Counter</option>
+						</select><div class="combobox proxy unselectable" style="left: 92.5px; top: 148px; width: 117px;">Follower<div class="combobox_line"></div><div class="combobox_arrow"><img src="https://www.duelingbook.com/simulator/images/svg/combobox_arrow.svg"></div></div>
+						<span class="hero_lbl">Hero Required:</span>
+						<!--<input class="hero_txt" type="text" value="All" />-->
+						<select class="hero_cb" style="font-size: 16.5703px; opacity: 0;">
+							<option value="All" style="font-size: 16.5703px;">All</option>
+							<option value="Becca, The Golden Knight" style="font-size: 16.5703px;">Becca, The Golden Knight</option>
+							<option value="Tutaric, Venom Hero" style="font-size: 16.5703px;">Tutaric, Venom Hero</option>
+							<option value="Conquest, The First Rider of the End" style="font-size: 16.5703px;">Conquest, The First Rider of the End</option>
+							<option value="Zooplo, Greed Cultist Master" style="font-size: 16.5703px;">Zooplo, Greed Cultist Master</option>
+							<option value="Mika, The Combat Botanist" style="font-size: 16.5703px;">Mika, The Combat Botanist</option>
+						</select><div class="combobox proxy unselectable" style="left: 124.5px; top: 172px; width: 85px;">All<div class="combobox_line"></div><div class="combobox_arrow"><img src="https://www.duelingbook.com/simulator/images/svg/combobox_arrow.svg"></div></div>
+						<span class="level_lbl">Level:</span>
+						<input class="level_txt" type="text" style="opacity: 0; height: 15px; width: 88px;" pattern="[0-9]+"><div class="textinput proxy" style="left: 124.5px; top: 196px; width: 86px; height: 19px;"></div>
+						<span class="power_lbl">Power:</span>
+						<input class="power_txt" type="text" style="opacity: 0; height: 15px; width: 88px;" pattern="[0-9]+"><div class="textinput proxy" style="left: 124.5px; top: 220px; width: 86px; height: 19px;"></div>
+						<input class="upload_btn" type="submit" value="Upload" style="opacity: 0;"><div class="button proxy unselectable" style="left: 60px; top: 581px; width: 98px; height: 17px;">Upload</div>
+						<input class="browse_btn" type="submit" value="Browse Image" style="opacity: 0;"><div class="button proxy unselectable" style="left: 60px; top: 606px; width: 98px; height: 17px;">Browse Image</div>
+					</div>
+					<div id="edit_card" class="uploader">
+						<div class="background"></div>
+						<div class="title_txt aliased">EDIT</div>
+						<span class="name_lbl">Name:</span>
+						<input class="name_txt" type="text" maxlength="100" style="opacity: 0; height: 15px; width: 156px;"><div class="textinput proxy" style="left: 56.5px; top: 36px; width: 154px; height: 19px;"></div>
+						<span class="desc_lbl">Effect:</span>
+						<textarea class="desc_txt" style="height: 76px; width: 150px;"></textarea>
+						<span class="card_lbl">Card Type:</span>
+						<select class="card_type_cb" style="font-size: 16.5703px; opacity: 0;">
+							<option value="Follower" style="font-size: 16.5703px;">Follower</option>
+							<option value="Drive" style="font-size: 16.5703px;">Drive</option>
+							<option value="Counter" style="font-size: 16.5703px;">Counter</option>
+						</select><div class="combobox proxy unselectable" style="left: 92.5px; top: 148px; width: 117px;">Follower<div class="combobox_line"></div><div class="combobox_arrow"><img src="https://www.duelingbook.com/simulator/images/svg/combobox_arrow.svg"></div></div>
+						<span class="hero_lbl">Hero Required:</span>
+						<!--<input class="hero_txt" type="text" value="All" />-->
+						<select class="hero_cb" style="font-size: 16.5703px; opacity: 0;">
+							<option value="All" style="font-size: 16.5703px;">All</option>
+							<option value="Becca, The Golden Knight" style="font-size: 16.5703px;">Becca, The Golden Knight</option>
+							<option value="Tutaric, Venom Hero" style="font-size: 16.5703px;">Tutaric, Venom Hero</option>
+							<option value="Conquest, The First Rider of the End" style="font-size: 16.5703px;">Conquest, The First Rider of the End</option>
+							<option value="Zooplo, Greed Cultist Master" style="font-size: 16.5703px;">Zooplo, Greed Cultist Master</option>
+							<option value="Mika, The Combat Botanist" style="font-size: 16.5703px;">Mika, The Combat Botanist</option>
+						</select><div class="combobox proxy unselectable" style="left: 124.5px; top: 172px; width: 85px;">All<div class="combobox_line"></div><div class="combobox_arrow"><img src="https://www.duelingbook.com/simulator/images/svg/combobox_arrow.svg"></div></div>
+						<span class="level_lbl">Level:</span>
+						<input class="level_txt" type="text" style="opacity: 0; height: 15px; width: 88px;" pattern="[0-9]+"><div class="textinput proxy" style="left: 124.5px; top: 196px; width: 86px; height: 19px;"></div>
+						<span class="power_lbl">Power:</span>
+						<input class="power_txt" type="text" style="opacity: 0; height: 15px; width: 88px;" pattern="[0-9]+"><div class="textinput proxy" style="left: 124.5px; top: 220px; width: 86px; height: 19px;"></div>
+						<input class="upload_btn" type="submit" value="Save" style="opacity: 0;"><div class="button proxy unselectable" style="left: 60px; top: 581px; width: 98px; height: 17px;">Save</div>
+						<input class="browse_btn" type="submit" value="Browse Image" style="opacity: 0;"><div class="button proxy unselectable" style="left: 60px; top: 606px; width: 98px; height: 17px;">Browse Image</div>
+					</div>
+					<div class="cards"></div>
+					<input class="ocg_limit_rb" type="radio" name="limit" style="opacity: 0; display: none;"><div class="radiobutton" name="limit" id="radiobutton1" style="left: 948px; top: 617px; display: none;"><img class="check" src="https://www.duelingbook.com/simulator/images/svg/radio.svg" style="display: none;"></div>
+					<input class="browse2_btn" type="file" style="opacity: 0;"><div class="button proxy unselectable" style="left: 0px; top: 0px; width: 98px; height: 17px; display: none;"></div>
+				</div>
+				<div id="duel" style="display: none;">
+					<div id="rps_start" class="duel_frame"></div>
+					<div id="tp_start" class="duel_frame"></div>
+					<div id="duel_start" class="duel_frame">
+						<img id="field_zones" class="field_zones" src="images/svg/field_zones.svg" alt="Field">
+					</div>
+					<div id="field"></div>
+					<div class="preview"></div>
+					<div id="duel_content" class="duel_frame">
+						<div id="field_content">
+							<div id="die_btn" style="cursor: pointer;">
+								<img src="images/svg/die_btn_up.svg" alt="Die">
+							</div>
+							<div id="coin_btn" style="cursor: pointer;">
+								<img src="images/svg/coin_btn_up.svg" alt="Coin">
+							</div>
+							<div class="token_btn" style="cursor: pointer;">
+								<img src="images/svg/token.svg" width="30" height="28" alt="Tokwn">
+							</div>
+							<span id="lp_txt">LP:</span>
+							<input id="life_txt" type="text" style="opacity: 0; height: 15px; width: 46px;"><div class="textinput proxy" style="left: 523px; top: 282px; width: 44px; height: 19px; opacity: 1;"></div>
+							<img id="minus_bg" src="images/svg/yellow_glow.svg" alt="Glow">
+							<div id="plus_btn">
+								<img src="images/svg/plus_btn.svg" alt="Plus">
+							</div>
+							<div id="minus_btn">
+								<img src="images/svg/minus_btn.svg" alt="Minus">
+							</div><div class="counter" id="counter_btn"><div class="content"><img class="background" src="https://www.duelingbook.com/simulator/images/svg/counter.svg"><img class="glow" src="https://www.duelingbook.com/simulator/images/svg/counter_glow.svg" style="display: none;"></div><span class="total_txt" style="display: none;">1</span></div>
+							<div id="turn">
+								<img class="background" src="images/svg/turn_background.svg" alt="Turn Background">
+								<img class="blue" src="images/svg/turn_blue.svg" alt="Turn Blue">
+								<img class="red" src="images/svg/turn_red.svg" alt="Turn Red">
+								<span class="arial_rounded20">TURN</span>
+							</div>
+							<div id="start_turn">
+								<img class="background" src="images/svg/turn_background.svg" alt="Turn Background">
+								<img class="green" src="images/svg/turn_green.svg" alt="Turn Green">
+								<img class="red" src="images/svg/turn_red.svg" alt="Turn Red">
+								<span class="start_turn_txt arial_rounded20">Start Turn</span>
+								<img class="white_glow" src="images/svg/white_glow.svg" alt="Glow">
+							</div>
+							<div id="end_turn">
+								<img class="background" src="images/svg/turn_background.svg" alt="Turn Background">
+								<img class="red" src="images/svg/turn_red.svg" alt="Turn Red">
+								<img class="green" src="images/svg/turn_green.svg" alt="Turn Green">
+								<img class="yellow" src="images/svg/turn_yellow.svg" alt="Turn Yellow">
+								<span class="end_turn_txt arial_rounded20">End Turn</span>
+								<img class="white_glow" src="images/svg/white_glow.svg" alt="Glow">
+							</div>
+						</div>
+						<div id="field_stats">
+							<span id="hm1_txt"></span>
+							<span id="hm2_txt"></span>
+							<span id="hm3_txt"></span>				
+							<span id="om1_txt"></span>
+							<span id="om2_txt"></span>
+							<span id="om3_txt"></span>				
+						</div>
+						<div id="counters"><div class="counter" id="m1_counter" style="cursor: pointer;"><div class="content"><img class="background" src="https://www.duelingbook.com/simulator/images/svg/counter.svg"><img class="glow" src="https://www.duelingbook.com/simulator/images/svg/counter_glow.svg" style="display: none;"></div><span class="total_txt">1</span></div><div class="counter" id="m2_counter" style="cursor: pointer;"><div class="content"><img class="background" src="https://www.duelingbook.com/simulator/images/svg/counter.svg"><img class="glow" src="https://www.duelingbook.com/simulator/images/svg/counter_glow.svg" style="display: none;"></div><span class="total_txt">1</span></div><div class="counter" id="m3_counter" style="cursor: pointer;"><div class="content"><img class="background" src="https://www.duelingbook.com/simulator/images/svg/counter.svg"><img class="glow" src="https://www.duelingbook.com/simulator/images/svg/counter_glow.svg" style="display: none;"></div><span class="total_txt">1</span></div><div class="counter" id="s1_counter" style="cursor: pointer;"><div class="content"><img class="background" src="https://www.duelingbook.com/simulator/images/svg/counter.svg"><img class="glow" src="https://www.duelingbook.com/simulator/images/svg/counter_glow.svg" style="display: none;"></div><span class="total_txt">1</span></div><div class="counter" id="s2_counter" style="cursor: pointer;"><div class="content"><img class="background" src="https://www.duelingbook.com/simulator/images/svg/counter.svg"><img class="glow" src="https://www.duelingbook.com/simulator/images/svg/counter_glow.svg" style="display: none;"></div><span class="total_txt">1</span></div><div class="counter" id="opp_m1_counter" style="cursor: pointer;"><div class="content"><img class="background" src="https://www.duelingbook.com/simulator/images/svg/counter.svg"><img class="glow" src="https://www.duelingbook.com/simulator/images/svg/counter_glow.svg" style="display: none;"></div><span class="total_txt">1</span></div><div class="counter" id="opp_m2_counter" style="cursor: pointer;"><div class="content"><img class="background" src="https://www.duelingbook.com/simulator/images/svg/counter.svg"><img class="glow" src="https://www.duelingbook.com/simulator/images/svg/counter_glow.svg" style="display: none;"></div><span class="total_txt">1</span></div><div class="counter" id="opp_m3_counter" style="cursor: pointer;"><div class="content"><img class="background" src="https://www.duelingbook.com/simulator/images/svg/counter.svg"><img class="glow" src="https://www.duelingbook.com/simulator/images/svg/counter_glow.svg" style="display: none;"></div><span class="total_txt">1</span></div><div class="counter" id="opp_s1_counter" style="cursor: pointer;"><div class="content"><img class="background" src="https://www.duelingbook.com/simulator/images/svg/counter.svg"><img class="glow" src="https://www.duelingbook.com/simulator/images/svg/counter_glow.svg" style="display: none;"></div><span class="total_txt">1</span></div><div class="counter" id="opp_s2_counter" style="cursor: pointer;"><div class="content"><img class="background" src="https://www.duelingbook.com/simulator/images/svg/counter.svg"><img class="glow" src="https://www.duelingbook.com/simulator/images/svg/counter_glow.svg" style="display: none;"></div><span class="total_txt">1</span></div></div>
+						<div id="hidden_spots">
+							<div class="untouchable">
+								<span id="m1_hidden"></span>
+								<span id="m2_hidden"></span>
+								<span id="m3_hidden"></span>
+								<span id="opp_m1_hidden"></span>
+								<span id="opp_m2_hidden"></span>
+								<span id="opp_m3_hidden"></span>
+							</div>
+							<span id="deck_hidden"></span>
+							<span id="grave_hidden"></span>
+							<span id="opp_deck_hidden"></span>
+							<span id="opp_grave_hidden"></span>
+						</div>
+						<div id="numbers">
+							<span id="cid1_txt"></span>
+							<span id="cig1_txt"></span>
+							<span id="cid2_txt"></span>
+							<span id="cig2_txt"></span>
+						</div>
+						<div id="select_zones">
+							<div id="m1_select"><svg height="93" version="1.1" width="93" xmlns="http://www.w3.org/2000/svg" id="svgSlmdv5xq01g" viewBox="0 0 93 93" preserveAspectRatio="xMidYMid meet"><desc>Created with Snap</desc><defs><mask mask-type="alpha" id="maskSlmdv5xq01r"><g token="1" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape" style="visibility: visible;"><path fill="#00ff00" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g></mask></defs><g token="svgSlmdv5xq01g" class="movieclip"><g token="1" transform="matrix(1,0,0,1,0,0)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="6" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape"><path fill="rgba(0,255,0,0)" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g><g token="1" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape" style="visibility: hidden;"><path fill="#00ff00" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g><g mask="url('#maskSlmdv5xq01r')" class="maskGroup"><g token="5" transform="matrix(1,0,0,1,0,11.65)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="4" transform="matrix(1,0,0,1,90.8,-23)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="3" transform="matrix(0,1,-1,0,116,90.8)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="2" transform="matrix(0,1,-1,0,81.35,0)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g></g></g></g></svg></div>
+							<div id="m2_select"><svg height="93" version="1.1" width="93" xmlns="http://www.w3.org/2000/svg" id="svgSlmdv5xq032" viewBox="0 0 93 93" preserveAspectRatio="xMidYMid meet"><desc>Created with Snap</desc><defs><mask mask-type="alpha" id="maskSlmdv5xq03d"><g token="1" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape" style="visibility: visible;"><path fill="#00ff00" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g></mask></defs><g token="svgSlmdv5xq032" class="movieclip"><g token="1" transform="matrix(1,0,0,1,0,0)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="6" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape"><path fill="rgba(0,255,0,0)" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g><g token="1" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape" style="visibility: hidden;"><path fill="#00ff00" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g><g mask="url('#maskSlmdv5xq03d')" class="maskGroup"><g token="5" transform="matrix(1,0,0,1,0,11.65)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="4" transform="matrix(1,0,0,1,90.8,-23)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="3" transform="matrix(0,1,-1,0,116,90.8)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="2" transform="matrix(0,1,-1,0,81.35,0)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g></g></g></g></svg></div>
+							<div id="m3_select"><svg height="93" version="1.1" width="93" xmlns="http://www.w3.org/2000/svg" id="svgSlmdv5xq04o" viewBox="0 0 93 93" preserveAspectRatio="xMidYMid meet"><desc>Created with Snap</desc><defs><mask mask-type="alpha" id="maskSlmdv5xq04z"><g token="1" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape" style="visibility: visible;"><path fill="#00ff00" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g></mask></defs><g token="svgSlmdv5xq04o" class="movieclip"><g token="1" transform="matrix(1,0,0,1,0,0)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="6" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape"><path fill="rgba(0,255,0,0)" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g><g token="1" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape" style="visibility: hidden;"><path fill="#00ff00" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g><g mask="url('#maskSlmdv5xq04z')" class="maskGroup"><g token="5" transform="matrix(1,0,0,1,0,11.65)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="4" transform="matrix(1,0,0,1,90.8,-23)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="3" transform="matrix(0,1,-1,0,116,90.8)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="2" transform="matrix(0,1,-1,0,81.35,0)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g></g></g></g></svg></div>
+							<div id="s1_select"><svg height="93" version="1.1" width="93" xmlns="http://www.w3.org/2000/svg" id="svgSlmdv5xq06a" viewBox="0 0 93 93" preserveAspectRatio="xMidYMid meet"><desc>Created with Snap</desc><defs><mask mask-type="alpha" id="maskSlmdv5xq06l"><g token="1" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape" style="visibility: visible;"><path fill="#00ff00" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g></mask></defs><g token="svgSlmdv5xq06a" class="movieclip"><g token="1" transform="matrix(1,0,0,1,0,0)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="6" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape"><path fill="rgba(0,255,0,0)" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g><g token="1" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape" style="visibility: hidden;"><path fill="#00ff00" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g><g mask="url('#maskSlmdv5xq06l')" class="maskGroup"><g token="5" transform="matrix(1,0,0,1,0,11.65)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="4" transform="matrix(1,0,0,1,90.8,-23)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="3" transform="matrix(0,1,-1,0,116,90.8)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="2" transform="matrix(0,1,-1,0,81.35,0)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g></g></g></g></svg></div>
+							<div id="s2_select"><svg height="93" version="1.1" width="93" xmlns="http://www.w3.org/2000/svg" id="svgSlmdv5xq07w" viewBox="0 0 93 93" preserveAspectRatio="xMidYMid meet"><desc>Created with Snap</desc><defs><mask mask-type="alpha" id="maskSlmdv5xq087"><g token="1" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape" style="visibility: visible;"><path fill="#00ff00" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g></mask></defs><g token="svgSlmdv5xq07w" class="movieclip"><g token="1" transform="matrix(1,0,0,1,0,0)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="6" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape"><path fill="rgba(0,255,0,0)" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g><g token="1" transform="matrix(1.034,0,0,1.036,-801.5,-411.95)" class="shape" style="visibility: hidden;"><path fill="#00ff00" d="M 865.2 487.6l0 -89.8l-89.95 0l0 89.8l89.95 0" style=""></path></g><g mask="url('#maskSlmdv5xq087')" class="maskGroup"><g token="5" transform="matrix(1,0,0,1,0,11.65)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="4" transform="matrix(1,0,0,1,90.8,-23)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="3" transform="matrix(0,1,-1,0,116,90.8)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g><g token="2" transform="matrix(0,1,-1,0,81.35,0)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="5" transform="matrix(1,0,0,1.488,0,-9)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="4" transform="matrix(1,0,0,1.488,0,14.25)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="3" transform="matrix(1,0,0,1.488,0,37.5)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="2" transform="matrix(1,0,0,1.488,0,60.75)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g><g token="1" transform="matrix(1,0,0,1.488,0,84)" class="shape"><path fill="#ffffff" d="M 2.2 6.05l-2.2 0l0 7.8l2.2 0l0 -7.8" style=""></path></g></g></g></g></g></svg></div>
+						</div>
+						<div class="cards"></div>
+						<div id="red_stream"><svg height="20" version="1.1" width="500" xmlns="http://www.w3.org/2000/svg" id="svgSlmdv5xq0q" viewBox="0 0 500 20" preserveAspectRatio="xMidYMid meet"><desc>Created with Snap</desc><defs><mask mask-type="alpha" id="maskSlmdv5xq0v"><g token="1" transform="matrix(1,0,0,0.8,0,-10)" style="opacity: 1; visibility: visible;" class="movieclip"></g></mask><radialGradient cx="750" cy="10" r="250.05" fx="750" fy="10" gradientUnits="userSpaceOnUse" id="radialGradientSlmdv5xq016"><stop offset="0%" stop-color="#ff0000" stop-opacity="0.498"></stop><stop offset="48.63%" stop-color="#ff0000" stop-opacity="0.745"></stop><stop offset="100%" stop-color="#ff0000" stop-opacity="0.498"></stop></radialGradient><radialGradient cx="250" cy="10" r="250.05" fx="250" fy="10" gradientUnits="userSpaceOnUse" id="radialGradientSlmdv5xq01c"><stop offset="0%" stop-color="#ff0000" stop-opacity="0.498"></stop><stop offset="48.63%" stop-color="#ff0000" stop-opacity="0.749"></stop><stop offset="100%" stop-color="#ff0000" stop-opacity="0.498"></stop></radialGradient></defs><g token="svgSlmdv5xq0q" class="movieclip"><g token="1" transform="matrix(1,0,0,1,0,10)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="1" transform="matrix(1,0,0,0.8,0,-10)" style="opacity: 1; visibility: hidden;" class="movieclip"><g token="1" transform="matrix(2.041,0,0,1.695,0,0)" class="movieclip" style="opacity: 1;"><g token="1" transform="matrix(1,0,0,1,0,0)" class="shape"><path fill="#000000" d="M 245 14.75l0 -14.75l-245 0l0 14.75l245 0" style=""></path></g></g></g><g mask="url('#maskSlmdv5xq0v')" class="maskGroup"><g token="2" transform="matrix(1,0,0,1,-500,-10)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="1" transform="matrix(1,0,0,1,0,0)" class="movieclip" style="opacity: 1;"><g token="2" transform="matrix(1,0,0,1,0,0)" class="shape"><path fill="url('#radialGradientSlmdv5xq01c')" d="M 500 20l0 -20l-500 0l0 20l500 0" style=""></path></g><g token="1" transform="matrix(1,0,0,1,0,0)" class="shape"><path fill="url('#radialGradientSlmdv5xq016')" d="M 1000 20l0 -20l-500 0l0 20l500 0" style=""></path></g></g></g></g></g></g></svg></div>
+						<div id="blue_stream"><svg height="20" version="1.1" width="500" xmlns="http://www.w3.org/2000/svg" id="svgSlmdv5xq00" viewBox="0 0 500 20" preserveAspectRatio="xMidYMid meet"><desc>Created with Snap</desc><defs><mask mask-type="alpha" id="maskSlmdv5xq05"><g token="1" transform="matrix(1,0,0,0.8,0,-10)" style="opacity: 1; visibility: visible;" class="movieclip"></g></mask><radialGradient cx="750" cy="10" r="250.05" fx="750" fy="10" gradientUnits="userSpaceOnUse" id="radialGradientSlmdv5xq0g"><stop offset="0%" stop-color="#0000ff" stop-opacity="0.498"></stop><stop offset="48.63%" stop-color="#0000ff" stop-opacity="0.745"></stop><stop offset="100%" stop-color="#0000ff" stop-opacity="0.498"></stop></radialGradient><radialGradient cx="250" cy="10" r="250.05" fx="250" fy="10" gradientUnits="userSpaceOnUse" id="radialGradientSlmdv5xq0m"><stop offset="0%" stop-color="#0000ff" stop-opacity="0.498"></stop><stop offset="48.63%" stop-color="#0000ff" stop-opacity="0.749"></stop><stop offset="100%" stop-color="#0000ff" stop-opacity="0.498"></stop></radialGradient></defs><g token="svgSlmdv5xq00" class="movieclip"><g token="1" transform="matrix(1,0,0,1,0,10)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="1" transform="matrix(1,0,0,0.8,0,-10)" style="opacity: 1; visibility: hidden;" class="movieclip"><g token="1" transform="matrix(2.041,0,0,1.695,0,0)" class="movieclip" style="opacity: 1;"><g token="1" transform="matrix(1,0,0,1,0,0)" class="shape"><path fill="#000000" d="M 245 14.75l0 -14.75l-245 0l0 14.75l245 0" style=""></path></g></g></g><g mask="url('#maskSlmdv5xq05')" class="maskGroup"><g token="2" transform="matrix(1,0,0,1,-500,-10)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="1" transform="matrix(1,0,0,1,0,0)" class="movieclip" style="opacity: 1;"><g token="2" transform="matrix(1,0,0,1,0,0)" class="shape"><path fill="url('#radialGradientSlmdv5xq0m')" d="M 500 20l0 -20l-500 0l0 20l500 0" style=""></path></g><g token="1" transform="matrix(1,0,0,1,0,0)" class="shape"><path fill="url('#radialGradientSlmdv5xq0g')" d="M 1000 20l0 -20l-500 0l0 20l500 0" style=""></path></g></g></g></g></g></g></svg></div>
+						<div id="red_target">
+							<img src="images/svg/red_target.svg" alt="Target">
+						</div>
+						<div id="blue_target">
+							<img src="images/svg/blue_target.svg" alt="Target">
+						</div>
+						<div id="sword">
+							<img src="images/svg/sword.svg" alt="Sword">
+						</div>
+						<div id="choose_zones">
+							<div class="background"></div>
+							<input id="choose_zones_cb" type="checkbox" checked="checked" style="opacity: 0;"><div class="checkbox" style="left: 5px; top: 4px;"><img class="check" src="https://www.duelingbook.com/simulator/images/svg/check.svg"></div>
+							<span id="choose_zones_lbl">Choose Zones</span>
+						</div>
+						<input id="auto_draw_cb" type="checkbox" checked="checked" style="opacity: 0;"><div class="checkbox" style="left: 763px; top: 584px;"><img class="check" src="https://www.duelingbook.com/simulator/images/svg/check.svg"></div>
+						<span id="auto_draw_lbl">Auto-Draw</span>
+						<div id="shuffle_btn">
+							<img src="images/hand_cards.jpg" width="30" height="30" alt="Shuffle">
+							<div class="blue">
+								<span class="shuffle_lbl">Shuffle</span>
+							</div>
+						</div>
+						<div id="show_hand_btn">
+							<img class="hand" src="images/svg/hand.svg" alt="Hand">
+							<img src="images/hand_cards.jpg" width="30" height="30" alt="Show Hand">
+							<div class="blue">
+								<span class="show_lbl">Show</span>
+							</div>
+						</div>
+						<div id="view">
+							<img class="background" src="images/svg/view.svg" alt="View Cards">
+							<span class="title_txt arial_rounded20">Viewing Graveyard</span>
+							<div class="exit_btn" style="cursor: pointer;">
+								<img src="images/svg/exit_btn_up.svg" alt="Exit">
+							</div>
+							<div class="content scrollpane"></div>
+						</div>
+						<div id="abilities">
+							<img class="background" src="images/svg/abilities.svg" alt="Abilities">
+							<span class="title_txt arial_rounded20">Your Abilities</span>
+							<div class="content">
+								<span class="lvl4_txt">Lv. 4</span>
+								<div class="lvl4_1">
+									<span class="talent_txt">The Rising Darkness</span>
+								</div>
+								<div class="lvl4_2">
+									<span class="talent_txt">The Rising Darkness</span>
+								</div>
+								<div class="lvl4_3">
+									<span class="talent_txt">The Rising Darkness</span>
+								</div>
+
+								<span class="lvl3_txt">Lv. 3</span>
+								<div class="lvl3_1">
+									<span class="talent_txt">The Rising Darkness</span>
+								</div>
+								<div class="lvl3_2">
+									<span class="talent_txt">The Rising Darkness</span>
+								</div>
+								<div class="lvl3_3">
+									<span class="talent_txt">The Rising Darkness</span>
+								</div>
+								
+								<span class="lvl2_txt">Lv. 2</span>
+								<div class="lvl2_1">
+									<span class="talent_txt">The Rising Darkness</span>
+								</div>
+								<div class="lvl2_2">
+									<span class="talent_txt">The Rising Darkness</span>
+								</div>
+								<div class="lvl2_3">
+									<span class="talent_txt">The Rising Darkness</span>
+								</div>
+								
+								<span class="lvl1_txt">Lv. 1</span>
+								<div class="lvl1_1">
+									<span class="talent_txt">The Rising Darkness</span>
+								</div>
+								<div class="lvl1_2">
+									<span class="talent_txt">The Rising Darkness</span>
+								</div>
+								<div class="lvl1_3">
+									<span class="talent_txt">The Rising Darkness</span>
+								</div>
+								<span class="ability_desc_txt">While you control Famine, The Third rider of the End, at the end of each turn, your opponent, must discard 1 card for each Follower they control. In addition, All opponents Followers lose power equal to 10x their level whenever attacking Famine, The Third Rider of the End.</span>
+							</div>
+							<div class="exit_btn" style="cursor: pointer;">
+								<img src="images/svg/exit_btn_up.svg" alt="Exit">
+							</div>
+						</div>
+						<div id="coin">
+							<img class="tails" src="images/coin_tails.png" alt="Tails">
+							<img class="heads" src="images/coin_heads.png" alt="Heads">
+						</div>
+						<div id="die" class="reset">
+							<div id="side1" class="face activate"><canvas id="mycanvas1" width="100" height="100"></canvas></div>
+							<div id="side2" class="face activate"><canvas id="mycanvas2" width="100" height="100"></canvas></div>
+							<div id="side3" class="face activate"><canvas id="mycanvas3" width="100" height="100"></canvas></div>
+							<div id="side4" class="face activate"><canvas id="mycanvas4" width="100" height="100"></canvas></div>
+							<div id="side5" class="face activate"><canvas id="mycanvas5" width="100" height="100"></canvas></div>
+							<div id="side6" class="face activate"><canvas id="mycanvas6" width="100" height="100"></canvas></div>
+						</div>
+					</div>
+					<div id="siding" class="duel_frame">
+						<img class="deck_constructor" src="images/svg/deck_constructor.svg" alt="Deck">
+						<span id="siding_in_progress">Siding in progress! Please wait...</span>
+					</div>
+					<div id="viewing"></div>
+					<div id="overlay">
+						<img src="images/svg/overlay.svg" alt="Overlay">
+					</div>
+					<div id="log_btn" style="cursor: pointer;">
+						<img src="images/svg/log_btn_up.svg" alt="Game Log">
+					</div>
+					<input id="defeat_btn" type="submit" value="Admit Defeat" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 540px; width: 96px; height: 17px;">Admit Defeat</div>
+					<input id="draw_btn" type="submit" value="Offer Draw" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 565px; width: 96px; height: 17px;">Offer Draw</div>
+					<input id="reset_btn" type="submit" value="Reset Deck" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 565px; width: 96px; height: 17px;">Reset Deck</div>
+					<input id="rematch_btn" type="submit" value="Offer Rematch" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 590px; width: 96px; height: 17px;">Offer Rematch</div>
+					<input id="duel_quit_btn" type="submit" value="Quit" style="opacity: 0;"><div class="button proxy unselectable" style="left: 105px; top: 615px; width: 96px; height: 17px;">Quit</div>
+					<div id="watchers">
+						<span class="watchers_txt">Watchers: 0</span>
+						<div class="users list scrollpane"></div>
+					</div>
+					<div id="lifepoints2" class="lifepoints">
+						<div class="life_bar">
+							<div class="black_bar"></div>
+						</div>
+						<div class="life_border"></div>
+						<span class="life_txt">8000</span>
+					</div>
+					<div id="avatar2" class="duel_avatar">
+						<img class="image" src="images/loading.gif" alt="Loading">
+						<div class="nsfw"></div>
+						<div id="bubbles2" class="bubbles"><svg height="20" version="1.1" width="500" xmlns="http://www.w3.org/2000/svg" id="svgSlmdv5xq09z" viewBox="0 0 500 20" preserveAspectRatio="xMidYMid meet"><desc>Created with Snap</desc><defs></defs><g token="svgSlmdv5xq09z" class="movieclip"><g token="1" transform="matrix(0.133,0,0,0.133,0,0)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="4" transform="matrix(1,0,0,1,-392.2,-16.75)" class="shape"><path fill="#999999" d="M 720.2 38.7q-21.95 -21.95 -53 -21.95l-200 0q-31.05 0 -53.05 21.95q-21.95 22 -21.95 53.05q0 31.05 21.95 53q22 22 53.05 22l200 0q31.05 0 53 -22q22 -21.95 22 -53q0 -31.05 -22 -53.05" style=""></path></g><g token="3" transform="matrix(1,0,0,1,25,25)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="1" transform="matrix(0.529,0,0,0.529,23.55,23.55)" class="movieclip" style="opacity: 0.77; visibility: visible;"><g token="1" transform="matrix(0.669,0,0,0.669,-243.95,-35.55)" class="shape"><path fill="#ffffff" d="M 492 180.6q21.9 -21.85 21.9 -52.8q0 -30.95 -21.9 -52.85q-21.85 -21.85 -52.8 -21.85q-30.95 0 -52.85 21.85q-21.85 21.9 -21.85 52.85q0 30.95 21.85 52.8q21.9 21.9 52.85 21.9q30.95 0 52.8 -21.9" style=""></path></g></g></g><g token="2" transform="matrix(1,0,0,1,125,25)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="1" transform="matrix(0.611,0,0,0.611,19.4,19.4)" class="movieclip" style="opacity: 0.8; visibility: visible;"><g token="1" transform="matrix(0.669,0,0,0.669,-243.95,-35.55)" class="shape"><path fill="#ffffff" d="M 492 180.6q21.9 -21.85 21.9 -52.8q0 -30.95 -21.9 -52.85q-21.85 -21.85 -52.8 -21.85q-30.95 0 -52.85 21.85q-21.85 21.9 -21.85 52.85q0 30.95 21.85 52.8q21.9 21.9 52.85 21.9q30.95 0 52.8 -21.9" style=""></path></g></g></g><g token="1" transform="matrix(1,0,0,1,225,25)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="1" transform="matrix(0.731,0,0,0.731,13.45,13.45)" class="movieclip" style="opacity: 0.88; visibility: visible;"><g token="1" transform="matrix(0.669,0,0,0.669,-243.95,-35.55)" class="shape"><path fill="#ffffff" d="M 492 180.6q21.9 -21.85 21.9 -52.8q0 -30.95 -21.9 -52.85q-21.85 -21.85 -52.8 -21.85q-30.95 0 -52.85 21.85q-21.85 21.9 -21.85 52.85q0 30.95 21.85 52.8q21.9 21.9 52.85 21.9q30.95 0 52.8 -21.9" style=""></path></g></g></g></g></g></svg></div>
+						<div class="rating">
+							<span class="rating_txt">rating/rep</span>
+						</div>
+						<input class="nsfw_btn" type="submit" value="Show Image" style="opacity: 0;"><div class="button proxy unselectable" style="left: 54px; top: 66px; width: 98px; height: 17px;">Show Image</div>
+						<span class="username_txt selectable">Username</span>
+					</div>
+					<div id="status2" class="duel_status">
+						<span class="status_txt arial_rounded25"></span>
+					</div>
+					<div id="gone2" class="gone"></div>
+					<div class="cout_txt textarea scrollpane selectable" tabindex="0"></div>
+					<input class="cin_txt" type="text" style="opacity: 0; height: 15px; width: 177px;"><div class="textinput proxy" style="left: 843px; top: 426px; width: 175px; height: 19px; opacity: 1;"></div>
+					<input class="html_cb" type="checkbox" style="opacity: 0;"><div class="checkbox" style="left: 1005px; top: 430px;"><img class="check" src="https://www.duelingbook.com/simulator/images/svg/check.svg" style="display: none;"></div>
+					<div id="avatar1" class="duel_avatar">
+						<img class="image" src="images/loading.gif" alt="Loading">
+						<div class="nsfw"></div>
+						<div id="bubbles1" class="bubbles"><svg height="20" version="1.1" width="500" xmlns="http://www.w3.org/2000/svg" id="svgSlmdv5xq09i" viewBox="0 0 500 20" preserveAspectRatio="xMidYMid meet"><desc>Created with Snap</desc><defs></defs><g token="svgSlmdv5xq09i" class="movieclip"><g token="1" transform="matrix(0.133,0,0,0.133,0,0)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="4" transform="matrix(1,0,0,1,-392.2,-16.75)" class="shape"><path fill="#999999" d="M 720.2 38.7q-21.95 -21.95 -53 -21.95l-200 0q-31.05 0 -53.05 21.95q-21.95 22 -21.95 53.05q0 31.05 21.95 53q22 22 53.05 22l200 0q31.05 0 53 -22q22 -21.95 22 -53q0 -31.05 -22 -53.05" style=""></path></g><g token="3" transform="matrix(1,0,0,1,25,25)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="1" transform="matrix(0.529,0,0,0.529,23.55,23.55)" class="movieclip" style="opacity: 0.77; visibility: visible;"><g token="1" transform="matrix(0.669,0,0,0.669,-243.95,-35.55)" class="shape"><path fill="#ffffff" d="M 492 180.6q21.9 -21.85 21.9 -52.8q0 -30.95 -21.9 -52.85q-21.85 -21.85 -52.8 -21.85q-30.95 0 -52.85 21.85q-21.85 21.9 -21.85 52.85q0 30.95 21.85 52.8q21.9 21.9 52.85 21.9q30.95 0 52.8 -21.9" style=""></path></g></g></g><g token="2" transform="matrix(1,0,0,1,125,25)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="1" transform="matrix(0.611,0,0,0.611,19.4,19.4)" class="movieclip" style="opacity: 0.8; visibility: visible;"><g token="1" transform="matrix(0.669,0,0,0.669,-243.95,-35.55)" class="shape"><path fill="#ffffff" d="M 492 180.6q21.9 -21.85 21.9 -52.8q0 -30.95 -21.9 -52.85q-21.85 -21.85 -52.8 -21.85q-30.95 0 -52.85 21.85q-21.85 21.9 -21.85 52.85q0 30.95 21.85 52.8q21.9 21.9 52.85 21.9q30.95 0 52.8 -21.9" style=""></path></g></g></g><g token="1" transform="matrix(1,0,0,1,225,25)" class="movieclip" style="opacity: 1; visibility: visible;"><g token="1" transform="matrix(0.731,0,0,0.731,13.45,13.45)" class="movieclip" style="opacity: 0.88; visibility: visible;"><g token="1" transform="matrix(0.669,0,0,0.669,-243.95,-35.55)" class="shape"><path fill="#ffffff" d="M 492 180.6q21.9 -21.85 21.9 -52.8q0 -30.95 -21.9 -52.85q-21.85 -21.85 -52.8 -21.85q-30.95 0 -52.85 21.85q-21.85 21.9 -21.85 52.85q0 30.95 21.85 52.8q21.9 21.9 52.85 21.9q30.95 0 52.8 -21.9" style=""></path></g></g></g></g></g></svg></div>
+						<div class="rating">
+							<span class="rating_txt">rating/rep</span>
+						</div>
+						<input class="nsfw_btn" type="submit" value="Show Image" style="opacity: 0;"><div class="button proxy unselectable" style="left: 54px; top: 66px; width: 98px; height: 17px;">Show Image</div>
+						<span class="username_txt selectable">Username</span>
+					</div>
+					<div id="status1" class="duel_status">
+						<span class="status_txt arial_rounded25"></span>
+					</div>
+					<input id="pause_btn" type="submit" value="Pause Game" style="opacity: 0;"><div class="button proxy unselectable" style="left: 897px; top: 547px; width: 98px; height: 17px;">Pause Game</div>
+					<div id="gone1" class="gone"></div>
+					<div id="over">
+						<img src="images/svg/over.svg" alt="Over">
+						<span class="title_txt">Game Over</span>
+						<span class="body_txt"></span>
+						<div class="ok_btn" style="cursor: pointer;">
+							<img src="images/svg/ok_btn_up.svg" alt="OK">
+						</div>
+					</div>
+					<div id="lifepoints1" class="lifepoints">
+						<div class="life_bar">
+							<div class="black_bar"></div>
+						</div>
+						<div class="life_border"></div>
+						<span class="life_txt">8000</span>
+					</div>
+				</div>
+			</div>
+			<div id="chats">
+				<div id="online_users" class="chat ui-draggable ui-draggable-handle">
+					<div class="chat_top">
+						<div class="chat_top_bg">
+							<span>Online Users</span>
+						</div>
+						<div class="minimize_btn" style="cursor: pointer;">
+							<img src="images/svg/minimize_btn_up.svg" alt="Minimize">
+						</div>
+					</div>
+					<div class="chat_background">
+						<div class="users list scrollpane"></div>
+						<input class="search_txt" type="text" style="opacity: 0; height: 15px; width: 186px;"><div class="textinput proxy" style="left: 5.2px; top: 378px; width: 184px; height: 19px;"></div>
+						<div class="black_line"></div>
+						<span class="total_txt">Users online:&nbsp; 0</span>
+					</div>
+				</div>
+				<div id="duel_log" class="chat ui-draggable ui-draggable-handle">
+					<div class="chat_top">
+						<div class="chat_top_bg">
+							<span>Game Log</span>
+						</div>
+						<div class="export_btn">
+							<img src="images/svg/export_btn.svg" alt="Export">
+						</div>
+						<div class="minimize_btn" style="cursor: pointer;">
+							<img src="images/svg/minimize_btn_up.svg" alt="Minimize">
+						</div>
+					</div>
+					<div class="chat_background">
+						<div class="log">
+							<div class="log_txt textarea scrollpane selectable" tabindex="0"></div>
+							<div class="log_tools">
+								<input class="chat_cb" type="checkbox" checked="checked" style="opacity: 0;"><div class="checkbox" style="left: 5px; top: 14px;"><img class="check" src="https://www.duelingbook.com/simulator/images/svg/check.svg"></div>
+								<span class="chat_lbl">Chat</span>
+								<input class="duel_cb" type="checkbox" checked="checked" style="opacity: 0;"><div class="checkbox" style="left: 63px; top: 14px;"><img class="check" src="https://www.duelingbook.com/simulator/images/svg/check.svg"></div>
+								<span class="duel_lbl">Game</span>
+								<input class="game_cb" type="checkbox" checked="checked" style="opacity: 0;"><div class="checkbox" style="left: 121px; top: 14px;"><img class="check" src="https://www.duelingbook.com/simulator/images/svg/check.svg"></div>
+								<span class="game_lbl">Other</span>
+								<input class="private_cb" type="checkbox" checked="checked" style="opacity: 0;"><div class="checkbox" style="left: 10px; top: 37px;"><img class="check" src="https://www.duelingbook.com/simulator/images/svg/check.svg"></div>
+								<span class="private_lbl">Private Info</span>
+								<input class="usernames_cb" type="checkbox" style="opacity: 0;"><div class="checkbox" style="left: 105px; top: 37px;"><img class="check" src="https://www.duelingbook.com/simulator/images/svg/check.svg" style="display: none;"></div>
+								<span class="usernames_lbl">Usernames</span>
+								<div class="black_line"></div>
+								<input class="search_txt" type="text" style="opacity: 0; height: 15px; width: 186px;"><div class="textinput proxy" style="left: 5px; top: 59px; width: 184px; height: 19px;"></div>
+								<img class="lookup" src="images/svg/lookup.svg" alt="Search">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="action_list"></div>
+			</div>
+			<div id="chat_buttons">
+				<div id="online_btn" style="cursor: pointer;">
+					<img src="images/svg/online_btn_up.svg" alt="Online Users">
+				</div>
+			</div>
+			<div id="tooltips" class="aliased">
+				<div id="online_users_tooltip">Online Users</div>
+				<div id="log_tooltip">Log</div>
+				<div id="randomize_tooltip">Randomize</div>
+			</div>
+			<div id="dim" style="display: none; pointer-events: none;"></div>
+			<div id="msg" style="display: none;">
+				<span class="title_txt">Message</span>
+				<div class="body_txt selectable"></div>
+				<div class="ok_btn" style="cursor: pointer;">
+					<img src="images/svg/ok_btn_up.svg" alt="OK">
+				</div>
+			</div>
+			<div id="confirm" style="display: none;">
+				<span class="title_txt">Message</span>
+				<div class="body_txt selectable"></div>
+				<div class="yes_btn" style="cursor: pointer;">
+					<img src="images/svg/yes_btn_up.svg" alt="Yes">
+				</div>
+				<div class="no_btn" style="cursor: pointer;">
+					<img src="images/svg/no_btn_up.svg" alt="No">
+				</div>
+			</div>
+			<div id="input" style="display: none;">
+				<span class="title_txt">Message</span>
+				<div class="body_txt selectable">Enter your input below</div>
+				<input class="input_txt" type="text" style="opacity: 0; height: 20px; width: 446px;"><div class="textinput proxy" style="left: 75px; top: 142px; width: 444px; height: 24px;"></div>
+				<div class="ok_btn" style="cursor: pointer;">
+					<img src="images/svg/ok_btn_up.svg" alt="OK">
+				</div>
+				<div class="cancel_btn" style="cursor: pointer;">
+					<img src="images/svg/cancel_btn_up.svg" alt="Cancel">
+				</div>
+			</div>
+			<div id="combo" style="display: none;">
+				<span class="title_txt">Message</span>
+				<div class="body_txt selectable">Enter your input below</div>
+				<select class="combo_cb" style="font-size: 25.684px; opacity: 0;"></select><div class="combobox proxy unselectable" style="left: 75px; top: 142px; width: 443px;"><div class="combobox_line"></div><div class="combobox_arrow"><img src="https://www.duelingbook.com/simulator/images/svg/combobox_arrow.svg"></div></div>
+				<div class="ok_btn" style="cursor: pointer;">
+					<img src="images/svg/ok_btn_up.svg" alt="OK">
+				</div>
+				<div class="cancel_btn" style="cursor: pointer;">
+					<img src="images/svg/cancel_btn_up.svg" alt="Cancel">
+				</div>
+			</div>
+		</div>
+		<script src="static/simulator-utils.js?v=7"></script>
+		<script src="static/simulator-duel.js?v=7"></script>
+		<script src="static/simulator-main.js?v=7"></script>
+		<script src="static/dom-to-image.min.js" async=""></script>
+		<script>
+			//window.onload = loadedE;
+						
+			function loadedE() {
+				initSite();
+				goto('front_page');
+				
+				//addButton($('#room_btn'));
+				//goto('main_menu');
+			}
+		</script>
+		
+		
+		
+		
+	
+</body></html>

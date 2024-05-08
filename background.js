@@ -7,6 +7,8 @@ const goatCards = [];
 const edisonCards = [];
 const negate_icon_blob = [];
 
+let drawLimitedBlob = null;
+
 function Eyal_BlobFileAsString(_path, _cb)
 {
 	let obj = {};
@@ -33,6 +35,23 @@ function Eyal_BlobFileAsString(_path, _cb)
 		_cb(obj.text, obj.type);
 	});
 };
+
+function Eyal_BlobFileAsSound(_path, _cb)
+{
+	let obj = {};
+	
+	fetch(_path, {mode:'same-origin'})   // <-- important
+	
+	.then(function(_res) {
+		return _res.blob();
+	})
+
+	.then(function(_blob) {
+		_cb(_blob)
+	})
+};
+
+
 function Eyal_ReadFile(_path, _cb)
 {
 
@@ -97,18 +116,66 @@ if(edisonCards.length == 0)
 	});
 }
 
-if(negate_icon_blob.length == 0)
-{
-	Eyal_BlobFileAsString("./negate_icon.png", function(text, type)
+chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse)
+{		
+	let parsedUrl = new URL(sender.url);
+			
+	if(parsedUrl.hostname !== "duelingbook.com" && parsedUrl.hostname !== "www.duelingbook.com")
+		return;
+				
+	if(request.type == "Background_MD_Sounds")
 	{
+		EyalBackground_playLocalSound(request.src, request.volume, request.loop, request.interrupt, request.tryOnly);
+	}
+	else if (request.type == "Background_MD_Stop_Sounds")
+	{
+		chrome.runtime.sendMessage({ type: "MD_Stop_Sounds" });
+	}
 	
-		let obj = {};
-		
-		obj.type = type;
-		obj.text = text;
-		negate_icon_blob.push(obj);
-	});
+	return;
+});
+
+async function EyalBackground_stopLocalSounds()
+{
+	await createOffscreen();
+	
+	chrome.runtime.sendMessage({ type: "MD_Stop_Sounds" });
+}	
+async function EyalBackground_playLocalSound(src, volume, loop, interrupt, tryOnly)
+{
+	await createOffscreen();
+	
+	if(typeof volume === "undefined")
+	{
+		volume = 1;
+	}
+	
+	if(typeof loop === "undefined")
+	{
+		loop = false;
+	}
+	
+	if(typeof interrupt === "undefined")
+	{
+		interrupt = false
+	}
+	
+	if(typeof tryOnly === "undefined")
+	{
+		tryOnly = false;
+	}
+	await chrome.runtime.sendMessage({ type: "MD_Sounds", src: src, volume: volume, loop: loop, interrupt: interrupt, tryOnly: tryOnly });
 }
+
+// Create the offscreen document if it doesn't already exist
+async function createOffscreen() {
+    if (await chrome.offscreen.hasDocument()) return;
+    await chrome.offscreen.createDocument({
+        url: 'MD_Sounds/MD_Sounds.html',
+        reasons: ['AUDIO_PLAYBACK'],
+        justification: 'Playing them moooooooooooosic' // details for using the API
+    });
+}	
 	
 
 setInterval(function () {
@@ -153,7 +220,7 @@ let raceInterval = setInterval(function () {
 	else
 		clearInterval(raceInterval);
 	
-	performInjection();
+	performInjection(true);
 }, 250);
 
 
@@ -232,12 +299,12 @@ function performFastInjection(bSecond)
 	}); 
 }
 
-function performInjection()
+function performInjection(bRace)
 {
 	chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-		if(tabs[0] && tabs[0].url && (tabs[0].url.search("www.duelingbook.com") != -1 || tabs[0].url.search("https://duelingbook.com") != -1))
+		if(tabs[0] && tabs[0].url && typeof tabs[0].id !== "undefined")
 		{
-			if(typeof tabs[0].id !== 'undefined')
+			if(tabs[0].url.search("www.duelingbook.com") != -1 || tabs[0].url.search("https://duelingbook.com") != -1)
 			{
 				chrome.storage.sync.get(['unlockCardMechanics', 'lowAnimations', 'silentCommands', 'birdUI', 'potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'musicSliderMD', 'zoomSlider', 'limitedCardsSound', 'cardLogging'], function(result)
 				{
@@ -309,13 +376,19 @@ function performInjection()
 					
 					chrome.scripting.executeScript(
 					{
-						args: [unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, zoomSlider, limitedCardsSound, cardLogging, goatCards, edisonCards, negate_icon_blob],
+						args: [chrome.runtime.id, unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, zoomSlider, limitedCardsSound, cardLogging, goatCards, edisonCards, negate_icon_blob],
 						target: {tabId: tabs[0].id},
 						world: "MAIN", // Main world is mandatory to edit other website functions
 						func: injectFunction,
-						//files: ['inject.js'],
+						//files: ['MD_Sounds/Draw_Limited.mp3'],
 					});
+					
 				});
+			}
+			else if(!bRace)
+			{
+				// Use Background_MD_Stop_Sounds if you want this in injectFunction.
+				EyalBackground_stopLocalSounds()
 			}
 		}
 	}); 
@@ -723,13 +796,27 @@ function censorInjectFunction(potOfSwitch, femOfSwitch)
 	Eyal_checkCensors();
 }
 
-function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, zoomSlider, limitedCardsSound, cardLogging, goatCards, edisonCards, negate_icon_blob)
+function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, zoomSlider, limitedCardsSound, cardLogging, goatCards, edisonCards, negate_icon_blob)
 {
 //	let Eyal_blob = new Blob([negate_icon_blob[0].text], {type: negate_icon_blob[0].type});
-	
-	//window.Eyal_blob2 = Eyal_blob;
-	
+
 	// Don't inject until jQuery is added.
+	
+	Eyal_extensionId = extensionId;
+	
+	if(typeof Eyal_currentMusicObject === "undefined")
+		Eyal_currentMusicObject = null;
+	
+	if(typeof Eyal_currentMusicSlider === "undefined")
+		Eyal_currentMusicSlider = -1;
+	
+	window.onfocus = function()
+	{
+		activateE(0);
+		if(typeof Eyal_tryStartMusic !== "undefined")
+			Eyal_tryStartMusic(true)
+	}
+	
 	if(typeof window.jQuery === "undefined")
 		return;
 
@@ -843,7 +930,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			case "victoryMusic":
 				if(abcdef >= 3)
 				{
-					return "https://drive.google.com/uc?id=17n_G-tGRVyQb2T6j4JuX2jzHDsz7oN2Z&export=download";
+					return "DL_Music/Victory/Victory_by_LP/DSOD.mp3";
 				}
 				else
 				{
@@ -852,36 +939,36 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				break;
 				
 			case "kaibaDSOD":
-				return "https://drive.google.com/uc?id=1b5a7Yl1JkIwLU3cVUPaooqM3IM7l_IJO&export=download"
+				return "DL_Music/Normal/Kaiba_DSOD.mp3"
 				break;
 			
 			case "kaibaSTD":
-				return "https://drive.google.com/uc?id=1mwYBJKBu8Nr1LZgff-ZBjbEyOTRUISfH&export=download"
+				return "DL_Music/Normal/STD/Kaiba.mp3"
 				break;
 				
 			case "jadenGX":
-				return "https://drive.google.com/uc?id=1jnk9dynB12az5Gj51cdJEFD88n4TlnDD&export=download"
+				return "DL_Music/Normal/Jaden_GX.mp3"
 				break;
 				
 			case "alexisGX":
-				return "https://drive.google.com/uc?id=1pCNuYhwEfPSK6aVHnl_wCbh6HfKVqMT6&export=download";
+				return "DL_Music/Normal/Alexis_GX.mp3";
 				break;
 				
 			case "profile":
 				if(my_profile_data == null)
-					return "https://drive.google.com/uc?id=1b5a7Yl1JkIwLU3cVUPaooqM3IM7l_IJO&export=download"
+					return "DL_Music/Normal/Kaiba_DSOD.mp3"
 				
 				else if(my_profile_data.loading)
 					return "Retry";
 				
 				else if(typeof my_profile_data.song === 'undefined')
-					return "https://drive.google.com/uc?id=1b5a7Yl1JkIwLU3cVUPaooqM3IM7l_IJO&export=download"
+					return "DL_Music/Normal/Kaiba_DSOD.mp3"
 				
 				else if(typeof my_profile_data.song.original_url === 'undefined')
-					return "https://drive.google.com/uc?id=1b5a7Yl1JkIwLU3cVUPaooqM3IM7l_IJO&export=download"
+					return "DL_Music/Normal/Kaiba_DSOD.mp3"
 				
 				else if(my_profile_data.song.original_url == "")
-					return "https://drive.google.com/uc?id=1b5a7Yl1JkIwLU3cVUPaooqM3IM7l_IJO&export=download"
+					return "DL_Music/Normal/Kaiba_DSOD.mp3"
 				
 				return my_profile_data.song.original_url;
 				break;
@@ -898,7 +985,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			case "normalMusic":
 				if(abcdef >= 3)
 				{
-					return "https://drive.google.com/uc?id=1b5a7Yl1JkIwLU3cVUPaooqM3IM7l_IJO&export=download";
+					return "DL_Music/Normal/Kaiba_DSOD.mp3";
 				}
 				else
 				{
@@ -907,48 +994,48 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				break;
 				
 			case "DMGX":
-				return "https://drive.google.com/uc?id=1CCOPyX3mwQfTUgPZRLyq6Bjf2aStjtq3&export=download";
+				return "DL_Music/Victory/Victory_by_LP/DM_GX.mp3";
 				break;
 				
 			case "DSOD":
-				return "https://drive.google.com/uc?id=17n_G-tGRVyQb2T6j4JuX2jzHDsz7oN2Z&export=download";
+				return "DL_Music/Victory/Victory_by_LP/DSOD.mp3";
 				break;
 				
 			case "5Ds":
-				return "https://drive.google.com/uc?id=1wr3gdiJBJ4zU4deuBX2LwP_Cz_P6wg8N&export=download"
+				return "DL_Music/Victory/Victory_by_LP/5Ds.mp3"
 				break;
 			
 			case "ArcV":
-				return "https://drive.google.com/uc?id=1q23d0ySZflsMX9cdDR-0AwVvGD4UM9BJ&export=download"
+				return "DL_Music/Victory/Victory_by_LP/ArcV.mp3"
 				break;
 				
 			case "ZEXAL":
-				return "https://drive.google.com/uc?id=1d1OzoqfZ2pgVBXXv5q00wo3vsq8ek34y&export=download"
+				return "DL_Music/Victory/Victory_by_LP/Zexal.mp3"
 				break;
 				
 			case "kiteAceZEXAL":
-				return "https://drive.google.com/uc?id=1usqlxqHby-dVcGjUxahZOKk4YlyVbbJl&export=download";
+				return "DL_Music/Victory/Victory_by_Ace_Monster/Kite_Shark_ZEXAL.mp3";
 				break;
 		
 			case "kaibaSTD":
-				return "https://drive.google.com/uc?id=1mwYBJKBu8Nr1LZgff-ZBjbEyOTRUISfH&export=download"
+				return "DL_Music/Normal/STD/Kaiba.mp3"
 				break;
 				
 			case "profile":
 				if(my_profile_data == null)
-					return "https://drive.google.com/uc?id=17n_G-tGRVyQb2T6j4JuX2jzHDsz7oN2Z&export=download"
+					return "DL_Music/Victory/Victory_by_LP/DSOD.mp3"
 				
 				else if(my_profile_data.loading)
 					return "Retry";
 				
 				else if(typeof my_profile_data.song === 'undefined')
-					return "https://drive.google.com/uc?id=17n_G-tGRVyQb2T6j4JuX2jzHDsz7oN2Z&export=download"
+					return "DL_Music/Victory/Victory_by_LP/DSOD.mp3"
 				
 				else if(typeof my_profile_data.song.original_url === 'undefined')
-					return "https://drive.google.com/uc?id=17n_G-tGRVyQb2T6j4JuX2jzHDsz7oN2Z&export=download"
+					return "DL_Music/Victory/Victory_by_LP/DSOD.mp3"
 				
 				else if(my_profile_data.song.original_url == "")
-					return "https://drive.google.com/uc?id=17n_G-tGRVyQb2T6j4JuX2jzHDsz7oN2Z&export=download"
+					return "DL_Music/Victory/Victory_by_LP/DSOD.mp3"
 				
 				return my_profile_data.song.original_url;
 				break;
@@ -957,200 +1044,23 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	
 	async function importSounds()
 	{
-		let Eyal_music = $('#Eyal_music')[0];
-		let Eyal_brinkMusic = $('#Eyal_brinkMusic')[0];
+		Eyal_music = Eyal_getNormalMusicURL();
+		Eyal_brinkMusic = Eyal_getVictoryMusicURL();
 		
-		if(typeof Eyal_music === "undefined")
-		{
-			// [0] is mandatory for some funny reason.
-			Eyal_music = $(`<audio src="https://cdn.freesound.org/previews/649/649769_14275923-lq.mp3" id="Eyal_music" loop=true></audio>`)[0];
-			document.body.appendChild(Eyal_music);
-			
-		}
-		else if(Eyal_music.error != null)
-		{
-			Eyal_music.load();
-		}
+		Eyal_pogSound = "Pog_Sound.mp3";
 		
-		if(typeof Eyal_brinkMusic === "undefined")
-		{
-			// [0] is mandatory for some funny reason.
-			Eyal_brinkMusic = $(`<audio src="https://cdn.freesound.org/previews/649/649769_14275923-lq.mp3" id="Eyal_brinkMusic" loop=true></audio>`)[0];
-			document.body.appendChild(Eyal_brinkMusic);
-
-		}
-		else if(Eyal_brinkMusic.error != null)
-		{
-			Eyal_brinkMusic.load();
-		}
+		Eyal_drawLimitedSound = "Draw_Limited.mp3";
+	
+		Eyal_chaosAnimSound = "MD_Cutin/SE_MONSTER_CUTIN_DARK.wav";
 		
-		if(Eyal_music.src != Eyal_getNormalMusicURL())
-		{
-			Eyal_music.src = Eyal_getNormalMusicURL();
-			
-			Eyal_music.preload = "auto";
-			Eyal_music.load();
-		}
+		Eyal_darkAnimSound = "MD_Cutin/SE_MONSTER_CUTIN_DARK.wav";
+		Eyal_lightAnimSound = "MD_Cutin/SE_MONSTER_CUTIN_LIGHT.wav";
+		Eyal_waterAnimSound = "MD_Cutin/SE_MONSTER_CUTIN_WATER.wav";
+		Eyal_earthAnimSound = "MD_Cutin/SE_MONSTER_CUTIN_EARTH.wav";
+		Eyal_fireAnimSound = "MD_Cutin/SE_MONSTER_CUTIN_FIRE.wav";
+		Eyal_windAnimSound = "MD_Cutin/SE_MONSTER_CUTIN_WIND.wav"
 		
-		if(Eyal_brinkMusic.src != Eyal_getVictoryMusicURL())
-		{
-			Eyal_brinkMusic.src = Eyal_getVictoryMusicURL();
-			
-			Eyal_brinkMusic.preload = "auto";
-			Eyal_brinkMusic.load();
-		}
-		
-		let Eyal_pogSound = $('#Eyal_pogSound')[0];
-		
-		if(typeof Eyal_pogSound === "undefined")
-		{
-			// [0] is mandatory for some funny reason.
-			Eyal_pogSound = $(`<audio src="https://cdn.freesound.org/previews/649/649769_14275923-lq.mp3" id="Eyal_pogSound"></audio>`)[0];
-			document.body.appendChild(Eyal_pogSound);
-			
-			Eyal_pogSound.preload = "auto";
-			Eyal_pogSound.load();
-		}
-		else if(Eyal_pogSound.error != null)
-		{
-			Eyal_pogSound.load();
-		}
-		
-		let Eyal_drawLimitedSound = $('#Eyal_drawLimitedSound')[0];
-		
-		if(typeof Eyal_drawLimitedSound === "undefined")
-		{
-			// [0] is mandatory for some funny reason.
-			Eyal_drawLimitedSound = $(`<audio src="https://drive.google.com/uc?id=1udHcnHg1evmoS_axmqka9eGFEHbpkmzH&export=download" id="Eyal_drawLimitedSound"></audio>`)[0];
-			document.body.appendChild(Eyal_drawLimitedSound);
-			
-			Eyal_drawLimitedSound.preload = "auto";
-			Eyal_drawLimitedSound.load();
-		}
-		else if(Eyal_drawLimitedSound.error != null)
-		{
-			Eyal_drawLimitedSound.load();
-		}
-		
-		let Eyal_chaosAnimSound = $('#Eyal_chaosAnimSound')[0];
-		
-		if(typeof Eyal_chaosAnimSound === "undefined")
-		{
-			// [0] is mandatory for some funny reason.
-			Eyal_chaosAnimSound = $(`<audio src="https://drive.google.com/uc?id=1K7nG6diCjDfGVPqyLzLL9Qaeyz9vAXtX&export=download" id="Eyal_chaosAnimSound"></audio>`)[0];
-			document.body.appendChild(Eyal_chaosAnimSound);
-			
-			Eyal_chaosAnimSound.preload = "auto";
-			Eyal_chaosAnimSound.load();
-		}
-		else if(Eyal_chaosAnimSound.error != null)
-		{
-			Eyal_chaosAnimSound.load();
-		}
-		
-		let Eyal_darkAnimSound = $('#Eyal_darkAnimSound')[0];
-		
-		if(typeof Eyal_darkAnimSound === "undefined")
-		{
-			// [0] is mandatory for some funny reason.
-			Eyal_darkAnimSound = $(`<audio src="https://drive.google.com/uc?id=1K7nG6diCjDfGVPqyLzLL9Qaeyz9vAXtX&export=download" id="Eyal_darkAnimSound"></audio>`)[0];
-			document.body.appendChild(Eyal_darkAnimSound);
-			
-			Eyal_darkAnimSound.preload = "auto";
-			Eyal_darkAnimSound.load();
-		}
-		else if(Eyal_darkAnimSound.error != null)
-		{
-			Eyal_darkAnimSound.load();
-		}
-		
-		let Eyal_lightAnimSound = $('#Eyal_lightAnimSound')[0];
-		
-		if(typeof Eyal_lightAnimSound === "undefined")
-		{
-			// [0] is mandatory for some funny reason.
-			Eyal_lightAnimSound = $(`<audio src="https://drive.google.com/uc?id=1abjshJt75ch8n9DAzfDiY_EdgszdE49g&export=download" id="Eyal_lightAnimSound"></audio>`)[0];
-			document.body.appendChild(Eyal_lightAnimSound);
-			
-			Eyal_lightAnimSound.preload = "auto";
-			Eyal_lightAnimSound.load();
-		}
-		else if(Eyal_lightAnimSound.error != null)
-		{
-			Eyal_lightAnimSound.load();
-		}
-		
-		let Eyal_waterAnimSound = $('#Eyal_waterAnimSound')[0];
-		
-		if(typeof Eyal_waterAnimSound === "undefined")
-		{
-			// [0] is mandatory for some funny reason.
-			Eyal_waterAnimSound = $(`<audio src="https://drive.google.com/uc?id=15PNOH8VGLbolzr-UvnDHyJxT_hFw8uGF&export=download" id="Eyal_waterAnimSound"></audio>`)[0];
-			document.body.appendChild(Eyal_waterAnimSound);
-			
-			Eyal_waterAnimSound.preload = "auto";
-			Eyal_waterAnimSound.load();
-		}
-		else if(Eyal_waterAnimSound.error != null)
-		{
-			Eyal_waterAnimSound.load();
-		}
-		
-		
-		let Eyal_earthAnimSound = $('#Eyal_earthAnimSound')[0];
-		
-		if(typeof Eyal_earthAnimSound === "undefined")
-		{
-			// [0] is mandatory for some funny reason.
-			Eyal_earthAnimSound = $(`<audio src="https://drive.google.com/uc?id=1d1pTBTE9GwGv-KS1-AqCfl7EmYumifrk&export=download" id="Eyal_earthAnimSound"></audio>`)[0];
-			document.body.appendChild(Eyal_earthAnimSound);
-			
-			Eyal_earthAnimSound.preload = "auto";
-			Eyal_earthAnimSound.load();		
-		}
-		else if(Eyal_earthAnimSound.error != null)
-		{
-			Eyal_earthAnimSound.load();
-		}
-		
-		
-		let Eyal_fireAnimSound = $('#Eyal_fireAnimSound')[0];
-
-		if(typeof Eyal_fireAnimSound === "undefined")
-		{
-			// [0] is mandatory for some funny reason.
-			Eyal_fireAnimSound = $(`<audio src="https://drive.google.com/uc?id=12je2FD8SXqY7p4wWe3G_L7K3_tEFUTkv&export=download" id="Eyal_fireAnimSound"></audio>`)[0];
-			document.body.appendChild(Eyal_fireAnimSound);
-			
-			Eyal_fireAnimSound.preload = "auto";
-			Eyal_fireAnimSound.load();
-		}
-		else if(Eyal_fireAnimSound.error != null)
-		{
-			Eyal_fireAnimSound.load();
-		}
-		
-		
-		let Eyal_windAnimSound = $('#Eyal_windAnimSound')[0];
-
-		if(typeof Eyal_windAnimSound === "undefined")
-		{
-			// [0] is mandatory for some funny reason.
-			Eyal_windAnimSound = $(`<audio src="https://drive.google.com/uc?id=1RPbpOVtSrE0M7JiqYkLGDCW0-cP-x8qs&export=download" id="Eyal_windAnimSound"></audio>`)[0];
-			document.body.appendChild(Eyal_windAnimSound);
-			
-			Eyal_windAnimSound.preload = "auto";
-			Eyal_windAnimSound.load();
-		}
-		else if(Eyal_windAnimSound.error != null)
-		{
-			Eyal_windAnimSound.load();
-		}
-		
-		Eyal_music.volume = (musicSliderDL / 100.0);
-		Eyal_brinkMusic.volume = (musicSliderDL / 100.0);
-		
-		
+		/*
 		let Eyal_list = document.querySelectorAll("audio")
 		
 		for(let abc=0;abc < Eyal_list.length;abc++)
@@ -1201,6 +1111,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				}, 50);
 			});
 		}
+		*/
 	}
 	importSounds();
 	
@@ -1988,6 +1899,9 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		// Eyal282 here.
 		
+		// Disable music to re-enable next time.
+		Eyal_currentMusicSlider = -1;
+		
 		Eyal_lastCardAction = undefined;
 		
 		if(typeof window.Eyal_lastTimescale !== "undefined")
@@ -2203,15 +2117,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	{
 		let urlToPlay = Eyal_getNormalMusicURL();
 		
-		let currentMusicObject;
-		let targetMusicObject = Eyal_music;
-		
-		if(!Eyal_music.paused)
-			currentMusicObject = Eyal_music;
-		
-		else if(!Eyal_brinkMusic.paused)
-			currentMusicObject = Eyal_brinkMusic;
-		
 		if(!player1)
 		{
 			await Eyal_delay(3);
@@ -2229,7 +2134,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		if((lifepointsToUse <= 3000 && !speed) || lifepointsToUse <= 1000)
 		{
 			urlToPlay = Eyal_getVictoryMusicURL();
-			targetMusicObject = Eyal_brinkMusic
 		}
 		
 		if(urlToPlay == "Retry")
@@ -2241,32 +2145,19 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			return;
 		}
 		
-		
-		targetMusicObject.volume = (musicSliderDL / 100.0);
-		
-		if(currentMusicObject != targetMusicObject)
+		if(Eyal_currentMusicObject != urlToPlay)
 		{
-			if(currentMusicObject != undefined && !currentMusicObject.paused)
-			{
-				currentMusicObject.pause();
-			}
-			
-			if(!bForceContinue)
-			{
-				targetMusicObject.currentTime = 0;
-			}
-			
-			await targetMusicObject.play();
-			
-			if(targetMusicObject.paused)
-			{
-				targetMusicObject.load();
-				
-				await Eyal_delay(4);
-			
-				Eyal_tryStartMusic();	
-			}
+			chrome.runtime.sendMessage(Eyal_extensionId, { type: "Background_MD_Stop_Sounds" });
 		}
+		if(Eyal_currentMusicObject != urlToPlay || Eyal_currentMusicSlider != musicSliderDL || bForceContinue)
+		{
+			
+			Eyal_currentMusicObject = urlToPlay
+			Eyal_currentMusicSlider = musicSliderDL;
+
+			await chrome.runtime.sendMessage(Eyal_extensionId, { type: "Background_MD_Sounds", volume: (musicSliderDL / 100.0), src: urlToPlay, loop: false, tryOnly: bForceContinue });
+		}
+		/*
 		else if(urlToPlay != targetMusicObject.src)
 		{
 			targetMusicObject.src = urlToPlay;
@@ -2275,12 +2166,14 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			{
 				targetMusicObject.currentTime = 0;
 			}
-		}
+		}*/
 	}
 	window.Eyal_tryStartMusic = function(bForceContinue)
 	{	
 		Eyal_tryStartMusicAsync(bForceContinue);
 	}
+	
+	Eyal_tryStartMusicAsync(true);
 
 	window.Negate = function(str) 
 	{
@@ -5295,6 +5188,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				addLine("/banishhand ==> Banishes your hand");
 				addLine("/addx ==> Gain x LP");
 				addLine("/subx ==> Lose x LP.");
+				addLine("/half ==> Halve your LP");
 				addLine("/pause ==> Pauses or Unpauses the game.");
 				addLine("/unpause ==> Identical to /pause in every way.");
 				Eyal_addColoredLine("037F51", "For Dueling Book Unlock commands, use " + data.message + "2");
@@ -5673,7 +5567,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 				
 				let Eyal_legalCardsArr = [];
 				
-				if(Eyal_arr.play.indexOf("SS") >= 0 || Eyal_arr.play.indexOf("OL") >= 0 || Eyal_arr.play == "Overlay" || Eyal_arr.play == "To hand")
+				if(Eyal_arr.play.indexOf("SS") >= 0 || Eyal_arr.play == "Normal Summon" || Eyal_arr.play.indexOf("OL") >= 0 || Eyal_arr.play == "Overlay" || Eyal_arr.play == "To hand")
 				{
 					window.Eyal_waitingForActionOrViewing = true;
 				}
@@ -5976,7 +5870,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		else if(data.action == "Duel" && data.play == "Quit duel")
 		{
-			Eyal_music.pause();
+			chrome.runtime.sendMessage(Eyal_extensionId, { type: "Background_MD_Sounds", volume: 0, src: Eyal_currentMusicObject, loop: false, interrupt: true });
 			
 			window.Eyal_preErratas = false;
 			// Don't return, send the data to DB.
@@ -7079,6 +6973,15 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		if(Eyal_players == 1)
 			Eyal_notifyOfPotentialDuel();
+		
+		window.Eyal_cell = cell;
+		
+		if($('#host .duel_note_txt').val().search(/instant accept/i) >= 0)
+		{
+			Send({"action":"Accept user", "username":data.username});
+			$('#joinlist').html("");
+			showDim();
+		}
 	}
 	
 	window.setupHosting = function() {
@@ -7484,8 +7387,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			delay = 0.4;
 		}
 		
-		
-		
 		TweenMax.set(_spark, {"left":parseInt(card.css("left")), "top":parseInt(card.css("top"))});
 		if (isViewingCard) {
 			
@@ -7691,11 +7592,14 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			
 			startChooseMonsterZones();
 			
-			if(links && isExtraDeckCard(card))
+			if(links)
 			{
-				$("#view").css("top", "-20px");
-				
-				startChooseExtraZones();
+				if(isExtraDeckCard(card) || ((card.data("cardfront").data("pendulum") && isIn(card, player1.hand_arr) < 0)))
+				{
+					$("#view").css("top", "-20px");
+					
+					startChooseExtraZones();
+				}
 			}
 			
 			startChooseSTZones();
@@ -9899,6 +9803,23 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	
 	window.startChooseFieldSpellZones = function()
 	{
+		if(links)
+		{
+			$("#field_spell1_select").css("left", "221.5px")
+			$("#field_spell1_select").css("top", "338px")
+			
+			$("#field_spell2_select").css("left", "753.495px")
+			$("#field_spell2_select").css("top", "151.997px")
+		}
+		else
+		{
+			$("#field_spell1_select").css("left", "207px")
+			$("#field_spell1_select").css("top", "292px")
+			
+			$("#field_spell2_select").css("left", "769px")
+			$("#field_spell2_select").css("top", "198px")
+		}
+		
 		if (player1.fieldSpell == null) {
 			$('#field_spell1_select').show();
 			
@@ -10583,6 +10504,43 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		window.Eyal_originalDuelResponse = window.duelResponse.clone();
 	}
 	
+	window.shuffleDeck = function(player, data)
+	{
+		if (player.main_arr.length == 0) {
+			return;
+		}
+		var total = 0;
+		var cardX = parseInt(player.main_arr[0].css("left"));
+
+		let Eyal_delay = 42;
+		
+		if (lowAnimations)
+		{
+			if (duelist && data.username == username) {
+				Eyal_delay /= 3.0;
+			}
+			else {
+				Eyal_delay /= 1.5;
+			}
+		}
+		var t = setInterval(function () {
+			for (var i = 0; i < player.main_arr.length; i++) {
+				var n1 = random(24);
+				var n2 = -random(24);
+				player.main_arr[i].css("left", cardX + (n1 + n2));
+			}
+			total++;
+			if (total > 10) {
+				clearInterval(t);
+				updateIDs(player.main_arr, data.deck, data.prev);
+				player.main_arr = shuffle(player, player.main_arr, data.deck);
+				shiftDeck(player);
+				endAction();
+			}
+		}, Eyal_delay);
+		playSound(ShuffleSound);
+	}
+
 	window.shuffleHand2 = function(player, data)
 	{
 		window.Eyal_newHand = data.hand;
@@ -11342,51 +11300,15 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	
 	window.Eyal_playLimitedSound = async function()
 	{
-		Eyal_drawLimitedSound.currentTime = 0;
-		await Eyal_drawLimitedSound.play();
-		
-		if(Eyal_drawLimitedSound.paused || Eyal_drawLimitedSound.ended)
-		{
-			Eyal_drawLimitedSound.load();
-			
-			setTimeout(function()
-			{
-				Eyal_playLimitedSound();
-			}, 50);
-		}
+		await chrome.runtime.sendMessage(Eyal_extensionId, { type: "Background_MD_Sounds", volume: 1, src: Eyal_drawLimitedSound, loop: false, interrupt: true });
 	}
 	window.Eyal_playPogSound = async function()
 	{
-		
-		Eyal_pogSound.currentTime = 0;
-		
-		await Eyal_pogSound.play();	
-		
-		if(Eyal_pogSound.paused || Eyal_pogSound.ended)
-		{
-			Eyal_pogSound.load();
-			
-			setTimeout(function()
-			{
-				Eyal_playPogSound();
-			}, 50);
-		}
+		await chrome.runtime.sendMessage(Eyal_extensionId, { type: "Background_MD_Sounds", volume: 1, src: Eyal_pogSound, loop: false, interrupt: true });
 	}
-	window.playMDSoundByAttribute = async function(card, attribute)
+	window.playMDSoundByAttribute = async function(card, attribute, bIgnoreFieldSpell)
 	{
-		let currentMusicObject;
-		
-		if(!Eyal_music.paused)
-			currentMusicObject = Eyal_music;
-		
-		else if(!Eyal_brinkMusic.paused)
-			currentMusicObject = Eyal_brinkMusic;
-		
-		if(currentMusicObject != undefined)
-		{
-			currentMusicObject.pause();
-		}
-		
+	
 		let currentAnimObject = null;
 		
 		switch(attribute)
@@ -11421,27 +11343,10 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		
 		if(currentAnimObject != null)
 		{
-			await currentAnimObject.pause();
-			
-			currentAnimObject.currentTime = 0;
-			
-			try
-			{
-				await currentAnimObject.play();
-			}
-			catch(e)
-			{
-				setTimeout(function()
-				{
-					playMDSoundByAttribute(card, attribute);
-				}, 50);
-			}
-			
-			
 			if(!duel_active)
 				return;
 		
-			if(card != null)
+			if(card != null && typeof bIgnoreFieldSpell === "undefined")
 			{
 				Eyal_setFieldSpellPic(player1, card);
 				
@@ -11459,6 +11364,26 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 					}
 					
 				}, duration);
+			}
+			
+			try
+			{
+				await chrome.runtime.sendMessage(Eyal_extensionId, { type: "Background_MD_Sounds", src: currentAnimObject, loop: false, interrupt: true });
+			}
+			catch(e)
+			{
+				setTimeout(function()
+				{
+					try
+					{
+						playMDSoundByAttribute(card, attribute, true);
+					}
+					
+					catch(e)
+					{
+						
+					}
+				}, 50);
 			}
 		}
 	}
@@ -12461,6 +12386,18 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 			}
 		}
 	}
+	// Not mobile
+	else
+	{
+		if (birdUI && duelist)
+		{
+			$('#deck_hidden').off("dblclick")
+			$('#deck_hidden').dblclick(function () { cardMenuClicked(new Card(), "View deck") });
+
+			$('#extra_hidden').off("dblclick")
+			$('#extra_hidden').dblclick(function () { cardMenuClicked(new Card(), "View ED") });
+		}
+	}
 	
 	//if($("#deck_hidden").length > 0)
 	//{
@@ -13017,6 +12954,10 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		max = Math.floor(max);
 		return Math.floor(Math.random() * ((max + 1) - min) + min);
 	}
+	window.Eyal_getRandomFloat = function(min, max)
+	{
+		return Math.random() * (max - min) + min;
+	}
 	window.Eyal_snipeByArray = async function(opponentArr)
 	{
 		for(let abc=0;abc < opponentArr.length;abc++)
@@ -13459,20 +13400,7 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 		}
 
 		if(potOfSwitch && (card.data("cardfront").data("name") == "Pot of Greed" || (card.data("cardfront").data("name") == "Sky Striker Mobilize - Engage!" && Eyal_CountSpellsInGY(player) >= 3)))
-		{	
-			let currentMusicObject;
-				
-			if(!Eyal_music.paused)
-				currentMusicObject = Eyal_music;
-				
-			else if(!Eyal_brinkMusic.paused)
-				currentMusicObject = Eyal_brinkMusic;
-				
-			if(currentMusicObject != undefined)
-			{
-				currentMusicObject.pause();
-			}
-				
+		{					
 			Eyal_playPogSound();
 		}
 		else
@@ -14558,6 +14486,11 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
 	}
 	window.Eyal_DeckConstructorSetCardLimit = function()
 	{
+		// We're currently in https://www.duelingbook.com/deck?id=513 
+		if(typeof master !== "undefined" && typeof card_id === "undefined")
+		{
+			return;
+		}
 		let arr = [];
 		
 		for(let abc=0;abc < deck_arr.length;abc++)
@@ -14873,19 +14806,6 @@ function injectFunction(unlockCardMechanics, lowAnimations, silentCommands, bird
              text: "Master Duel",
              value: 'Eyal Master Duel'
 		}));
-	}
-	
-	if($("#search .custom_cb option[value='Eyal Edison Format']").length == 0)
-	{
-			$("#search .custom_cb").append($('<option>', {
-             text: "Edison Format",
-             value: 'Eyal Edison Format'
-		}));
-	}
-	
-	if($("#search .custom_cb option[value='4']").length != 0)
-	{
-		$("#search .custom_cb option[value='4']").val("Eyal Goat Format")
 	}
 
 	if ($("#search .custom_cb option[value='Eyal From Clipboard']").length == 0) {
