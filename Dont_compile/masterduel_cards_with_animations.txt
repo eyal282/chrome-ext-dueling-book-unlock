@@ -466,4 +466,4 @@ Ancient Warriors Oath - Double Dragon Lords
 ;Victory Dragon
 
 ; Custom Cards ( usually added by CardMakerMaster )
-Justice League - Batman
+
