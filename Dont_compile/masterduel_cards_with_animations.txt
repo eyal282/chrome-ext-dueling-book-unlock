@@ -464,3 +464,6 @@ Ancient Warriors Oath - Double Dragon Lords
 ;Phantasm Spiral Assault
 ;Vennominaga the Deity of Poisonous Snakes
 ;Victory Dragon
+
+; Custom Cards ( usually added by CardMakerMaster )
+Justice League - Batman
