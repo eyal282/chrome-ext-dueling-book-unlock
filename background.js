@@ -4336,7 +4336,7 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		// Space is included in chars.
 		
 		let csgoConsole = "`"
-		let chars = `1234567890 ~${csgoConsole}!#$%^&*+_=-()[]\';,./{}|":<>? ●☆★ “”‟`
+		let chars = `1234567890 ~${csgoConsole}!#$%^&*+_=-()[]\';,./{}|":<>? ☆★ “”‟`
 		
 		if(RegExp(/^\p{L}/, 'u').test(charac))
 			return false;
