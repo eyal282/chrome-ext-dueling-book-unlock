@@ -810,6 +810,9 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 	if(typeof Eyal_currentMusicSlider === "undefined")
 		Eyal_currentMusicSlider = -1;
 	
+	if(typeof Eyal_FusionSentThisTurn === "undefined")
+			Eyal_FusionSentThisTurn = false;
+	
 	window.onfocus = function()
 	{
 		activateE(0);
@@ -1241,8 +1244,26 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		
 		let Eyal_count = 0;
 		
+		if(Eyal_FusionSentThisTurn == true)
+		{
+			for(let abc=0;abc < player1.grave_arr.length;abc++)
+			{
+				if(Eyal_IsCardEcclesiaLike(player1.grave_arr[abc]))
+				{
+					window.GYwarning.push(player1.grave_arr[abc]);
+				}
+			}
+			
+			Eyal_FusionSentThisTurn = false;
+		}
+		
 		if(window.GYwarning.length > 0)
 		{
+			// Remove duplicates. This doesn't appear to like using the original variable.
+			let dummy_arr = [];
+			dummy_arr = [...new Map(GYwarning.map((m) => [m.data("cardfront").data("name"), m])).values()];
+			GYwarning = [].concat(dummy_arr);
+			
 			let Eyal_msg = "You have End Phase GY effects:<br>"
 			let Eyal_max = 5;
 			
@@ -1265,7 +1286,7 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 			
 			if(Eyal_count > 0)
 			{
-				getConfirmation("GY Warning", Eyal_msg, undefined, undefined, true);
+				getConfirmation2("GY Warning", Eyal_msg, undefined, undefined, undefined, true);
 			}
 		}
 		
@@ -1282,6 +1303,19 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 	{
 		
 		let Eyal_count = 0;
+		
+		if(Eyal_FusionSentThisTurn == true)
+		{
+			for(let abc=0;abc < player1.grave_arr.length;abc++)
+			{
+				if(Eyal_IsCardEcclesiaLike(player1.grave_arr[abc]))
+				{
+					window.GYwarning.push(player1.grave_arr[abc]);
+				}
+			}
+			
+			Eyal_FusionSentThisTurn = false;
+		}
 		
 		if(window.GYwarning.length > 0)
 		{
@@ -1350,9 +1384,14 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		}});
 		//playSound(Move);
 		
-		if(card.data("owner") == player1 && card && card.data("cardfront").data("effect").search(/During the End Phase, if this card is in the GY because it was sent there this turn:/i) != -1)
+		if(card.data("owner") == player1 && card && card.data("cardfront") && card.data("cardfront").data("effect").search(/During the End Phase, if this card is in the GY because it was sent there this turn:/i) != -1)
 		{
 			window.GYwarning.push(card)
+		}
+		
+		if(card.data("owner") == player1 && card && card.data("cardfront") && card.data("cardfront").data("monster_color") == "Fusion")
+		{
+			window.Eyal_FusionSentThisTurn = true;
 		}
 	}
 
@@ -3653,7 +3692,9 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 				
 				let Eyal_url = URL_START + 'replay?id=' + (duelist ? userId + "-" : "") + duelId;
 				
-				Eyal_addColoredLine("0000FF", Eyal_url);
+				Eyal_addHTMLLine(`<b><a href="${Eyal_url}" target="_blank">${Eyal_url}</a></b>`);
+				Eyal_addColoredLine("000000", "--------------------------------------");
+				Eyal_addHTMLLine(`<b><a href="https://forum.duelingbook.com/posting.php?mode=post&f=7" target="_blank">Press here to report them in the forums</a></b>`);
 			}
 		}
 	}
@@ -3670,6 +3711,18 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
         }
         saveDuelVSP();
 		let messageToSend = `<b><eyal style="color: #${color};">${escapeHTML(str)}</b></eyal><br>`;
+		$('#duel .cout_txt').append(messageToSend);
+        restoreDuelVSP();
+    }
+	
+	window.Eyal_addHTMLLine = function(str)
+    {
+        if (conceal)
+        {
+            return;
+        }
+        saveDuelVSP();
+		let messageToSend = `${str}<br>`;
 		$('#duel .cout_txt').append(messageToSend);
         restoreDuelVSP();
     }
@@ -4283,9 +4336,12 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		// Space is included in chars.
 		
 		let csgoConsole = "`"
-		let chars = `AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890 ~${csgoConsole}!#$%^&*+_=-()[]\';,./{}|":<>?`
+		let chars = `1234567890 ~${csgoConsole}!#$%^&*+_=-()[]\';,./{}|":<>? ●☆★ “”‟`
 		
-		if(chars.indexOf(charac) == -1)
+		if(RegExp(/^\p{L}/, 'u').test(charac))
+			return false;
+
+		else if(chars.indexOf(charac) == -1)
 			return true;
 		
 		return false;
@@ -4298,7 +4354,13 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		let count = 0;
 		for(let i=index;i < str.length;i++)
 		{
-			if(str[i] == `"`)
+			if (str[i] == `"` || str[i] == `“` || str[i] == `”` || str[i] == `‟`)
+				count++;
+
+			if (str[i] == `'` && str[i+1] == `'`)
+				count++;
+
+			if(str[i] == `’` && str[i+1] == `’`)
 				count++;
 		}
 		
@@ -4804,9 +4866,15 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 	}
 	
 	
-	window.Send = function(data)
+	window.Send = async function(data)
 	{
-		console.log(data);
+		let Eyal_message = "";
+
+		if (data && data.message)
+		{
+			Eyal_message = data.message;
+		}
+		
 		if(data.action == "Duel" && (data.play == "Life points" || data.play == "Stop viewing"))
 		{
 			if(typeof Eyal_recordCombo !== "undefined")
@@ -5030,9 +5098,7 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 				return;
 		}
 		else if(data.action == "Duel" && data.play == "Duel message")
-		{
-			let Eyal_message = data.message;
-			
+		{		
 			if(actionsQueue.length > 0)
 			{
 				if(Eyal_messageStartsWith(Eyal_message, "/"))
@@ -5845,29 +5911,18 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 				fakeData.message = Eyal_message; 
 				
 				// fake duelResponse returns true if a command was consumed.
-				if(duelResponse(fakeData))
+				let result = await duelResponse(fakeData);
+				
+				console.log(result)
+				if(result)
 				{
+					console.log("This is a command")
 					// Return immediately, don't send the action over to DB.
 					return;
 				}
 			}
 		}
-		if(Eyal_silentCommands)
-		{
-			let fakeData = {};
-			fakeData.fake = true;
-			fakeData.username = username;
-			fakeData.play = "Duel message";
-			fakeData.message = Eyal_message; 
-			
-			// fake duelResponse returns true if a command was consumed.
-			if(duelResponse(fakeData))
-			{
-				// Return immediately, don't send the action over to DB.
-				return;
-			}
-		}
-		
+
 		else if(data.action == "Duel" && data.play == "Quit duel")
 		{
 			chrome.runtime.sendMessage(Eyal_extensionId, { type: "Background_MD_Sounds", volume: 0, src: Eyal_currentMusicObject, loop: false, interrupt: true });
@@ -6544,7 +6599,7 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 				if (isMonster(player1, card) && countOverlayOptions(player1) > 1 && !card.data("face_down")) {
 					menu.push({label:"Overlay",data:"Overlay"});
 				}
-				if ((isIn(card, player1.hand_arr) >= 0 && card.data("cardfront").data("card_type") != "Spell") || isIn(card, player1.main_arr) >= 0 || isIn(card, player1.grave_arr) >= 0) {
+				if ((isIn(card, player1.hand_arr) >= 0 && card.data("cardfront").data("card_type") != "Spell") || isIn(card, player1.main_arr) >= 0 || isIn(card, player1.grave_arr) >= 0 || isIn(card, player1.banished_arr) >= 0) {
 					//if (card.data("cardfront").type != "Field" && hasAvailableSTZones(player1)) {
 					if (hasAvailableSTZones(player1)) {
 						menu.push({label:"To S/T",data:"To ST"});
@@ -10628,10 +10683,12 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 					{					
 						Eyal_swapCardMenuForPlayer(player1);
 					}
+					
+					window.Eyal_FusionSentThisTurn = false;
 				}
 				case "Duel message":
 					// Maybe add data.fake?
-					if (duelist && data.username == username)
+					if (duelist && data.username == username && data.message)
 					{
 						
 						// Eyal282, check if this condition we're in prevents an opponent from being able to search for us.
@@ -10677,6 +10734,8 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 									return;
 								}
 							}, 50);
+							
+							return true;
 						}
 						if(Eyal_messageStartsWith(Eyal_message, "/snipe"))
 						{
@@ -10998,7 +11057,6 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 									}
 								}
 							}
-							
 							return true;
 						}
 					}
@@ -11399,17 +11457,13 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		if (card.data("face_down")) {
 			return;
 		}
+   
+
 		var id = card.data("cardfront").data("id");
-		var src = CARD_IMAGES_START + id + '.jpg';
+		var src = card.find(".pic").attr("src")
 		src = src.replace("/low-res/", "/card-pics/").replace("/small/", "/card-pics/");
-		$('#field_spell_pic').attr("src", src);
-		
-		
-				/*
-					if (custom > 0) {
-					src = CUSTOM_PICS_START + getCustomFolder(id) + '/' + id + '.jpg';
-				}*/
-		
+		$("#field_spell_pic > img.top-left").attr("src", src);
+		$("#field_spell_pic > img.bottom-right").attr("src", src);
 	}
 		
 	//rotation WILL affect it
@@ -12391,11 +12445,11 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 	{
 		if (birdUI && duelist)
 		{
-			$('#deck_hidden').off("dblclick")
-			$('#deck_hidden').dblclick(function () { cardMenuClicked(new Card(), "View deck") });
+			$('#deck_hidden').off("click")
+			$('#deck_hidden').click(function () { Eyal_testDoubleClick("View deck") });
 
-			$('#extra_hidden').off("dblclick")
-			$('#extra_hidden').dblclick(function () { cardMenuClicked(new Card(), "View ED") });
+			$('#extra_hidden').off("click")
+			$('#extra_hidden').click(function () { Eyal_testDoubleClick("View ED") });
 		}
 	}
 	
@@ -12413,7 +12467,28 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		//});
 	//}
 	
-	
+	window.Eyal_testDoubleClick = function(command)
+	{
+		if(typeof clickCount === "undefined")
+		{
+			clickCount = 0;
+		}
+		clickCount++;
+		
+		if (clickCount === 1)
+		{
+			singleClickTimer = setTimeout(function() {
+				clickCount = 0;            
+			}, 400);
+		}
+		else if (clickCount === 2)
+		{
+			clearTimeout(singleClickTimer);
+			clickCount = 0;
+			
+			cardMenuClicked(new Card(), command);
+		}
+	}
 	if($("#extra_hidden").length > 0)
 	{
 		$("#extra_hidden").off("contextmenu");
@@ -12816,6 +12891,28 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		effect = effect.replace(/lose half your/gi, "pay half your");
 		
 		if(effect.search(/pay half your LP/i) != -1)
+			return true;
+		
+		return false;
+			
+			
+	}
+	
+	window.Eyal_IsCardEcclesiaLike = function(card)
+	{
+		let effect = card.data("cardfront").data("effect");
+		
+		if(typeof effect === 'undefined')
+			return false;
+		
+		// /word/gi --> /word/Global ( all occurences ) case insensitive
+		effect = effect.replace(/You can /gi, "");
+		effect = effect.replace(/Monster\(s\)/gi, "Monster");
+		effect = effect.replace(/lose half your/gi, "pay half your");
+		effect = effect.replace(/Set this card/gi, "Add this card");
+		
+		console.log(effect);
+		if(effect.search(/During the End Phase, if a Fusion Monster was sent to your GY this turn: Add this card from the GY/i) != -1)
 			return true;
 		
 		return false;
@@ -14812,6 +14909,38 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		$("#search .custom_cb").append($('<option>', {
 			text: "From Clipboard",
 			value: 'Eyal From Clipboard'
+		}));
+	}
+	
+	if($(".attrib_cb option[value='ICE']").length == 0)
+	{
+			$(".attrib_cb").append($('<option>', {
+             text: "ICE",
+             value: 'ICE'
+		}));
+	}
+	
+	if($(".attrib_cb option[value='NATURE']").length == 0)
+	{
+			$(".attrib_cb").append($('<option>', {
+             text: "NATURE",
+             value: 'NATURE'
+		}));
+	}
+	
+	if($(".attrib_cb option[value='ELECTRIC']").length == 0)
+	{
+			$(".attrib_cb").append($('<option>', {
+             text: "ELECTRIC",
+             value: 'ELECTRIC'
+		}));
+	}
+	
+	if($(".attrib_cb option[value='METAL']").length == 0)
+	{
+			$(".attrib_cb").append($('<option>', {
+             text: "METAL",
+             value: 'METAL'
 		}));
 	}
 	
