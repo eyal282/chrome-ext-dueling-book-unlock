@@ -306,7 +306,7 @@ function performInjection(bRace)
 		{
 			if(tabs[0].url.search("www.duelingbook.com") != -1 || tabs[0].url.search("https://duelingbook.com") != -1)
 			{
-				chrome.storage.sync.get(['unlockCardMechanics', 'lowAnimations', 'silentCommands', 'birdUI', 'potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'musicSliderMD', 'zoomSlider', 'limitedCardsSound', 'cardLogging'], function(result)
+				chrome.storage.sync.get(['unlockCardMechanics', 'lowAnimations', 'silentCommands', 'birdUI', 'potOfSwitch', 'femOfSwitch', 'normalMusicDL', 'victoryMusicDL_V2', 'musicSliderDL', 'musicSliderMD', 'zoomSlider', 'limitedCardsSound', 'cardLogging', 'psctBold', 'psctConditionColor', 'psctCostColor', 'psctLockColor', 'psctEffectColor'], function(result)
 				{
 					let unlockCardMechanics = true;
 					
@@ -372,11 +372,51 @@ function performInjection(bRace)
 					
 					if(result && result.cardLogging == false)
 						cardLogging = false;
+					
+					let psctColors = [];
+					
+					let psctBold, psctConditionColor, psctCostColor, psctLockColor, psctEffectColor;
+					
+					if(result && result.psctBold == true)
+						psctBold = true;
+					
+					else
+						psctBold = false;
+					
+					if(result && result.psctConditionColor)
+						psctConditionColor = result.psctConditionColor
+					
+					else
+						psctConditionColor = "#008000";
+					
+					if(result && result.psctCostColor)
+						psctCostColor = result.psctCostColor
+					
+					else
+						psctCostColor = "#ff0000";
+					
+					if(result && result.psctLockColor)
+						psctLockColor = result.psctLockColor
+					
+					else
+						psctLockColor = "#0000ff";
+					
+					if(result && result.psctEffectColor)
+						psctEffectColor = result.psctEffectColor
+					
+					else
+						psctEffectColor = "#000000";
+					
+					psctColors.push(psctBold)
+					psctColors.push(psctConditionColor);
+					psctColors.push(psctCostColor);
+					psctColors.push(psctLockColor);
+					psctColors.push(psctEffectColor);
 						
 					
 					chrome.scripting.executeScript(
 					{
-						args: [chrome.runtime.id, unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, zoomSlider, limitedCardsSound, cardLogging, goatCards, edisonCards, negate_icon_blob],
+						args: [chrome.runtime.id, unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, psctColors, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, zoomSlider, limitedCardsSound, cardLogging, goatCards, edisonCards, negate_icon_blob],
 						target: {tabId: tabs[0].id},
 						world: "MAIN", // Main world is mandatory to edit other website functions
 						func: injectFunction,
@@ -744,10 +784,20 @@ function censorInjectFunction(potOfSwitch, femOfSwitch)
 				if(typeof Eyal_cards[abc].data === 'undefined')
 					continue;
 				
-				if(Eyal_cards[abc].data("cardfront"))
-					Eyal_cards[abc] = Eyal_cards[abc].data("cardfront");
+				let Eyal_original = Eyal_cards[abc];;
 				
-				if(Eyal_femaleCards.indexOf(Eyal_cards[abc].data("name")) != -1 && (Eyal_cards[abc].find('.pic').attr("src").indexOf("card-pics") >= 0 || Eyal_cards[abc].find('.pic').attr("src").indexOf("low-res") >= 0))
+				if(Eyal_cards[abc].data("cardfront"))
+				{
+					Eyal_cards[abc] = Eyal_cards[abc].data("cardfront");
+				}
+				
+				let bCensor = Eyal_femaleCards.indexOf(Eyal_cards[abc].data("name")) != -1 && (Eyal_cards[abc].find('.pic').attr("src").indexOf("card-pics") >= 0 || Eyal_cards[abc].find('.pic').attr("src").indexOf("low-res") >= 0)
+				
+				
+				if(!$('#avatar2 .nsfw_btn').is(":hidden") && typeof Eyal_original.data("owner") !== "undefined" && Eyal_original.data("owner").username == player2.username && Eyal_cards[abc].data("custom"))
+					bCensor = true;
+				
+				if(bCensor)
 				{
 					Eyal_cards[abc].removeImage();
 					
@@ -796,11 +846,20 @@ function censorInjectFunction(potOfSwitch, femOfSwitch)
 	Eyal_checkCensors();
 }
 
-function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, zoomSlider, limitedCardsSound, cardLogging, goatCards, edisonCards, negate_icon_blob)
+function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentCommands, birdUI, potOfSwitch, femOfSwitch, psctColors, normalMusicDL, victoryMusicDL, musicSliderDL, musicSliderMD, zoomSlider, limitedCardsSound, cardLogging, goatCards, edisonCards, negate_icon_blob)
 {
 //	let Eyal_blob = new Blob([negate_icon_blob[0].text], {type: negate_icon_blob[0].type});
 
 	// Don't inject until jQuery is added.
+	
+	let Eyal_psctBold, Eyal_psctConditionColor, Eyal_psctCostColor, Eyal_psctLockColor, Eyal_psctEffectColor;
+	
+	console.log(psctColors)
+	Eyal_psctBold = psctColors[0];
+	Eyal_psctConditionColor = psctColors[1];
+	Eyal_psctCostColor = psctColors[2];
+	Eyal_psctLockColor = psctColors[3];
+	Eyal_psctEffectColor = psctColors[4];
 	
 	Eyal_extensionId = extensionId;
 	
@@ -824,6 +883,9 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		return;
 
 	window.Eyal_constComboDelimiter = "&#*$^%*&#^$*%&#";
+	
+	if(typeof window.Eyal_waitingForSendAction === "undefined")
+		window.Eyal_waitingForSendAction = 0;
 	
 	if(typeof Mexp === "undefined" && document.readyState == "complete")
 	{
@@ -4159,10 +4221,20 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		let stateActive = 0;
 
 		let stateColors = []
-		stateColors.push(`</eyal>`)
-		stateColors.push(`<eyal style="color:red;">`)
-		stateColors.push(`<eyal style="color:green;">`)
-
+		
+		if(Eyal_psctBold)
+		{
+			stateColors.push(`</eyal></b>`)
+			stateColors.push(`<b><eyal style="color:${Eyal_psctCostColor};">`)
+			stateColors.push(`<b><eyal style="color:${Eyal_psctConditionColor};">`)			
+		}
+		else
+		{
+			stateColors.push(`</eyal>`)
+			stateColors.push(`<eyal style="color:${Eyal_psctCostColor};">`)
+			stateColors.push(`<eyal style="color:${Eyal_psctConditionColor};">`)
+		}
+	
 		let newText = [];
 
 		for(let abc=text.length;abc >= 0;abc--)
@@ -4305,8 +4377,16 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 			
 			while((position = text.indexOf(trueEffects[abc], position + 1)) != -1)
 			{
-				positionsFormatting.push({format: `<eyal style="color:blue;">`, position: position});
-				positionsFormatting.push({format: `</eyal>`, position: position + trueEffects[abc].length});
+				if(Eyal_psctBold)
+				{
+					positionsFormatting.push({format: `<b><eyal style="color:${Eyal_psctLockColor};">`, position: position});
+					positionsFormatting.push({format: `</eyal></b>`, position: position + trueEffects[abc].length});					
+				}
+				else
+				{
+					positionsFormatting.push({format: `<eyal style="color:${Eyal_psctLockColor};">`, position: position});
+					positionsFormatting.push({format: `</eyal>`, position: position + trueEffects[abc].length});
+				}
 			}
 		}
 		
@@ -7531,6 +7611,7 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 	
 	window.toHand = function(player, data)
 	{
+		console.log(data);
 		var card = removeFromDeck(player, data);
 		
 		// Don't care about non-deck, if card was removed from deck, it's in the deck.
@@ -7552,11 +7633,13 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 					card = removeCard(player, data);
 				}
 				revealAndToHand(player, card, data);
+				Eyal_CheckIllegalThrust(card, data);
 				return;
 			}
 		}
 		if (card) {
 			revealAndToHand(player, card, data);
+			Eyal_CheckIllegalThrust(card, data);
 			return;
 		}
 		toHandFromBanished(player, data);
@@ -7619,9 +7702,137 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 			Eyal_handleData3(e);
 		}
 		
+		if(data.action == "Load duels")
+		{
+			if(typeof Eyal_waitingForSendAction !== "undefined")
+				window.Eyal_waitingForSendAction = 0;
+			
+			console.log("Load Duels Eyal282");
+			
+			// You are not 0, you cannot skip yourself
+			for(let abc=0;abc < online_users_data.length;abc++)
+			{
+				let user = structuredClone(online_users_data[abc]);
+				let lastUser = structuredClone(online_users_data[abc-1]);
+				
+				if(typeof user.admin === "undefined")
+					user.admin = false;
+				
+				else
+					user.admin = true;
+				
+				if(abc > 0)
+				{
+					if(typeof lastUser.admin === "undefined")
+						lastUser.admin = false;
+					
+					else
+						lastUser.admin = true;
+				}
+				
+				// Check sortOnlineUsers() why this works
+				if(!user.admin)
+					continue;
+				
+				
+				console.log(`Load profile of ${user.username}`);
+				
+				window.Eyal_waitingForSendAction++;
+				
+				Send({"action":"Load profile", "username":online_users_data[abc].username});
+			}
+		}
+		if(data.action == "Load profile")
+		{
+
+			if(window.Eyal_waitingForSendAction > 0)
+			{
+				window.Eyal_waitingForSendAction--;
+				
+				if(data.duel <= 0)
+					return;
+				
+				
+				let Eyal_JudgeText = "JUDGE";
+				
+				let Eyal_formats = ["ar", "gr", "er"]
+				
+				for(let abc=0;abc < Eyal_formats.length;abc++)
+				{
+					let sp = getFormat(Eyal_formats[abc])
+					
+					for (var i = 0; i < sp.find('.duelbutton').length; i++) {
+						if(sp.find('.duelbutton').eq(i).find(".tcg_title").text() == Eyal_JudgeText)
+						{
+							sp.find('.duelbutton').eq(i).find(".tcg_title").text("N/A")
+						}
+					}
+					
+					for (var i = 0; i < sp.find('.duelbutton').length; i++) {
+						if(data.duel == sp.find('.duelbutton').eq(i).data("id"))
+						{
+							sp.find('.duelbutton').eq(i).find(".tcg_title").text("JUDGE")
+							
+							if(Eyal_formats[abc] == "gr")
+								sp.find('.duelbutton').eq(i).find(".note_txt").text("JUDGE (Goat)")
+						
+							else if(Eyal_formats[abc] == "er")
+								sp.find('.duelbutton').eq(i).find(".note_txt").text("JUDGE (Edison)")
+							
+							prependButtonToTop(sp.find('.duelbutton').eq(i), getFormat("ar"));
+						}
+					}
+				}
+				//Eyal_createWatchButton(Eyal_data);
+				return;
+			}
+		}
+		
 		// Send the data to the original function, it is a garbage idea to edit the original function...
 		handleData(e);
 	}
+		
+	// Thanks Cody AI
+	window.prependButtonToTop = function(newBtn, sp)
+	{
+		// Find the existing button if it's already there
+		var existingBtn = sp.find('.duelbutton').filter(function() {
+			return $(this).data('id') === newBtn.data('id');
+		});
+
+		// Use the existing button if found, otherwise use the new button
+		var btnToUse = existingBtn.length ? existingBtn.detach() : newBtn;
+
+		// Set the button's top position to 0
+		btnToUse.css("top", 0);
+
+		// Shift all existing buttons down
+		sp.find('.duelbutton').each(function() {
+			var currentTop = parseInt($(this).css("top"));
+			$(this).css("top", currentTop + 50);
+		});
+
+		// Insert the button at the beginning
+		sp.prepend(btnToUse);
+
+		// Update scrolling if necessary
+		if (sp.find('.duelbutton').length * 50 > 250) {
+			sp.removeClass("unscrollable");
+		}
+
+		// Refresh text and apply filters
+		if (btnToUse.hasClass("joinbutton")) {
+			setText(btnToUse.find('.username_txt'));
+		} else {
+			setText(btnToUse.find('.title_txt'));
+			setText(btnToUse.find('.title2_txt'));
+		}
+		setText(btnToUse.find('.note_txt'));
+		if (!passesFilter(btnToUse)) {
+			btnToUse.hide();
+		}
+	}
+	
 	// duelResponse is after DB saw our interaction. This is before that happens.
 	window.cardMenuClicked = function(card, data, e) {
 		console.log(data);
@@ -11142,6 +11353,8 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		playSound(Activate);
 		
 		checkPlayMDSound(card);
+		
+		Eyal_CheckIllegalThrust(card, data);
 	}
 	
 	window.activateFieldSpell2 = function(player, data)
@@ -11194,6 +11407,8 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 			endAction();
 		}});
 		removeFieldSpellPic();
+		
+		Eyal_CheckIllegalThrust(card, data);
 	}
 
 	window.setFieldSpell2 = function(player, data)
@@ -13464,6 +13679,36 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 	{
 		Send({"action":"Duel", "play":"Life points", "amount":1000});
 	}
+	
+	if(typeof window.Eyal_originalToST === "undefined" && typeof window.toST !== "undefined")
+	{
+		Function.prototype.clone = function()
+		{
+			var that = this;
+			var temp = function temporary() { return that.apply(this, arguments); };
+			for(var key in this) {
+				if (this.hasOwnProperty(key)) {
+					temp[key] = this[key];
+				}
+			}
+			return temp;
+		};
+		
+
+		window.Eyal_originalToST = window.toST.clone();
+	}
+	
+	window.toST = function(player, data)
+	{
+		Eyal_originalToST(player, data);
+		
+		var card = getFieldCard(player, data);
+		
+		if(!card)
+			return;
+		
+		Eyal_CheckIllegalThrust(card, data);
+	}
 	window.activateST = function(player, data)
 	{
 		var points;
@@ -13475,6 +13720,7 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		else {
 			points = [parseInt(card.css("left")), parseInt(card.css("top"))];
 		}
+		
 		card.data("cardfront").reinitialize(data.card);
 		card.data("inATK", true);
 		card.data("inDEF", false);
@@ -13496,6 +13742,8 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 			$('#life_txt').val(lpPay);
 		}
 
+		Eyal_CheckIllegalThrust(card, data);
+		
 		if(potOfSwitch && (card.data("cardfront").data("name") == "Pot of Greed" || (card.data("cardfront").data("name") == "Sky Striker Mobilize - Engage!" && Eyal_CountSpellsInGY(player) >= 3)))
 		{					
 			Eyal_playPogSound();
@@ -13514,7 +13762,21 @@ function injectFunction(extensionId, unlockCardMechanics, lowAnimations, silentC
 		}
 		questionE(card);
 	}
-
+	
+	window.Eyal_CheckIllegalThrust = function(card, data)
+	{
+		console.log(data);
+		if(data.log && data.log.public_log && data.log.public_log.search(/" from Deck/i) < 0)
+			return;
+			
+		if(Eyal_findCardReal(["Triple Tactics Thrust"]))
+		{
+			if(card.data("cardfront").data("type") == "Field" || card.data("cardfront").data("type") == "Continuous" || card.data("cardfront").data("type") == "Quick-Play" || card.data("cardfront").data("type") == "Counter" )
+			{
+				Eyal_addColoredLine(`FF0000`, `Make sure you didn't add ${card.data("cardfront").data("name")} with Thrust`);
+			}
+		}
+	}
 	// bReal decides if it's an imperm column or an indicator of any spell trap.
 	window.Eyal_GenerateImpermColumn = function(card, points, bReal, overrideSrcStr)
 	{

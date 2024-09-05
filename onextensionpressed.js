@@ -200,7 +200,118 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 });
 
+document.addEventListener('DOMContentLoaded', function () {
 
+	let checkbox = document.querySelector('input[id="psctBold"]');
+	
+	if(checkbox.id == 'psctBold')
+	{
+		chrome.storage.sync.get(['psctBold'], function(result) {
+			
+			if(result && result.psctBold == true)
+				checkbox.checked = true;
+			
+			else
+				checkbox.checked = false;
+
+		});
+		
+		checkbox.addEventListener('change', function () {
+			chrome.storage.sync.set({psctBold: checkbox.checked}, function() {});
+		});
+	}
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+
+	let picker = document.querySelector('input[id="psctConditionColor"]');
+	
+	if(picker.id == 'psctConditionColor')
+	{
+		chrome.storage.sync.get(['psctConditionColor'], function(result) {
+			
+			if(result && result.psctConditionColor)
+				picker.value = result.psctConditionColor
+			
+			else
+				picker.value = "#008000"
+
+		});
+		
+		picker.addEventListener('change', function () {
+			chrome.storage.sync.set({psctConditionColor: picker.value}, function() {});
+		});
+	}
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+
+	let picker = document.querySelector('input[id="psctCostColor"]');
+	
+	if(picker.id == 'psctCostColor')
+	{
+		chrome.storage.sync.get(['psctCostColor'], function(result) {
+			
+			if(result && result.psctCostColor)
+				picker.value = result.psctCostColor
+			
+			else
+				picker.value = "#ff0000"
+
+		});
+		
+		picker.addEventListener('change', function () {
+			chrome.storage.sync.set({psctCostColor: picker.value}, function() {});
+		});
+	}
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+
+	let picker = document.querySelector('input[id="psctLockColor"]');
+	
+	if(picker.id == 'psctLockColor')
+	{
+		chrome.storage.sync.get(['psctLockColor'], function(result) {
+			
+			if(result && result.psctLockColor)
+				picker.value = result.psctLockColor
+			
+			else
+				picker.value = "#0000ff"
+
+		});
+		
+		picker.addEventListener('change', function () {
+			chrome.storage.sync.set({psctLockColor: picker.value}, function() {});
+		});
+	}
+});
+/*
+document.addEventListener('DOMContentLoaded', function () {
+
+	let picker = document.querySelector('input[id="psctEffectColor"]');
+	
+	if(picker.id == 'psctEffectColor')
+	{
+		chrome.storage.sync.get(['psctEffectColor'], function(result) {
+			
+			if(result && result.psctEffectColor)
+				picker.value = result.psctEffectColor
+			
+			else
+				picker.value = "#000000"
+
+		});
+		
+		picker.addEventListener('change', function () {
+			conLog(picker.value);
+			chrome.storage.sync.set({psctEffectColor: picker.value}, function() {});
+		});
+	}
+});
+*/
 document.addEventListener('DOMContentLoaded', function () {
 
 	let menu = document.getElementById('normalMusicDL');
@@ -315,14 +426,14 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 });
 
-/*
+
 function conLog(text)
 {
 	let cons = document.getElementById('consoleLog');
 	
 	cons.innerHTML = "a" + text;
 }
-*/
+
 function getIndexByValue(options, value)
 {
 	for(let abc=0;abc < options.length;abc++)
