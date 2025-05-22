@@ -11,6 +11,8 @@ Abyss Script - Romantic Terror
 Abyss-scorn
 Abyss-sphere
 Abyss-squall
+Abyssrhine, the Atlantean Spirit
+Abysstrite, the Atlantean Spirit
 Accursed Necrotwins
 Adamancipator Friends
 Adamancipator Laputite
@@ -122,6 +124,12 @@ Archfiend Empress
 Archfiend Giant
 Archfiend Heiress
 Arduous Decision
+Argostars - Fierce Parthe
+Argostars - Glorious Adra
+Argostars - Home Stadium
+Argostars - Lightning Tydeu
+Argostars - Slayer Eteo
+Argostars - Swift Capane
 Aria From Beyond
 Aria the Melodious Diva
 Ariel, Priestess of the Nekroz
@@ -143,10 +151,13 @@ Arsenal Summoner
 Artemis, the Magistus Moon Maiden
 Artifact Aegis
 Artifact Labrys
+Artmegia Finemelt
+Artmegia Litera
 Asceticism of the Six Samurai
 Ash Blossom & Joyous Spring
 Assault Overload
 Assault Spirits
+Astellar of the White Forest
 Astral Shift
 Athena
 Attack Pheromones
@@ -163,18 +174,23 @@ Awakening of the Possessed
 Awakening of the Possessed - Gagigobyte
 Awakening of the Possessed - Rasenryu
 Baba Barber
+Bacha the Melodious Maestra
 Back Beat
+Backup @Ignister
 Backup Operator
 Backup Secretary
 Backup Supervisor
 Bad Reaction to Simochi
 Balance Magician
+A Bao A Qu, the Lightless Shadow
+Baronne de Fleur
 Barrier Statue of the Heavens
 Barrier Wave
 Baton of the Hero
 Battle Claw Fox
 Battle Mania
 Battlewasp - Azusa the Ghost Bow
+Battlewasp - Sachi the Ceremonial Bow
 Beat Cop from the Underworld
 Beatrice, Lady of the Eternal
 Beautiful Beast Trainer
@@ -241,18 +257,22 @@ Cat Girl
 Cat Girl Magician
 Cataclysmic Circumpolar Chilblainia
 Catche Eve L2
-Catchy Boardist
+Keytar Kid
 Catoblepas and the Witch of Fate
 Celestia, Lightsworn Angel
 Celestial Bell Tower
 Celestial Mage
 Celestial Sword - Eatos
 Centaur Mina
-Centurion Emet VI
-Centurion Legatia
-Centurion Phalanx
-Centurion Primera
-Centurion Trudea
+Centur-Ion Bonds
+Centur-Ion Chimerea
+Centur-Ion Emeth VI
+Centur-Ion Legatia
+Centur-Ion Phalanx
+Centur-Ion Primera
+Centur-Ion Primera Primus
+Centur-Ion Trudea
+Centur-Ion True Awakening
 Certain Victory! Monster Academy
 Cerulean Sacred Phoenix of Nephthys
 Chamber Dragonmaid
@@ -298,8 +318,11 @@ Contact Out
 Contact with Gusto
 Converging Wishes
 Cosmic String Noodle-Druidess
+Cosmo Brain
 Cosmo Queen
+Cosmo Queen the Queen of Prayers
 Counselor Lily
+Couplet the Melodious Songstress
 Courageous Crimson Chevalier Bradamante
 Creeping Darkness
 Crimson Sentry
@@ -409,6 +432,7 @@ Darklord Ixchel
 Darklord Marie
 Darklord Nurse Reficule
 Darktellarknight Batlamyus
+Dawn Angel Kambi
 Dayu the Dark King of Chairs
 Deal of Phantom
 Death and Rebirth
@@ -426,6 +450,11 @@ Denko Sekka
 Deskbot 008
 Devoted Love
 Devotee of Nephthys
+Diabell, Queen of the White Forest
+Diabellstar Vengeance
+Diabellze the Original Sinkeeper
+Diabellze the White Witch
+Diabolica the Draconique General
 Dian Keto the Cure Master
 Dian Keto the Gold-digging Master
 Diana the Light Spirit
@@ -481,8 +510,8 @@ Dragon Horn Hunter
 Dragon Lady
 Dragon Mastery
 Dragon Queen of Tragic Endings
+Dragon Tail Fymena
 Dragoncaller Magician
-Dragoness the Wicked Knight
 Dragonmaid Changeover
 Dragonmaid Downtime
 Dragonmaid Ernus
@@ -491,6 +520,7 @@ Dragonmaid Lorpar
 Dragonmaid Nudyarl
 Dragonmaid Send-Off
 Dragonmaid Sheou
+Dragonmaid Stern
 Dragonmaid Tidying
 Dragonmaid Tinkhec
 Dragonmaid Welcome
@@ -504,9 +534,9 @@ Dreamsprite
 Dunames Dark Witch
 Duo of the Seven Emperors
 Dwell Chair Bone
-Eater of Millions
 Ebon Magician Curran
 Ecclesia the Exiled
+Eclipse Twins
 Eco Spell - Recycle
 Eco Spell - Reduce Waste
 Edea the Heavenly Squire
@@ -542,8 +572,10 @@ Elementsaber Aina
 Elementsaber Makani
 Elementsaber Nalu
 Elf's Light
+Elzette of the White Forest
 Emblem of the Plunder Patroll
 Emergency Assistance
+Emilia, Dance Priestess of the Nekroz
 Emissary of Darkness Token
 Emissary of the Oasis
 Empress Judge
@@ -563,7 +595,7 @@ Erica the Rikka Fairy
 Escape of the Unchained
 Eshila the Lovely Bisque Doll
 Esper Girl
-Esperaid of the Smashing Light
+Esperade the Smashing Superstar
 Etoile Cyber
 Evenly Matched
 Evigishki Gustkraken
@@ -579,6 +611,7 @@ Evil Eye Mesmerism
 Evil Eye Repose
 Evil HERO Infernal Sniper
 Evil HERO Inferno Wing
+Evil HERO Inferno Wing - Backfire
 Evil Mind
 Evil★Twin Challenge
 Evil★Twin GG EZ
@@ -591,6 +624,7 @@ Exceed the Pendulum
 Executie Feena
 Exosister Asophiel
 Exosister Gibrine
+Exosister Irene
 Exosister Kaspitell
 Exosister Mikailis
 Exosisters Magnifica
@@ -621,7 +655,6 @@ Fairy's Gift
 Fairy's Hand Mirror
 Fairyant the Circular Sorcerer
 Fairywitch
-Faith of Centurion
 Fallen Angel in Darkness
 Fallen Angel of Roses
 Familiar-Possessed - Aussa
@@ -633,6 +666,7 @@ Fateful Hour
 Featherizer
 Felis, Lightsworn Archer
 Fifth Hope
+Filia Regis
 Filo, Messenger Fur Hire
 Final Gesture
 Fine
@@ -649,6 +683,7 @@ Flourishing Frolic
 Flower Cardian Moonflowerviewing
 Flowerfang Kunoichi Etranzer
 Flowerfang Venus Meika Etranzer
+Flowering Etoile the Melodious Magnificat
 Fluff Snakebird
 Flutomahawk, the Axe Music Maiden
 Foaming Beauty
@@ -693,6 +728,7 @@ Gagaga Mancer
 Gagaga Sister
 Gagaga Thunder
 Gagagadraw
+Gagagaga Girl
 Gagagaguard
 Gagagamirror
 Gagagatag
@@ -756,6 +792,7 @@ Gladiator Beast Attorix
 Glorious Illusion
 Glory of the Seven Emperors
 Gnomaterial
+Goblin Biker Mean Merciless
 Goblin Circus
 Goddess Erda's Guidance
 Goddess Mandrake
@@ -764,6 +801,7 @@ Goddess Urd's Verdict
 Goddess Verdande's Guidance
 Goddess of Sweet Revenge
 Goddess of Whim
+Goddess of the Two Sides
 Goddess with the Third Eye
 Gold Moon Coin
 Gold Pride - Captain Carrie
@@ -801,7 +839,9 @@ Gwenhwyfar, Queen of Noble Arms
 Gyakutenno Megami
 HERO's Bond
 Ha-Re the Sword Mikanko
+Hailon, the Timelord
 Half Counter
+Hallo, the Spirit of Tricks
 Hallowed Life Barrier
 Hand of Nephthys
 Hand of the Six Samurai
@@ -865,6 +905,7 @@ Honeybot
 Hope for the Future
 Horn Wan Yue the Crescent Music Maiden
 House Dragonmaid
+Hrimnir the Divine Follower
 Hu-Li the Jewel Mikanko
 Humhumming the Key Djinn
 Hunter Channel
@@ -878,7 +919,6 @@ Ib the World Chalice Justiciar
 Ib the World Chalice Priestess
 Ice Beast Zerofyne
 Ice Chain
-Ice Doll
 Ice Master
 Ice Princess Zereort
 Ice Queen
@@ -938,6 +978,8 @@ Junk Forward
 Junk Puppet
 Juno, the Celestial Goddess
 Justice of Prophecy
+K9 - #17 "Ripper"
+K9 - #17 Izuna
 Kagero the Cannon Ninja
 Kaien the Emissary of Darkness
 Kanan the Ganguro Swordsmistress
@@ -946,6 +988,7 @@ Kanzashi the Rikka Queen
 Karakuri Komachi mdl 224 "Ninishi"
 Karakuri Ninja mdl 919 "Kuick"
 Karma Cut
+Key Mace
 Kingyo Sukui
 Kitchen Dragonmaid
 Kiwi Magician Girl
@@ -964,9 +1007,11 @@ Kung Fu Nyan Nyan
 Kunoichi
 Kunoichi Ayame the Ninja Girl
 Kuribon
+Kuribon the Fairy Spirit
 Kuzunoha, the Onmyojin
 LaMoon
 Labor Pain
+Lacrima the Crimson Tears
 Lady Assailant of Flames
 Lady Beetle
 Lady Debug
@@ -976,6 +1021,7 @@ The Lady in Wight
 Lady of D.
 Lady of Faith
 Lady of the Lake
+Lady's Dragonmaid
 Last Chapter of the Noble Knights
 Last Day of Witch
 Last Hope of Nephthys
@@ -1018,6 +1064,7 @@ Live☆Twin Ki-sikil
 Live☆Twin Ki-sikil Frost
 Live☆Twin Lil-la
 Live☆Twin Lil-la Treat
+Lo, the Prayers of the Voiceless Voice
 Lorelei, the Symphonic Arsenal
 Lucky Loan
 Lullabind
@@ -1031,6 +1078,7 @@ Lunalight Cat Dancer
 Lunalight Crimson Fox
 Lunalight Emerald Bird
 Lunalight Fusion
+Lunalight Gold Leo
 Lunalight Kaleido Chick
 Lunalight Leo Dancer
 Lunalight Panther Dancer
@@ -1098,16 +1146,25 @@ Magnificent Machine Angel
 Mahjong Munia Maidens
 Mahunder
 Maiden in Love
+Maiden of Blue Tears
 Maiden of Macabre
 Maiden of the Aqua
 Maiden of the Moonlight
 Maiden with Eyes of Blue
+Majespecter Draco - Ryu
 Majesty Maiden, the True Dracocaster
 Malevolent Nuzzler
 Malice, Lady of Lament
+Maliss <&#80;> Chessy Cat
+Maliss <&#80;> Dormouse
+Maliss <&#80;> March Hare
+Maliss <&#80;> White Rabbit
+Maliss <&#81;> Hearts Crypter
+Maliss <&#81;> Red Ransom
+Maliss <&#81;> White Binder
 Mamemaki
 Manipulator Token
-Mannadium Trilosukda
+Mannadium Trisukta
 March of the Dark Brigade
 Mardel, Generaider Boss of Light
 Mariamne, the True Dracophoenix
@@ -1147,6 +1204,7 @@ Megalith Phul
 Melffy Mommy
 Melffy Playhouse
 Meliae of the Trees
+Melodious Concerto
 Melodious Illusion
 Melodious Rhythm Change
 Melomelody the Brass Djinn
@@ -1183,7 +1241,9 @@ Mist Valley Shaman
 Mithra the Thunder Vassal
 Mitsu the Insect Ninja
 Moon Dragon Quilla
+Moon of the Closed Heaven
 Morgan, the Enchantress of Avalon
+Morgana the Witch of Eyes
 Morpho Butterspy
 Mother Grizzly
 Mother Spider
@@ -1216,6 +1276,7 @@ Nekogal #1
 Nekogal #2
 Nekroz Cycle
 Nekroz of Gungnir
+Nekroz of Metaltron
 Nekroz of Sophia
 Nemuriko
 Neo Flamvell Lady
@@ -1232,11 +1293,13 @@ Ni-Ni the Mirror Mikanko
 Night Assailant
 Night Papilloperative
 Night Wing Sorceress
+Nightmare Apprentice
 Ninaruru, the Magistus Glass Goddess
 Ninjitsu Art of Shadow Sealing
 Ninjitsu Art of Transformation
 Noble Knight Joan
 Nobledragon Magician
+Noh-P.U.N.K. Rising Scale
 Non-Spellcasting Area
 Novox's Prayer
 Number 21: Frozen Lady Justice
@@ -1251,7 +1314,6 @@ Nunchuclarinet the Whirling Music Maiden
 Nurse Dragonmaid
 Nursepia Pink Demon
 Nuvia the Wicked
-Ocean of Regeneration
 Oh Tokenbaum!
 Ohime the Manifested Mikanko
 One-Length LaMoon
@@ -1263,7 +1325,7 @@ Orcustrated Core
 Orcustrated Einsatz
 Orcustrated Release
 Orcustrated Return
-Oriori no Kamigami
+Origami Goddess
 Otohime
 PSY-Frame Multi-Threader
 PSY-Framelord Lambda
@@ -1281,8 +1343,10 @@ People Running About
 Perfect Counter Code 123
 Perform Puppet
 Performage Bubble Gardna
+Performage Fire Dancer
 Performage Magic Tactician
 Performage Trapeze Witch
+Performage Water Dancer
 Performance of Sword
 Performapal Cheermole
 Performapal Corn
@@ -1331,8 +1395,7 @@ Prickle Fairy
 Pride of Tribe
 Pride of the Plunder Patroll
 Priestess with Eyes of Blue
-Prima Guitarna of the Colorful Light
-Prima Light
+Prima Guitarna the Shining Superstar
 Primula the Rikka Fairy
 Princess Curran
 Princess Pikeru
@@ -1342,6 +1405,7 @@ Prism Wall
 Prohibition
 Protecting Spirit Loagaeth
 Protector of the Throne
+Prototype Sky Striker Ace - Amatsu
 Psi Stage Bouncer
 Psychic Divergence
 Psychic Fervor
@@ -1354,6 +1418,7 @@ Puppet Parade
 Puppet Repair
 Purushaddoll Aeon
 Queen Angel of Roses
+Queen Azamina
 Queen Bird
 Queen Dragun Djinn
 Queen Nereia the Silvercrown
@@ -1365,12 +1430,15 @@ Queen's Knight
 Queen's Pawn
 Question Change
 Raging Eria
+Ragnaraika Chain Coils
+Ragnaraika Wicked Butterfly
 Ragnarok
 Rai-Mei
 Rainbow Marine Mermaid
 Rainbow Path
 Rainbow Veil
 Ray of Hope
+Rciela, Sinister Soul of the White Forest
 Receive Ace
 Recon, Scout Fur Hire
 Red Archery Girl
@@ -1382,6 +1450,7 @@ Reese the Ice Mistress
 Reeshaddoll Wendi
 Reeze, Whirlwind of Gusto
 Reflection of Endymion
+Refrain the Melodious Songstress
 Regen Warrior
 Reincarnation of Hope
 Released Curse
@@ -1451,7 +1520,7 @@ Robolady
 Rocket Dart Striker
 Roll of Fate
 Rolling Hot Arrow
-Romance Pick
+Romanpick
 Romic'n'Roller
 Rookie Warrior Lady
 Rose Archer
@@ -1470,13 +1539,14 @@ Royal Prison
 Royal Straight
 Royal Tribute
 Royal Writ of Taxation
+Rucia of the White Forest
 Ruddy Rose Witch
 Ruin, Angel of Oblivion
 Ruin, Queen of Oblivion
 Ruin, Supreme Queen of Oblivion
 S-Force Nightchaser
 S-Force Rappa Chiyomaru
-S:P Little Night
+S:P Little Knight
 SPYGAL Misty
 SPYRAL MISSION - Recapture
 SPYRAL Master Plan
@@ -1484,11 +1554,13 @@ SPYRAL Resort
 Saambell the Summoner
 Sacred Phoenix of Nephthys
 Sacred Serpent's Wake
+Saffira, Divine Dragon of the Voiceless Voice
 Saffira, Queen of Dragons
 Sage of Benevolence - Ciela
 Sage of Silence
 Sage of Strength - Akash
 Sagitta, Maverick Fur Hire
+Saint Azamina
 Salamangreat Foxer
 Sapphire Revive
 Sari of the Silverwing Axe
@@ -1505,6 +1577,7 @@ Self Fan Club
 Sentence of Doom
 Seraphim Blaster
 Serenade the Melodious Diva
+Serene Psychic Girl
 Serene Psychic Witch
 Serpentine Princess
 Servant of Endymion
@@ -1515,6 +1588,7 @@ Shaddoll Construct
 Shadow Tamer
 Shadow of Eyes
 Shadowpriestess of Ohm
+Shaman of the Ashened City
 Shaman of the Tenyi
 Shamisen Samsara Sorrowcat
 Shapesister
@@ -1547,7 +1621,11 @@ Silent Magician LV4
 Silent Magician LV5
 Silent Magician LV8
 Silent Paladin
+Silvera, Wolf Tamer of the White Forest
+Silvy of the White Forest
 Simultaneous Loss
+Sinful Spoils Subdual
+Sinful Spoils of Slumber - Morrian
 Sirenorca
 Sishunder
 The Six Shinobi
@@ -1580,6 +1658,7 @@ Smiling Lion Girl
 Snake Deity's Command
 The Snake Hair
 Snake Rain
+Snake-Eyes Diabellstar
 Snow Fairy
 Snowdrop the Rikka Fairy
 Snoww, Unlight of Dark World
@@ -1618,6 +1697,7 @@ Spherous Lady
 Sphinx Teleia
 Spirit Charmers
 Spirit Hunting
+Spirit of Yubel
 Spirit of the Breeze
 Spirit of the Harp
 Spirit of the Winds
@@ -1638,8 +1718,8 @@ Spy-C-Spy
 St. Joan
 Stairway to a Fabled Realm
 Stand In
+Stand Up Centur-Ion!
 Stand-Off
-Stand-Up Centurion!
 Star Drawing
 Stardust Trail
 Staring Contest
@@ -1702,6 +1782,7 @@ Tellarknight Genesis
 Temperance of Prophecy
 Tempest Magician
 Temptation of the Goddess
+Tenyi Spirit - Suruya
 Testament of the Arcane Lords
 Tethys, Goddess of Light
 That Wacky Magic!
@@ -1769,6 +1850,7 @@ Triangle Ecstasy Spark
 Tribute Burial
 Tribute Ticket
 Trick Battle
+Trickstar Band Drumatis
 Trickstar Band Sweet Guitar
 Trickstar Bella Madonna
 Trickstar Birdhelm
@@ -1776,9 +1858,11 @@ Trickstar Black Catbat
 Trickstar Bloom
 Trickstar Bouquet
 Trickstar Candina
+Trickstar Colchica
 Trickstar Corobane
 Trickstar Crimson Heart
 Trickstar Delfiendium
+Trickstar Diffusion
 Trickstar Divaridis
 Trickstar Festival
 Trickstar Foxglove Witch
@@ -1791,12 +1875,12 @@ Trickstar Lycoris
 Trickstar Mandrake
 Trickstar Narkissus
 Trickstar Nightshade
+Trickstar Noble Angel
 Trickstar Rhodode
 The Tripper Mercury
 Trismagistus
 Trumpetonfa, the Assault Music Maiden
 Trust Chain
-Truth Centurion
 Tuner's Reflect
 Tuning
 Tuning Magician
@@ -1848,8 +1932,10 @@ Vampire Vamp
 Vampire's Domain
 Vanadis of the Nordic Ascendant
 Vanquish Soul Dr. Mad Love
+Vanquish Soul Holy Sue
 Vanquish Soul Pantera
 Vanquishing Light
+Varar, Vaalmonican Concord
 Vector Change
 Vendread Anima
 Vendread Nightmare
@@ -1873,6 +1959,8 @@ Vortex the Whirlwind
 Waboku
 Wall of Illusion
 War Rock Skyler
+War Rock Spirit
+War Rock Wento
 Warrior Lady of the Wasteland
 Warrior of Tradition
 Water Element
@@ -1891,6 +1979,8 @@ The Weather Rainbowed Canvas
 The Weather Rainy Canvas
 The Weather Thundery Canvas
 Weed Out
+Ween, the Spirit of Treats
+Weiss, Lightsworn Archfiend
 Whirlwind of Gusto
 Whispark Fairy Girl
 Whispering Fairy
@@ -1967,12 +2057,15 @@ Yaminabe Party
 Yellow Hecate
 Yoko, the Graceful Mayakashi
 Yoshitsune the Goblin of Beauty
+You're Finished
 Yubel
+Yubel - The Loving Defender Forever
 Yuki-Musume, the Ice Mayakashi
 Yuki-Onna, the Absolute Zero Mayakashi
 Yuki-Onna, the Ice Mayakashi
 Zaphion, the Timelord
 Zefra Providence
+Zilofthonia Gorgon
 Zombina
 Zoodiac Barrage
 Zoodiac Bunnyblast
